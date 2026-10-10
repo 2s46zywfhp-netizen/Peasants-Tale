@@ -9,7 +9,14 @@ const errors = [];
 page.on('pageerror', (e) => errors.push(String(e)));
 await page.goto(URL);
 await page.waitForTimeout(1500);
-await page.keyboard.press('Enter'); // title -> world (cottage)
+await page.keyboard.press('Enter'); // title -> name grid (fresh save)
+await page.waitForTimeout(400);
+if ((await page.evaluate(() => document.body.dataset.scene)) === 'naming') {
+  // Keep the suggested names, skip the intro, and pass the tutorial hints (B) so the plain world is measured.
+  await page.keyboard.press('Enter'); await page.waitForTimeout(200);
+  await page.keyboard.press('Enter'); await page.waitForTimeout(500);
+  await page.keyboard.press('KeyZ'); await page.waitForTimeout(600);
+}
 await page.waitForTimeout(800);
 // Walk out to the green: weather, NPCs, livestock, sky all active.
 await page.keyboard.down('ArrowDown'); await page.waitForTimeout(1000); await page.keyboard.up('ArrowDown');
