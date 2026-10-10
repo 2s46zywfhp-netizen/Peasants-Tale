@@ -1,6 +1,6 @@
 # Progress
 Current phase: 3
-Resume point: none
+Resume point: All Phase 3 features committed (66e0a2e). Remaining: atmosphere unit test (criterion 4), browser verification of criteria 2-6 (scenes walk-through, gallery, FF-week Parchment Log, screenshots of season/time/weather/moon, heap-sampling + throttled fps), CREDITS note, full suite, push, Netlify check.
 ## Checklist
 - [ ] 1. Every sprite, variant and animation above exists.
 - [ ] 2. A Sprite Gallery debug screen shows all sprites and animations, cycling palettes.
