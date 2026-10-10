@@ -29,12 +29,36 @@ describe('migrations', () => {
     expect(s.settings.textSpeed).toBe('fast');
     expect(s.sim.seed).toBe(77);
     expect(s.sim.anchorMs).toBe(400);
-    expect(s.sim.version).toBe(2);
+    expect(s.sim.version).toBe(3);
     expect(s.seenBlock).toBe(0);
+  });
+  it('migrates a Phase 3 (schema 3, sim v2) life: household kept, village peopled, onboarding skipped', () => {
+    const cur = newSave(9, 10).sim;
+    const v2sim: Record<string, unknown> = {
+      ...cur,
+      version: 2,
+      block: 600,
+      members: cur.members.slice(0, 2).map((m) => ({ id: m.id, name: m.name, role: m.role, alive: true, body: m.body })),
+      wealth: { ...cur.wealth, grain: 33 },
+    };
+    for (const k of ['familyName', 'generation', 'village', 'rumours', 'station', 'family', 'dark', 'plague', 'lordGrip', 'wageMult', 'lastHarvest', 'hallmote', 'chronicle', 'doom']) delete v2sim[k];
+    const v3 = { schema: 3, savedAt: 1, settings: newSave(1, 1).settings, sim: v2sim, seenBlock: 500 };
+    const s = loadSave(v3);
+    expect(s.schema).toBe(SCHEMA_VERSION);
+    expect(s.sim.version).toBe(3);
+    expect(s.sim.block).toBe(600);
+    expect(s.sim.wealth.grain).toBe(33);
+    expect(s.sim.members.map((m) => [m.name, m.role, m.sex])).toEqual([[cur.members[0]!.name, 'peasant', 'm'], [cur.members[1]!.name, 'spouse', 'f']]);
+    expect(s.sim.village).toHaveLength(15);
+    expect(s.sim.chronicle).toHaveLength(1);
+    expect(s.onboarded).toBe(true);
+    expect(s.seenBlock).toBe(500);
   });
   it('migrates a schema 2 save, treating the log so far as read', () => {
     const v2 = { ...newSave(5, 10), schema: 2, sim: { ...newSave(5, 10).sim, block: 99 } } as Record<string, unknown>;
     delete v2.seenBlock;
+    delete v2.onboarded;
+    delete v2.tutorial;
     expect(loadSave(v2).seenBlock).toBe(99);
   });
   it('rejects a migration that forgets to bump the schema', () => {

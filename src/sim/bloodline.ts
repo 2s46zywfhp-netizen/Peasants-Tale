@@ -72,7 +72,7 @@ export function bury(s: SimState, m: Member, cause: string): void {
   for (const o of s.members) if (o.role === 'spouse' && wasChild) o.role = 'parent';
   s.generation += 1;
   for (const k of ['lord', 'priest', 'village'] as const) s.standing[k] = clamp(50 + (s.standing[k] - 50) * INHERIT_STANDING);
-  for (const v of s.village) v.opinion = Math.round(v.opinion * INHERIT_OPINION);
+  for (const v of s.village) v.opinion = Math.round(v.opinion * INHERIT_OPINION) + 0;
   for (const v of s.village) v.courtship = 0;
   s.soul.morale = clamp(s.soul.morale + GRIEF_MORALE);
   s.tags = s.tags.filter((t) => t.id === 'debtor' || t.id === 'witch');

@@ -41,6 +41,40 @@ export function createLife(seed: number, nowMs: number, opts: LifeOptions = {}):
   return s;
 }
 
+/**
+ * Upgrades a Phase 2/3 life (sim version 2) to version 3: the household gains ages and sexes, the village
+ * is peopled, and the new ledgers start empty. The life keeps its seed, clock, stores, fields and log.
+ */
+export function migrateSim(old: Record<string, unknown>): SimState {
+  if (old.version === 3) return old as unknown as SimState;
+  const o = old as unknown as SimState & { members: (Partial<SimState['members'][number]> & { role: string })[] };
+  const fresh = createState(o.seed, o.anchorMs);
+  const day = Math.floor(o.block / BLOCKS_PER_DAY);
+  const s: SimState = {
+    ...fresh,
+    ...o,
+    version: 3,
+    members: o.members.map((m, i) => ({
+      ...fresh.members[Math.min(i, 1)]!,
+      ...m,
+      role: i === 0 ? 'peasant' : 'spouse',
+      sex: i === 0 ? 'm' : 'f',
+      bornDay: fresh.members[Math.min(i, 1)]!.bornDay,
+    })) as SimState['members'],
+    counters: { ...fresh.counters, ...o.counters },
+    village: [],
+    chronicle: [],
+  };
+  // The dead are buried before the new ledgers begin.
+  s.members = s.members.filter((m) => m.alive);
+  createVillage(s);
+  const p = s.members[0];
+  if (p) s.chronicle.push(chronicleEntry(s, p));
+  else s.dead = true;
+  s.hallmote.nextDay = day + 7;
+  return s;
+}
+
 /** Index of the block containing real time `nowMs`. */
 export function blockAt(s: SimState, nowMs: number): number {
   return Math.floor(((nowMs - s.anchorMs) * BLOCKS_PER_REAL_DAY) / REAL_DAY_MS);
@@ -65,6 +99,7 @@ export function clock(s: SimState, nowMs: number): Clock {
 /* ───────────── daily processing ───────────── */
 
 function dawn(s: SimState, info: DayInfo, w: Weather): void {
+  if (s.dead) return;
   const day = info.dayIndex;
   s.soul.morale = clamp(s.soul.morale + w.morale);
   if (w.sky === 'storm' || w.sky === 'snow') log(s, 'weather', w.sky === 'storm' ? 'A storm howls over the village.' : 'Snow lies on the thatch.');

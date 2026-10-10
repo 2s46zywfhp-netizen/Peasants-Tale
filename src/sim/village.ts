@@ -35,7 +35,7 @@ export const ROSTER: readonly RosterEntry[] = [
   { id: 'nicholas', name: 'NICHOLAS', role: 'beggar', sex: 'm', age: 46, married: false },
 ];
 
-const range = (s: SimState, r: { min: number; max: number }) => Math.round(r.min + rand(s) * (r.max - r.min));
+const range = (s: SimState, r: { min: number; max: number }) => Math.round(r.min + rand(s) * (r.max - r.min)) + 0; // never -0: saves round-trip through JSON
 
 export function createVillage(s: SimState): void {
   const n = ROSTER.length;

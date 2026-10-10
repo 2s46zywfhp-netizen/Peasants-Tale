@@ -1,6 +1,7 @@
-import { createLife, type SimState } from '../sim/sim';
+import { createLife, migrateSim, type SimState } from '../sim/sim';
+import type { LifeOptions } from '../sim/state';
 
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 export type TextSpeed = 'slow' | 'normal' | 'fast';
 
@@ -18,12 +19,16 @@ export interface SaveData {
   sim: SimState;
   /** The block up to which the player has read the log (the Parchment Log shows what came after). */
   seenBlock: number;
+  /** The new life has been named and the intro seen. */
+  onboarded: boolean;
+  /** Index of the next first-day tutorial hint; past the end = finished. */
+  tutorial: number;
 }
 
 export const DEFAULT_SETTINGS: Settings = { textSpeed: 'normal', sound: true, scanlines: false, dmg: false };
 
-export function newSave(seed: number, now: number, settings: Settings = DEFAULT_SETTINGS): SaveData {
-  return { schema: SCHEMA_VERSION, savedAt: now, settings: { ...settings }, sim: createLife(seed, now), seenBlock: 0 };
+export function newSave(seed: number, now: number, settings: Settings = DEFAULT_SETTINGS, names: LifeOptions = {}): SaveData {
+  return { schema: SCHEMA_VERSION, savedAt: now, settings: { ...settings }, sim: createLife(seed, now, names), seenBlock: 0, onboarded: false, tutorial: 0 };
 }
 
 /** migrations[n] upgrades a schema-n save to schema n+1. */
@@ -40,6 +45,8 @@ export const MIGRATIONS: MigrationRegistry = {
   },
   // v3 (Phase 3) remembers how much of the log the player has seen; treat everything so far as read.
   2: (s) => ({ ...s, schema: 3, seenBlock: (s.sim as { block?: number } | undefined)?.block ?? 0 }),
+  // v4 (Phase 4): the village, family and bloodline (sim v3); a life already under way skips onboarding.
+  3: (s) => ({ ...s, schema: 4, sim: migrateSim(s.sim as Record<string, unknown>), onboarded: true, tutorial: 99 }),
 };
 
 export class SaveError extends Error {}
@@ -73,14 +80,15 @@ export function validate(data: Record<string, unknown>): SaveData {
   if (!s || !sim) throw new SaveError('missing settings or sim');
   if (!['slow', 'normal', 'fast'].includes(s.textSpeed as string)) throw new SaveError('bad textSpeed');
   for (const k of ['sound', 'scanlines', 'dmg']) if (typeof s[k] !== 'boolean') throw new SaveError(`bad ${k}`);
-  if (sim.version !== 2) throw new SaveError('bad sim.version');
+  if (sim.version !== 3) throw new SaveError('bad sim.version');
   for (const k of ['seed', 'rng', 'anchorMs', 'lastSimMs', 'block']) if (!isNum(sim[k])) throw new SaveError(`bad sim.${k}`);
-  for (const k of ['members', 'fields', 'log', 'tags']) if (!Array.isArray(sim[k])) throw new SaveError(`bad sim.${k}`);
-  for (const k of ['soul', 'standing', 'wealth', 'obligations', 'habits']) {
+  for (const k of ['members', 'fields', 'log', 'tags', 'village', 'rumours', 'chronicle']) if (!Array.isArray(sim[k])) throw new SaveError(`bad sim.${k}`);
+  for (const k of ['soul', 'standing', 'wealth', 'obligations', 'habits', 'station', 'family', 'plague', 'hallmote', 'dark']) {
     if (typeof sim[k] !== 'object' || sim[k] === null) throw new SaveError(`bad sim.${k}`);
   }
   if (!isNum(data.savedAt)) throw new SaveError('bad savedAt');
   if (!isNum(data.seenBlock)) throw new SaveError('bad seenBlock');
+  if (typeof data.onboarded !== 'boolean' || !isNum(data.tutorial)) throw new SaveError('bad onboarding flags');
   return data as unknown as SaveData;
 }
 
