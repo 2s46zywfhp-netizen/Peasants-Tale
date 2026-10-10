@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>Peasant's Life</title>
+    <meta name="description" content="A peasant in 1345 England lives in real time on your phone." />
+    <meta name="theme-color" content="#0b0d14" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Peasant" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  </head>
+  <body>
+    <main id="gb" aria-label="Peasant's Life">
+      <section id="bezel">
+        <span class="led" aria-hidden="true"></span>
+        <canvas id="screen" width="160" height="144"></canvas>
+      </section>
+      <div id="brand" aria-hidden="true">PEASANT'S LIFE</div>
+      <section id="controls">
+        <div id="dpad" role="group" aria-label="D-pad">
+          <span class="arm" data-dir="up"></span>
+          <span class="arm" data-dir="left"></span>
+          <span class="hub"></span>
+          <span class="arm" data-dir="right"></span>
+          <span class="arm" data-dir="down"></span>
+        </div>
+        <div id="ab">
+          <div class="round b"><div class="btn" data-btn="b" role="button" aria-label="B"></div><span>B</span></div>
+          <div class="round a"><div class="btn" data-btn="a" role="button" aria-label="A"></div><span>A</span></div>
+        </div>
+        <div id="meta">
+          <div class="pill"><div class="btn" data-btn="select" role="button" aria-label="Select"></div><span>SELECT</span></div>
+          <div class="pill"><div class="btn" data-btn="start" role="button" aria-label="Start"></div><span>START</span></div>
+        </div>
+      </section>
+    </main>
+    <div id="rotate">TURN YOUR PHONE<br />UPRIGHT</div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
