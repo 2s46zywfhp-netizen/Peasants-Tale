@@ -8,6 +8,7 @@ import type { DayInfo } from './calendar';
 import { fieldTask } from './farm';
 import { isBoonDay } from './obligations';
 import { peasant, rand, type SimState } from './state';
+import { present } from './village';
 import type { Weather } from './weather';
 
 export const slotOf = (weekday: number, bod: number): number => weekday * 6 + bod;
@@ -62,6 +63,23 @@ export interface Choice {
   why: 'habit' | 'need' | 'vice';
 }
 
+/** Choices the autopilot never makes on its own: they are the player's to make. */
+const DELIBERATE: ReadonlySet<ActionId> = new Set(['eat', 'court', 'marry', 'accuse', 'takeHolding', 'buyFreedom', 'flee', 'rob', 'offering', 'surrender', 'askFavour']);
+
+/** The neighbour the autopilot would help: whoever likes the family best and is owed nothing yet. */
+function neighbourToHelp(s: SimState): string | null {
+  let best: string | null = null;
+  let score = -Infinity;
+  for (const v of s.village) {
+    if (!present(v) || v.owes >= 1) continue;
+    if (v.opinion > score) {
+      score = v.opinion;
+      best = v.id;
+    }
+  }
+  return best;
+}
+
 function tradeNeed(s: SimState): TradeKind | null {
   const w = s.wealth;
   if ((w.grain < LOW_GRAIN || foodServings(s) < 2) && w.pence >= PRICES.grainBuy) return 'buyGrain';
@@ -80,10 +98,12 @@ export function chooseAction(s: SimState, info: DayInfo, bod: number, w: Weather
   const trade = tradeNeed(s);
   let best: Choice = { action: 'rest', param: null, why: 'need' };
   let bestScore = -Infinity;
+  const landless = s.obligations.evicted;
+  const hungry = foodServings(s) < 3;
   for (const id of ACTION_IDS) {
-    if (id === 'eat') continue;
-    const param = id === 'trade' ? trade : null;
-    if (id === 'trade' && !param) continue;
+    if (DELIBERATE.has(id)) continue;
+    const param = id === 'trade' ? trade : id === 'helpNeighbour' ? neighbourToHelp(s) : null;
+    if ((id === 'trade' || id === 'helpNeighbour') && !param) continue;
     if (availability(s, id, info, bod, param) !== null) continue;
     const h = (habit[id] ?? 0) * HABIT_WEIGHT;
     let need = 0;
@@ -110,6 +130,11 @@ export function chooseAction(s: SimState, info: DayInfo, bod: number, w: Weather
         break;
       case 'tavern': vice = lowMorale(s) ? 1 + (VICE_MORALE - s.soul.morale) / 5 : 0; break;
       case 'socialise': need = s.soul.morale < 45 ? 0.5 : 0; break;
+      // The landless work for hire, beg when there is nothing, and poach when outlawed and hungry.
+      case 'hire': need = landless || s.station.residence === 'town' ? 6 + (hungry ? 3 : 0) : 0; break;
+      case 'beg': need = s.station.beggar && hungry ? 7 : 0; break;
+      case 'poach': need = s.station.outlaw ? (hungry ? 8 : 3) : 0; break;
+      case 'helpNeighbour': need = 0; break;
       default: break;
     }
     // Duties the habit points at also weaken with low morale (lateness, skipped duties).

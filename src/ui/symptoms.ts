@@ -8,7 +8,7 @@ import type { Body, SimState } from '../sim/state';
 const TIER = {
   stout: ['Your belt strains at the buckle.', 'is stout and well fed.'],
   healthy: ['You are hale and whole.', 'is hale.'],
-  thin: ['Your belt is looser.', 'is thinner than she was.'],
+  thin: ['Your belt is looser.', 'is thinner than before.'],
   gaunt: ['Your ribs show through.', 'has gone gaunt.'],
   skeletal: ['Bones press at your skin.', 'is wasting away.'],
 } as const;
@@ -18,6 +18,7 @@ const ILL = {
   flux: ['The flux has you.', 'has the flux.'],
   fever: ['A fever burns in you.', 'burns with fever.'],
   infectedInjury: ['Your wound festers.', 'has a festering wound.'],
+  pestilence: ['Black swellings under your arms. The tokens.', 'has the black swellings.'],
 } as const;
 
 function bodyLines(b: Body, self: boolean, name: string): string[] {

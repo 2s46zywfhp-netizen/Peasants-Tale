@@ -35,11 +35,11 @@ const SPAWN: Record<SceneId, [number, number]> = {
 
 const PROMPT: Record<Location, string> = {
   home: 'A:HOME', green: 'A:GREEN', tavern: 'A:ALEHOUSE', strips: 'A:STRIPS', demesne: 'A:DEMESNE',
-  church: 'A:CHURCH', woods: 'A:WOODS', stream: 'A:STREAM',
+  church: 'A:CHURCH', woods: 'A:WOODS', stream: 'A:STREAM', manor: 'A:MANOR', barrow: 'A:BARROW', town: 'A:TOWN', camp: 'A:CAMP',
 };
 const LOCATION_TITLE: Record<Location, string> = {
   home: 'COTTAGE', green: 'VILLAGE GREEN', tavern: 'ALEHOUSE', strips: 'YOUR STRIPS', demesne: "LORD'S DEMESNE",
-  church: 'CHURCH', woods: 'WOODS', stream: 'STREAM',
+  church: 'CHURCH', woods: 'WOODS', stream: 'STREAM', manor: 'MANOR HALL', barrow: 'THE BARROW', town: 'THE TOWN', camp: 'OUTLAW CAMP',
 };
 
 interface NpcRt {

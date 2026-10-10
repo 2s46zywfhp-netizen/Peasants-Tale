@@ -233,4 +233,5 @@ export const OPPOSITE: Record<Dir, Dir> = { west: 'east', east: 'west' };
 /** The scene the sim's location belongs to. */
 export const SCENE_OF: Record<Location, SceneId> = {
   home: 'cottage', green: 'green', tavern: 'green', strips: 'fields', demesne: 'manor', church: 'church', woods: 'woods', stream: 'woods',
+  manor: 'manor', barrow: 'woods', town: 'woods', camp: 'woods',
 };

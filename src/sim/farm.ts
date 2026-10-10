@@ -4,6 +4,8 @@ import {
   YIELD_NOISE, YIELD_PER_ACRE, type Crop,
 } from './balance';
 import { inWindow, type DayInfo } from './calendar';
+import { faeSpare } from './dark';
+import { childLabour } from './family';
 import { log } from './log';
 import { clamp, rand, type Field, type SimState } from './state';
 import type { Weather } from './weather';
@@ -18,13 +20,13 @@ export function manureFactor(s: SimState): number {
 }
 
 export function labourPerBlock(s: SimState): number {
-  return (0.5 + s.wealth.tools / 200) * (s.wealth.ox > 0 ? OX_LABOUR_BONUS : 1);
+  return (0.5 + s.wealth.tools / 200) * (s.wealth.ox > 0 ? OX_LABOUR_BONUS : 1) * (1 + childLabour(s));
 }
 
 /** Yield roll when a crop ripens: weather over its growth, the care it got, manure, and luck. */
 export function rollYield(s: SimState, f: Field): number {
   if (!f.crop) return 0;
-  const weather = clamp(1 + (f.weatherDays ? f.weatherSum / f.weatherDays : 0) * 0.5, 0.4, 1.4);
+  const weather = faeSpare(s, clamp(1 + (f.weatherDays ? f.weatherSum / f.weatherDays : 0) * 0.5, 0.4, 1.4), f.id);
   const care = 0.7 + 0.3 * Math.min(1, f.careLabour / (f.acres * CARE_LABOUR_PER_ACRE));
   const noise = 1 + (rand(s) * 2 - 1) * YIELD_NOISE;
   return Math.round(f.acres * YIELD_PER_ACRE[f.crop] * f.sownShare * weather * care * manureFactor(s) * noise * 10) / 10;
@@ -40,6 +42,7 @@ function finishHarvest(s: SimState, f: Field, note: string): void {
   f.stage = 'harvested';
   const tithe = Math.round(f.harvested * TITHE_RATE * 10) / 10;
   s.soul.publicPiety = clamp(s.soul.publicPiety + TITHE_PUBLIC_PIETY);
+  if (f.crop && f.acres > 0) s.lastHarvest = f.harvested / (f.acres * YIELD_PER_ACRE[f.crop]);
   log(s, 'farm', `${note} ${Math.round(f.harvested)} bu of ${f.crop}. Tithe: ${tithe} bu.`);
 }
 

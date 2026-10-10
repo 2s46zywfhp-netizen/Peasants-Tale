@@ -1,11 +1,13 @@
 import {
-  BOON_MORALE, BOON_WEEKDAY, BOON_WINDOWS, COURT_DELAY_DAYS, EVICTION, FINE_PENCE, LORD_HIT, MANOR_COURT_FINE, MASS_MISS,
-  MASS_MISSES_FOR_COURT, MASS_WINDOW_DAYS, MEAL_VALUE, PENANCE, RENT_PENCE, STRIKE_FORGIVE_DAYS, TAG_DAYS, WEEK_WORK_DAYS,
+  BOON_MORALE, BOON_WEEKDAY, BOON_WINDOWS, COURT_DELAY_DAYS, DEED, FINE_PENCE, LORD_HIT, MANOR_COURT_FINE, MASS_MISS,
+  MASS_MISSES_FOR_COURT, MASS_WINDOW_DAYS, MEAL_VALUE, PENANCE, STRIKE_FORGIVE_DAYS, TAG_DAYS, WEEK_WORK_DAYS,
   WEEK_WORK_MIN_BLOCKS,
 } from './balance';
 import { inWindow, type DayInfo } from './calendar';
 import { log } from './log';
 import { addTag, clamp, peasant, removeTag, type SimState } from './state';
+import { evict, owesLabour, rentDue } from './station';
+import { deed } from './village';
 
 export function isWeekWorkDay(i: DayInfo): boolean {
   return WEEK_WORK_DAYS.includes(i.weekday) && !i.isHolyDay;
@@ -27,23 +29,13 @@ export function charge(s: SimState, pence: number): number {
   return owed;
 }
 
-function evict(s: SimState): void {
-  const o = s.obligations;
-  o.evicted = true;
-  o.manorCourtDay = null;
-  s.wealth.acres = 0;
-  for (const f of s.fields) Object.assign(f, { acres: 0, crop: null, stage: 'fallow' });
-  s.soul.morale = clamp(s.soul.morale + EVICTION.morale);
-  s.standing.lord = clamp(s.standing.lord + EVICTION.lord);
-  log(s, 'manor', 'EVICTED. The steward takes back the holding. The strips are given to another.');
-}
-
 /** A failed obligation climbs the ladder: fine -> suspicion -> manor court -> eviction. */
 export function strike(s: SimState, day: number, reason: string): void {
   const o = s.obligations;
   if (o.evicted) return;
   o.strikes += 1;
   o.lastStrikeDay = day;
+  s.counters.strikesSince += 1;
   if (o.manorCourtHeld) return evict(s);
   if (o.strikes === 1) {
     const owed = charge(s, FINE_PENCE);
@@ -88,16 +80,18 @@ export function dawnObligations(s: SimState, i: DayInfo): void {
     s.standing.village = clamp(s.standing.village + PENANCE.village);
     s.standing.priest = clamp(s.standing.priest + PENANCE.priest);
     addTag(s, 'penitent', day + PENANCE.sundays * 7 + 7);
+    deed(s, DEED.penance, `${peasant(s).name} ${s.familyName} stood barefoot in a sheet before the whole parish.`, s.village.map((_, k) => k));
     log(s, 'church', `Church court: public penance. Barefoot in a white sheet for ${PENANCE.sundays} Sundays.`);
   }
-  if (i.feasts.includes('michaelmas') && !o.evicted) {
-    const owed = charge(s, RENT_PENCE);
+  const rent = rentDue(s);
+  if (i.feasts.includes('michaelmas') && rent > 0) {
+    const owed = charge(s, rent);
     if (owed) {
-      log(s, 'manor', `Michaelmas rent of ${RENT_PENCE}d is due. You are ${owed}d short.`);
+      log(s, 'manor', `Michaelmas rent of ${rent}d is due. You are ${owed}d short.`);
       strike(s, day, 'unpaid rent');
     } else {
       s.standing.lord = clamp(s.standing.lord + LORD_HIT.rentPaid);
-      log(s, 'manor', `Michaelmas: rent of ${RENT_PENCE}d paid to the steward.`);
+      log(s, 'manor', `Michaelmas: rent of ${rent}d paid to the steward.`);
     }
   }
   if (o.debt > 0 && s.wealth.pence > 0) {
@@ -138,10 +132,10 @@ export function recordMass(s: SimState): void {
 export function endOfDayObligations(s: SimState, i: DayInfo): void {
   const o = s.obligations;
   const day = i.dayIndex;
-  if (!o.evicted && (isWeekWorkDay(i) || isBoonDay(i)) && o.weekWorkToday < WEEK_WORK_MIN_BLOCKS) {
+  if (owesLabour(s) && (isWeekWorkDay(i) || isBoonDay(i)) && o.weekWorkToday < WEEK_WORK_MIN_BLOCKS) {
     strike(s, day, isBoonDay(i) ? 'missing boon work' : 'missing week-work');
   }
-  if (i.isSunday) {
+  if (i.isSunday && !s.station.outlaw) {
     if (o.massToday) {
       if (o.penanceSundaysLeft > 0) {
         o.penanceSundaysLeft -= 1;
@@ -156,6 +150,7 @@ export function endOfDayObligations(s: SimState, i: DayInfo): void {
       s.standing.priest = clamp(s.standing.priest + MASS_MISS.priest);
       s.soul.publicPiety = clamp(s.soul.publicPiety + MASS_MISS.publicPiety);
       addTag(s, 'heathen', day + TAG_DAYS.heathen);
+      if (s.station.residence === 'village') deed(s, DEED.missedMass, `The ${s.familyName} pew was empty again.`);
       o.missedMasses = [...o.missedMasses.filter((d) => day - d < MASS_WINDOW_DAYS), day];
       log(s, 'church', `Absent from mass. Missed ${o.missedMasses.length} in ${MASS_WINDOW_DAYS / 7} weeks.`);
       if (o.missedMasses.length >= MASS_MISSES_FOR_COURT && o.churchCourtDay === null && o.penanceSundaysLeft === 0) {

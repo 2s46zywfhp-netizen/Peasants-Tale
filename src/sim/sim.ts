@@ -1,17 +1,24 @@
 import {
   ACTIONS, BLOCKS_PER_DAY, BLOCKS_PER_REAL_DAY, CATCHUP_CAP_BLOCKS, EGGS_PER_HEN_PER_DAY, FEAST_MORALE, FOOD_SPOIL_PER_DAY, FIREWOOD_PER_HOME_BLOCK,
-  FIRE_BELOW_C, MARTINMAS_PORK, MORALE_COLD_BLOCK, MORALE_DRIFT, MORALE_HUNGRY_BLOCK, MORALE_ILL_BLOCK, NEGLECT, PIETY_DAILY_DECAY,
+  FIRE_BELOW_C, GARDEN_MONTHS, GARDEN_POTTAGE_PER_DAY, MARTINMAS_PORK, MORALE_COLD_BLOCK, MORALE_DRIFT, MORALE_HUNGRY_BLOCK, MORALE_ILL_BLOCK, NEGLECT, PIETY_DAILY_DECAY,
   REAL_DAY_MS, STANDING_DRIFT, URGENT_HUNGER, WARMTH_COLD, type ActionId, type Food,
 } from './balance';
 import { dailyHealth, injure, injuryChance, tickBody } from './body';
 import { BLOCK_NAMES, dayInfo, type DayInfo } from './calendar';
 import { dailyFarm } from './farm';
 import { availability, eat, runActionBlock } from './actions';
+import { bury, chronicleEntry } from './bloodline';
+import { dailyDark, nightTerrors, roadAtNight } from './dark';
 import { dailyEvents, triggerEvent } from './events';
+import { dailyFamily, frailty } from './family';
+import { dailyHallmote, weeklyReeve } from './hallmote';
+import { dailyPlague } from './plague';
+import { dailyStation, placeFor } from './station';
+import { createVillage, dailyVillage } from './village';
 import { chooseAction, planLength, recordAction, recordMeal, seedDefaultHabits, shouldAutoEat, slotOf, weeklyHabitDecay } from './habits';
 import { log } from './log';
 import { dawnObligations, endOfDayObligations } from './obligations';
-import { clamp, createState, peasant, rand, type SimState } from './state';
+import { clamp, createState, peasant, rand, type LifeOptions, type Member, type SimState } from './state';
 import { weatherFor, type Weather } from './weather';
 
 export { stateHash, type SimState } from './state';
@@ -25,9 +32,11 @@ export function cloneState(s: SimState): SimState {
 }
 
 /** A new life: the default routine is seeded into the habits so the autopilot works from the first block. */
-export function createLife(seed: number, nowMs: number): SimState {
-  const s = createState(seed, nowMs);
+export function createLife(seed: number, nowMs: number, opts: LifeOptions = {}): SimState {
+  const s = createState(seed, nowMs, opts);
+  createVillage(s);
   seedDefaultHabits(s);
+  s.chronicle.push(chronicleEntry(s, peasant(s)));
   log(s, 'feast', 'Lady Day, 1345. A new year. The Lenten fast is nearly done.');
   return s;
 }
@@ -77,28 +86,47 @@ function dawn(s: SimState, info: DayInfo, w: Weather): void {
     weeklyHabitDecay(s);
   }
   s.wealth.eggs += s.wealth.hens * EGGS_PER_HEN_PER_DAY;
+  if (!s.obligations.evicted && s.station.residence === 'village' && GARDEN_MONTHS.includes(info.month)) s.wealth.pottage += GARDEN_POTTAGE_PER_DAY;
   s.wealth.pottage *= 1 - FOOD_SPOIL_PER_DAY.pottage;
   s.wealth.bread *= 1 - FOOD_SPOIL_PER_DAY.bread;
   s.wealth.eggs *= 1 - FOOD_SPOIL_PER_DAY.eggs;
   dailyFarm(s, info, w);
   dawnObligations(s, info);
+  dailyVillage(s, info);
+  dailyHallmote(s, info);
+  if (info.isSunday) weeklyReeve(s);
+  dailyStation(s, info);
+  dailyPlague(s, info);
+  dailyDark(s);
+  const childbed = dailyFamily(s, info);
+  for (const m of childbed) bury(s, m, 'in childbed');
   const wet = w.sky === 'rain' || w.sky === 'storm' || w.sky === 'snow';
-  for (const m of s.members) {
+  const omen = s.tags.some((t) => t.id === 'omen') ? 1.5 : 1;
+  for (const m of [...s.members]) {
     if (!m.alive) continue;
-    const r = { illness: rand(s), kind: rand(s), severity: rand(s), infection: rand(s) };
+    // Frailty (the very young, the old, an ill omen) makes the illness roll land more often.
+    const r = { illness: rand(s) / (frailty(m, day) * omen), kind: rand(s), severity: rand(s), infection: rand(s) };
+    const ill = m.body.illness?.kind ?? null;
     const out = dailyHealth(m.body, info.season, wet, r);
     if (out.fellIll) log(s, 'illness', `${m.name} falls ill: ${ILLNESS_TEXT[out.fellIll]}.`, [m.name]);
     if (out.recovered) log(s, 'illness', `${m.name} recovers from the ${ILLNESS_TEXT[out.recovered]}.`, [m.name]);
-    if (out.died) {
-      m.alive = false;
-      log(s, 'death', `${m.name} is dead. The bell tolls.`, [m.name]);
-      if (m.role === 'peasant') s.dead = true;
-    }
+    if (out.died) bury(s, m, causeOf(m, ill));
+    if (s.dead) return;
+  }
+  if (s.doom) {
+    bury(s, peasant(s), s.doom);
+    s.doom = null;
   }
   if (!s.dead) dailyEvents(s, info);
 }
 
-const ILLNESS_TEXT = { ague: 'ague', flux: 'flux', fever: 'fever', infectedInjury: 'festering wound' } as const;
+const ILLNESS_TEXT = { ague: 'ague', flux: 'flux', fever: 'fever', infectedInjury: 'festering wound', pestilence: 'pestilence' } as const;
+
+function causeOf(m: Member, ill: keyof typeof ILLNESS_TEXT | null): string {
+  if (ill) return `of the ${ILLNESS_TEXT[ill]}`;
+  if (m.body.reserve < 15) return 'of hunger';
+  return 'in their sleep';
+}
 
 const FEAST_TEXT: Record<DayInfo['feasts'][number], string> = {
   ladyDay: 'Lady Day. The year turns.',
@@ -144,12 +172,20 @@ function resolveBlock(s: SimState): void {
   const first = plan.from === s.block;
   const did = runActionBlock(s, plan.action, plan.param, info, bod, first);
   if (first && !plan.byPlayer) log(s, 'auto', `${p.name} ${did}.`, undefined, plan.action);
+  if (s.doom) {
+    bury(s, p, s.doom);
+    s.doom = null;
+    finishBlock(s, info, bod);
+    return;
+  }
+  if (bod >= 4) roadAtNight(s, info);
+  if (bod === 5 && s.location !== 'camp') nightTerrors(s);
 
   // Hearth: burns whenever it is cold and there is wood; the spouse keeps it.
   const fireLit = w.tempC < FIRE_BELOW_C && s.wealth.firewood > 0;
   if (fireLit) s.wealth.firewood = Math.max(0, s.wealth.firewood - FIREWOOD_PER_HOME_BLOCK);
   const activity = ACTIONS[plan.action].activity;
-  tickBody(p.body, { activity, tempC: w.tempC, atHome: s.location === 'home', fireLit, night: bod === 5 });
+  tickBody(p.body, { activity, tempC: w.tempC, atHome: s.location === 'home' || s.location === 'town', fireLit, night: bod === 5 });
   for (const m of s.members) {
     if (m === p || !m.alive) continue;
     tickBody(m.body, { activity: bod === 5 ? 'sleep' : 'light', tempC: w.tempC, atHome: true, fireLit, night: bod === 5 });
@@ -164,7 +200,11 @@ function resolveBlock(s: SimState): void {
   if (p.body.illness) m.morale = clamp(m.morale + MORALE_ILL_BLOCK);
   if (p.body.warmth < WARMTH_COLD) m.morale = clamp(m.morale + MORALE_COLD_BLOCK);
 
-  if (bod === BLOCKS_PER_DAY - 1) endOfDayObligations(s, info);
+  finishBlock(s, info, bod);
+}
+
+function finishBlock(s: SimState, info: DayInfo, bod: number): void {
+  if (bod === BLOCKS_PER_DAY - 1 && !s.dead) endOfDayObligations(s, info);
   s.block += 1;
   s.ateThisBlock = false;
   if (s.plan && s.block >= s.plan.until) s.plan = null;
@@ -244,7 +284,7 @@ export function act(state: SimState, id: ActionId, nowMs: number, param: string 
   }
   s.plan = { action: id, param, from: s.block, until: s.block + planLength(id, bod), byPlayer: true };
   const def = ACTIONS[id];
-  if (def.location !== 'any') s.location = def.location;
+  s.location = placeFor(s, id, def.location);
   recordAction(s, slot, id);
   log(s, 'action', `${p.name} chooses to ${def.label.toLowerCase()}.`, undefined, id);
   return { state: s, ok: true, message: def.label };

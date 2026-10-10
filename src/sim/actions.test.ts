@@ -10,9 +10,12 @@ const monday = dayInfo(3);
 const wednesday = dayInfo(5);
 
 describe('actions', () => {
-  it('defines all fifteen actions with duration, location, valid times and effects in balance', () => {
+  it('defines every action with duration, location, valid times and effects in balance', () => {
     expect(ACTION_IDS.sort()).toEqual(
-      ['attendMass', 'brew', 'confess', 'cook', 'eat', 'gatherFirewood', 'pray', 'rest', 'sleep', 'socialise', 'tavern', 'trade', 'wash', 'weekWork', 'workStrips'].sort(),
+      [
+        'attendMass', 'brew', 'confess', 'cook', 'eat', 'gatherFirewood', 'pray', 'rest', 'sleep', 'socialise', 'tavern', 'trade', 'wash', 'weekWork', 'workStrips',
+        'court', 'marry', 'helpNeighbour', 'askFavour', 'accuse', 'takeHolding', 'buyFreedom', 'hire', 'beg', 'flee', 'poach', 'rob', 'offering', 'surrender',
+      ].sort(),
     );
     for (const id of ACTION_IDS) {
       const d = ACTIONS[id];
@@ -48,12 +51,13 @@ describe('actions', () => {
     runActionBlock(s, 'brew', null, monday, 2, true);
     expect(s.wealth.ale).toBeGreaterThan(w.ale);
   });
-  it('eating feeds the whole household and uses stores', () => {
+  it('eating feeds the whole household and uses stores (a small child eats half a serving)', () => {
     const s = createState(1, 0);
+    expect(s.members.map((m) => m.role)).toEqual(['peasant', 'spouse', 'child']);
     s.members.forEach((m) => (m.body.hunger = 60));
     const pot = s.wealth.pottage;
     expect(eat(s, monday)).toBe('pottage');
-    expect(s.wealth.pottage).toBe(pot - 2);
+    expect(s.wealth.pottage).toBe(pot - 2.5);
     expect(s.members.every((m) => m.body.hunger === 30)).toBe(true);
   });
   it('avoids meat on fast days, and meat eaten on a fast may be seen', () => {

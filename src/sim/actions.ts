@@ -1,19 +1,23 @@
 import {
   ACTIONS, BREW_GRAIN, BREW_YIELD, CONFESS_HEATHEN_DAYS, COOK_GRAIN, COOK_YIELD, DRUNKARD_HIT, DRUNKARD_TAVERN_PER_WEEK,
-  GOOD_NEIGHBOUR_GAIN, GOOD_NEIGHBOUR_SOCIAL_PER_WEEK, LORD_HIT, MEAL_VALUE, MEAT_SEEN, MEAT_SEEN_CHANCE, PRICES, SERVING_COST,
-  TAG_DAYS, type ActionId, type Effects, type Food, type TradeKind,
+  BRAWL_CHANCE, DEED, GOOD_NEIGHBOUR_GAIN, GOOD_NEIGHBOUR_SOCIAL_PER_WEEK, LORD_HIT, MEAL_VALUE, MEAT_SEEN, MEAT_SEEN_CHANCE, PRICES, SERVING_COST,
+  TAG_DAYS, VICE_MORALE, type ActionId, type Effects, type Food, type TradeKind,
 } from './balance';
 import type { DayInfo } from './calendar';
+import { offering, offeringShort } from './dark';
+import { court, courtShort, living, marry, marryShort, servingShare } from './family';
 import { workStrips } from './farm';
 import { log } from './log';
 import { creditWeekWork, isBoonDay, isWeekWorkDay, recordMass } from './obligations';
-import { addTag, clamp, hasTag, peasant, rand, type SimState } from './state';
+import { addTag, clamp, hasTag, peasant, rand, today, type SimState } from './state';
+import {
+  beg, buyFreedom, flee, hire, owesLabour, placeFor, poach, rob, stationShort, surrender, takeHolding,
+} from './station';
+import { accuse, askFavour, deed, favourShort, hearGossip, helpNeighbour, present, villager } from './village';
 
 export const ACTION_IDS = Object.keys(ACTIONS) as ActionId[];
 export const FOODS: readonly Food[] = ['pottage', 'bread', 'eggs', 'meat', 'grain'];
 export const TRADE_KINDS: readonly TradeKind[] = ['sellGrain', 'buyGrain', 'sellEggs', 'buyFirewood', 'sellAle'];
-
-const living = (s: SimState) => s.members.filter((m) => m.alive);
 
 function servings(s: SimState, food: Food): number {
   return Math.floor((s.wealth[food] + 1e-9) / SERVING_COST[food]);
@@ -34,7 +38,8 @@ export function readyServings(s: SimState): number {
  * and raw grain is the last resort.
  */
 export function bestFood(s: SimState, info: DayInfo): Food | null {
-  const mouths = Math.max(1, living(s).length);
+  const day = today(s);
+  const mouths = Math.max(1, Math.ceil(living(s).reduce((n, m) => n + servingShare(m, day), 0)));
   const order = FOODS.filter((f) => !(f === 'meat' && info.isFastDay));
   return order.find((f) => servings(s, f) >= mouths) ?? order.find((f) => servings(s, f) >= 1) ?? (servings(s, 'meat') >= 1 ? 'meat' : null);
 }
@@ -57,7 +62,8 @@ export function availability(s: SimState, id: ActionId, info: DayInfo, bod: numb
   if (!def.blocks.includes(bod)) return 'NOT NOW';
   if (def.days === 'sunday' && !info.isSunday) return 'SUNDAYS ONLY';
   if (def.days === 'weekWork' && !(isWeekWorkDay(info) || isBoonDay(info))) return 'NOT OWED TODAY';
-  return resourceShort(s, id, info, param);
+  if (id === 'weekWork' && !owesLabour(s)) return 'NOT OWED';
+  return stationShort(s, id) ?? resourceShort(s, id, info, param);
 }
 
 /** null if the household has what the action consumes, else a short reason. */
@@ -75,6 +81,15 @@ export function resourceShort(s: SimState, id: ActionId, info: DayInfo, param: s
     case 'weekWork': return s.obligations.evicted ? 'NO LAND' : null;
     case 'tavern': return w.pence < 1 ? 'NO PENNY' : null;
     case 'trade': return param ? tradeAvailable(s, param as TradeKind) : null;
+    case 'court': return courtShort(s, param);
+    case 'marry': return marryShort(s, param);
+    case 'helpNeighbour':
+    case 'accuse': {
+      const v = villager(s, param);
+      return !v ? 'CHOOSE WHO' : present(v) ? null : 'GONE';
+    }
+    case 'askFavour': return favourShort(s, param);
+    case 'offering': return offeringShort(s);
     default: return null;
   }
 }
@@ -83,11 +98,12 @@ export function resourceShort(s: SimState, id: ActionId, info: DayInfo, param: s
 export function eat(s: SimState, info: DayInfo, food: Food | null = null): Food | null {
   const f = food ?? bestFood(s, info);
   if (!f) return null;
+  const day = info.dayIndex;
   for (const m of living(s)) {
     // The chosen food first; if it runs out, whatever else is on hand.
     const g = servings(s, f) >= 1 ? f : bestFood(s, info);
     if (!g) break;
-    s.wealth[g] = Math.max(0, s.wealth[g] - SERVING_COST[g]);
+    s.wealth[g] = Math.max(0, s.wealth[g] - SERVING_COST[g] * servingShare(m, day));
     m.body.hunger = clamp(m.body.hunger - MEAL_VALUE[g]);
   }
   s.ateThisBlock = true;
@@ -95,6 +111,7 @@ export function eat(s: SimState, info: DayInfo, food: Food | null = null): Food 
     s.standing.priest = clamp(s.standing.priest + MEAT_SEEN.priest);
     s.soul.publicPiety = clamp(s.soul.publicPiety + MEAT_SEEN.publicPiety);
     addTag(s, 'heathen', info.dayIndex + TAG_DAYS.heathen);
+    deed(s, DEED.heathen, `${peasant(s).name} ${s.familyName} was seen eating meat on a fast day.`);
     log(s, 'church', `Seen eating meat on a ${info.isLent ? 'Lenten' : 'Friday'} fast. Tongues wag.`);
   }
   return f;
@@ -129,6 +146,7 @@ function trade(s: SimState, kind: TradeKind): string {
       const d = Math.min(4, Math.floor(w.ale / PRICES.alePerPenny));
       w.ale -= d * PRICES.alePerPenny;
       w.pence += d;
+      s.counters.aleSold += d;
       return `sells ale for ${d}d`;
     }
   }
@@ -157,7 +175,7 @@ function applyEffects(s: SimState, e: Effects): void {
  */
 export function runActionBlock(s: SimState, id: ActionId, param: string | null, info: DayInfo, bod: number, first: boolean): string {
   const def = ACTIONS[id];
-  if (def.location !== 'any') s.location = def.location;
+  s.location = placeFor(s, id, def.location);
   // Re-check resources each block: a multi-block plan can run dry.
   if (resourceShort(s, id, info, param) !== null) return 'finds nothing to do';
   applyEffects(s, def.effects);
@@ -197,8 +215,16 @@ export function runActionBlock(s: SimState, id: ActionId, param: string | null, 
         addTag(s, 'drunkard', info.dayIndex + TAG_DAYS.drunkard);
         s.standing.village = clamp(s.standing.village + DRUNKARD_HIT.village);
         s.standing.priest = clamp(s.standing.priest + DRUNKARD_HIT.priest);
+        deed(s, DEED.drunkard, `${peasant(s).name} ${s.familyName} is at the alehouse every night now.`);
         log(s, 'event', 'Known now as a drunkard at the alehouse.');
       }
+      if (rand(s) < BRAWL_CHANCE * (s.soul.morale < VICE_MORALE ? 2 : 1) * (hasTag(s, 'drunkard') ? 2 : 1)) {
+        s.counters.brawls += 1;
+        addTag(s, 'brawler', info.dayIndex + TAG_DAYS.brawler);
+        peasant(s).body.health = clamp(peasant(s).body.health - 4);
+        deed(s, DEED.quarrel, `${peasant(s).name} ${s.familyName} started a fight in the alehouse.`);
+        log(s, 'event', 'Words, then fists. A brawl in the alehouse. The reeve saw.');
+      } else if (s.station.residence === 'village') hearGossip(s);
       return 'drinks at the alehouse';
     }
     case 'gatherFirewood': return 'gathers deadwood';
@@ -208,11 +234,31 @@ export function runActionBlock(s: SimState, id: ActionId, param: string | null, 
       if (s.counters.socialThisWeek >= GOOD_NEIGHBOUR_SOCIAL_PER_WEEK && !hasTag(s, 'goodNeighbour')) {
         addTag(s, 'goodNeighbour', info.dayIndex + TAG_DAYS.goodNeighbour);
         s.standing.village = clamp(s.standing.village + GOOD_NEIGHBOUR_GAIN);
+        deed(s, DEED.goodNeighbour, `${peasant(s).name} ${s.familyName} always has time for a neighbour.`);
         log(s, 'event', 'The village calls you a good neighbour.');
       }
+      hearGossip(s);
       return 'passes the time on the green';
     case 'trade': return param ? trade(s, param as TradeKind) : 'haggles but buys nothing';
     case 'eat':
       return '';
+    case 'court': return param ? court(s, param, info) : 'idles on the green';
+    case 'marry': return param ? marry(s, param, info) : 'waits at the church door';
+    case 'helpNeighbour': return param ? helpNeighbour(s, param) : 'finds nobody to help';
+    case 'askFavour': return param ? askFavour(s, param, info) : 'asks nobody';
+    case 'accuse': return param ? accuse(s, param) : 'mutters';
+    case 'takeHolding': return takeHolding(s);
+    case 'buyFreedom': return buyFreedom(s);
+    case 'hire': return hire(s);
+    case 'beg': return beg(s);
+    case 'flee': return flee(s);
+    case 'poach':
+    case 'rob': {
+      const r = id === 'poach' ? poach(s) : rob(s);
+      if (r.hanged) s.doom = 'hanged at the crossroads';
+      return r.text;
+    }
+    case 'offering': return offering(s);
+    case 'surrender': return surrender(s);
   }
 }

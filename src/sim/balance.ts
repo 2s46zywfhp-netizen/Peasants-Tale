@@ -90,6 +90,8 @@ export const ILLNESS = {
   flux: { drain: 4, minDays: 4, maxDays: 8 },
   fever: { drain: 5, minDays: 3, maxDays: 7 },
   infectedInjury: { drain: 3, minDays: 7, maxDays: 14 },
+  /** The great pestilence: buboes, black fever. Death is rolled daily while it lasts (PLAGUE.deathDaily). */
+  pestilence: { drain: 6, minDays: 5, maxDays: 9 },
 } as const;
 export type IllnessKind = keyof typeof ILLNESS;
 export const INFECTION_BASE_CHANCE = 0.05;
@@ -107,7 +109,7 @@ export const MORALE_COLD_BLOCK = -0.5;
 export const PIETY_DAILY_DECAY = { privatePiety: 0.3, publicPiety: 0.45 } as const;
 export const VICE_MORALE = 30;
 
-export const TAG_DAYS = { heathen: 56, drunkard: 28, goodNeighbour: 28, debtor: 84, suspect: 28, penitent: 28 } as const;
+export const TAG_DAYS = { heathen: 56, drunkard: 28, goodNeighbour: 28, debtor: 84, suspect: 28, penitent: 28, witch: 365, omen: 21, brawler: 21 } as const;
 export type TagId = keyof typeof TAG_DAYS;
 export const DRUNKARD_TAVERN_PER_WEEK = 4;
 export const GOOD_NEIGHBOUR_SOCIAL_PER_WEEK = 3;
@@ -150,7 +152,10 @@ export const ENOUGH_COOKED = 20;
 /** ...and makes cooking a priority below this many. */
 export const LOW_COOKED = 12;
 export const COOK_GRAIN = 1;
-export const COOK_YIELD = { bread: 14, pottage: 14 } as const;
+export const COOK_YIELD = { bread: 18, pottage: 18 } as const;
+/** The croft garden (peas, beans, leeks, worts) adds pottage each day from May to October while there is land. */
+export const GARDEN_POTTAGE_PER_DAY = 1.5;
+export const GARDEN_MONTHS: readonly number[] = [5, 6, 7, 8, 9, 10];
 export const BREW_GRAIN = 1;
 export const BREW_YIELD = 8;
 export const PRICES = { grainSell: 5, grainBuy: 7, eggsPerPenny: 6, firewoodBuy: 1, alePerPenny: 2 } as const;
@@ -167,6 +172,9 @@ export const BOON_WINDOWS = [
 ] as const;
 export const BOON_WEEKDAY = 3;
 export const RENT_PENCE = 36;
+/** Rent per acre for an unfree holding (36d for the starting 15 acres), and for a free tenant who owes no labour. */
+export const RENT_PER_ACRE = 2.4;
+export const RENT_FREE_PER_ACRE = 4;
 export const FINE_PENCE = 6;
 export const MANOR_COURT_FINE = 12;
 export const COURT_DELAY_DAYS = 7;
@@ -231,10 +239,12 @@ export const DEBUG_HOLD_MS = 2000;
 
 /* ───────────────────────── Actions ───────────────────────── */
 
-export type Location = 'home' | 'strips' | 'demesne' | 'church' | 'tavern' | 'woods' | 'stream' | 'green';
+export type Location = 'home' | 'strips' | 'demesne' | 'church' | 'tavern' | 'woods' | 'stream' | 'green' | 'manor' | 'barrow' | 'town' | 'camp';
 export type ActionId =
   | 'eat' | 'cook' | 'brew' | 'sleep' | 'workStrips' | 'weekWork' | 'attendMass' | 'pray' | 'confess'
-  | 'tavern' | 'gatherFirewood' | 'wash' | 'socialise' | 'trade' | 'rest';
+  | 'tavern' | 'gatherFirewood' | 'wash' | 'socialise' | 'trade' | 'rest'
+  | 'court' | 'marry' | 'helpNeighbour' | 'askFavour' | 'accuse' | 'takeHolding' | 'buyFreedom' | 'hire' | 'beg'
+  | 'flee' | 'poach' | 'rob' | 'offering' | 'surrender';
 
 /** Plain numeric effects applied once per block the action runs (household stores, soul, standing, actor body). */
 export interface Effects {
@@ -275,6 +285,20 @@ export const ACTIONS: Readonly<Record<ActionId, ActionDef>> = {
   socialise: { label: 'SOCIALISE', duration: 1, location: 'green', blocks: [1, 2, 3, 4, 5], days: 'any', activity: 'rest', effects: { village: 1, morale: 3 } },
   trade: { label: 'TRADE', duration: 1, location: 'green', blocks: [1, 2, 3], days: 'any', activity: 'light', effects: {} },
   rest: { label: 'REST', duration: 1, location: 'home', blocks: ALL, days: 'any', activity: 'rest', effects: { morale: 0.5 } },
+  court: { label: 'COURT', duration: 1, location: 'green', blocks: [2, 3, 4], days: 'any', activity: 'rest', effects: { morale: 3 } },
+  marry: { label: 'MARRY', duration: 1, location: 'church', blocks: [1, 2], days: 'any', activity: 'rest', effects: { morale: 15 } },
+  helpNeighbour: { label: 'HELP NEIGHBOUR', duration: 1, location: 'green', blocks: [1, 2, 3], days: 'any', activity: 'work', effects: { filth: 1 } },
+  askFavour: { label: 'ASK A FAVOUR', duration: 1, location: 'green', blocks: [1, 2, 3, 4], days: 'any', activity: 'rest', effects: {} },
+  accuse: { label: 'ACCUSE', duration: 1, location: 'church', blocks: [1, 2, 3], days: 'any', activity: 'rest', effects: {} },
+  takeHolding: { label: 'TAKE A HOLDING', duration: 1, location: 'manor', blocks: [1, 2, 3], days: 'any', activity: 'rest', effects: {} },
+  buyFreedom: { label: 'BUY FREEDOM', duration: 1, location: 'manor', blocks: [1, 2, 3], days: 'any', activity: 'rest', effects: {} },
+  hire: { label: 'WORK FOR HIRE', duration: 3, location: 'any', blocks: [1, 2], days: 'any', activity: 'heavy', effects: { filth: 1 } },
+  beg: { label: 'BEG', duration: 1, location: 'church', blocks: [1, 2, 3, 4], days: 'any', activity: 'rest', effects: { morale: -2 } },
+  flee: { label: 'FLEE TO TOWN', duration: 1, location: 'town', blocks: [0, 1], days: 'any', activity: 'heavy', effects: {} },
+  poach: { label: 'POACH', duration: 1, location: 'woods', blocks: [0, 4, 5], days: 'any', activity: 'work', effects: { filth: 2 } },
+  rob: { label: 'ROB TRAVELLERS', duration: 1, location: 'woods', blocks: [3, 4], days: 'any', activity: 'heavy', effects: { filth: 2, privatePiety: -6 } },
+  offering: { label: 'LEAVE OFFERING', duration: 1, location: 'barrow', blocks: [4, 5], days: 'any', activity: 'light', effects: { privatePiety: -3 } },
+  surrender: { label: 'GIVE UP THE WOODS', duration: 1, location: 'manor', blocks: [1, 2], days: 'any', activity: 'rest', effects: {} },
 };
 
 export type TradeKind = 'sellGrain' | 'buyGrain' | 'sellEggs' | 'buyFirewood' | 'sellAle';
@@ -295,4 +319,114 @@ export const BOON_MORALE = 3;
 export const EVICTION = { morale: -40, lord: -20 } as const;
 export const DRUNKARD_HIT = { village: -2, priest: -2 } as const;
 export const GOOD_NEIGHBOUR_GAIN = 3;
+
+/* ───────────────────────── Phase 4: village ───────────────────────── */
+
+/** Opinions run -100..100. */
+export const OPINION_START = { min: -10, max: 25 } as const;
+export const TIE_START = { min: -30, max: 45 } as const;
+/** Daily pull of every opinion toward 0 (memory fades). */
+export const OPINION_DECAY = 0.004;
+/** standing.village is pulled daily toward 50 + mean opinion / 2 by this share. */
+export const VILLAGE_FROM_OPINION = 0.05;
+export const MEMORY_MAX = 6;
+/** Rumours: chance per day that a knower tells each friend (tie > FRIEND_TIE); rumours die after LIFE days. */
+export const GOSSIP = { tellChance: 0.35, friendTie: 0, lifeDays: 21, maxRumours: 24, playerHearsChance: 0.5, villagerDeedChance: 0.15 } as const;
+/** Opinion change in the person who did the deed's direct witness, and a share of it in each who hears it. */
+export const RUMOUR_HEARD_SHARE = 0.6;
+export const DEED = {
+  drunkard: -6, fined: -5, penance: -8, goodNeighbour: 4, helped: 8, quarrel: -8, missedMass: -2, beggar: -3,
+  accuseWin: 6, accuseFail: -15, accused: -20, poacher: -6, robber: -25, reeveDues: -1, generous: 5, heathen: -4,
+} as const;
+/** Favours ledger: help given -> owed; capped per villager; asking for help without credit puts you in their debt. */
+export const FAVOUR = { cap: 3, askOpinionMin: 20, grudgeOwed: -2, callInChance: 0.1, callInGrain: 1, calledInOpinion: -6, breadGift: 3, labourBlocks: 1 } as const;
+/** Witch accusations: below this village standing after a harvest worse than BAD_HARVEST of expected. */
+export const WITCH = { standing: 30, badHarvest: 0.75, dailyChance: 0.004, oathHelpers: 4, helperOpinion: 15, convictMorale: -30, convictVillage: -20, convictFine: 24 } as const;
+/** Accusing a rival succeeds if the village's mean tie toward them is below this (and the harvest was bad: easier). */
+export const ACCUSE = { meanTieBelow: 0, badHarvestBonus: 15, priestGain: 3, grudge: -60 } as const;
+
+/* ───────────────────────── Phase 4: family ───────────────────────── */
+
+export const DAYS_PER_YEAR = 365;
+export const START_AGES = { peasant: 28, spouse: 25, child: 6 } as const;
+export const CHILD_WORK_AGE = 7;
+export const ADULT_AGE = 14;
+/** Children under this age eat half a serving. */
+export const SMALL_CHILD_AGE = 7;
+export const CHILD_LABOUR_SHARE = 0.25;
+/** Daily conception chance for a married woman in [min,max] years with no baby under a year. */
+export const CONCEPTION = { daily: 0.004, minAge: 16, maxAge: 40, pregnancyDays: 270, childbedDeath: 0.04, maxChildren: 6 } as const;
+/** Illness chance multiplier for small children (under SMALL_CHILD_AGE) and the old (over OLD_AGE). */
+export const CHILD_FRAILTY = 2.5;
+export const OLD_AGE = 50;
+export const OLD_FRAILTY_PER_YEAR = 0.15;
+/** Daily chance a grown child (not the heir) leaves for service or marriage. */
+export const LEAVE_HOME_DAILY = 0.0015;
+/** Courtship points: per block of courting on a feast day / ordinary day; needed to propose. */
+export const COURTSHIP = { feast: 12, ordinary: 4, needed: 30, opinionGain: 4 } as const;
+export const MERCHET_PENCE = 12;
+export const MARRY_MIN_AGE = 14;
+
+/* ───────────────────────── Phase 4: hallmote ───────────────────────── */
+
+export const HALLMOTE_EVERY_DAYS = 21;
+export const HALLMOTE_FINES = { brawling: 6, badAle: 3, strayBeast: 2, missedWork: 4 } as const;
+export const HALLMOTE_STANDING_HIT = -4;
+export const BAD_ALE_CHANCE = 0.3;
+export const STRAY_CHANCE_PER_BEAST = 0.08;
+/** A brawl in the alehouse: chance per tavern visit while drunk (low morale doubles it). */
+export const BRAWL_CHANCE = 0.06;
+export const REEVE = { minVillage: 55, minLord: 45, termDays: 365, wagePerWeek: 2, lord: 5 } as const;
+
+/* ───────────────────────── Phase 4: advancement and decline ───────────────────────── */
+
+export const RANK_ACRES = { villein: 10, virgate: 30 } as const;
+/** Entry fine (gersum) per acre to take up a vacant holding, and acres per holding. */
+export const HOLDING = { entryPerAcre: 1.5, acres: 5, minLord: 35 } as const;
+export const FREEDOM = { pence: 240, minLord: 55, plagueDiscount: 0.5 } as const;
+/** Debt: seizure of a beast above this; eviction above EVICT_AT when nothing is left to take. */
+export const DEBT = { seizeAt: 24, evictAt: 60 } as const;
+export const BEAST_VALUE = { ox: 60, cow: 40, pig: 12, hens: 1 } as const;
+/** Wages per block of hired labour; ×PLAGUE.wageMult in the aftermath. */
+export const WAGE_PER_BLOCK = 1;
+export const TOWN_WAGE_PER_BLOCK = 1.5;
+/** A labourer with nothing becomes a beggar after this many hungry days. */
+export const BEGGAR_AFTER_DAYS = 10;
+export const BEG = { breadChance: 0.5, bread: 2, pennyChance: 0.2 } as const;
+/** Chance per poach/rob of being taken; taken means the hallmote outlaws a landless man, and the sheriff hangs an outlaw. */
+export const POACH = { meat: 6, caughtChance: 0.08 } as const;
+export const ROB = { minPence: 2, maxPence: 12, caughtChance: 0.12 } as const;
+/** Flight: daily chance the lord's men find you in town (×lordGrip). A year and a day makes you free. */
+export const FLIGHT = { daysToFree: 366, captureDaily: 0.002, capturedFine: 24, capturedLord: -25 } as const;
+/** Daily chance the sheriff takes an outlaw in the woods (×lordGrip). */
+export const OUTLAW_TAKEN_DAILY = 0.003;
+/** An outlaw who surrenders is fined and becomes a labourer. */
+export const SURRENDER_FINE = 40;
+
+/* ───────────────────────── Phase 4: dark layer ───────────────────────── */
+
+/** The black dog: chance per night block spent abroad (new moon triples it). */
+export const BLACK_DOG_CHANCE = 0.02;
+export const BLACK_DOG_MORALE = -8;
+export const FAE = { offeringBread: 2, saveFloor: 0.9, takeDaily: 0.02, morale: -10 } as const;
+/** Nightmares and visitors at night: base chance plus hunger, sickness, low piety. */
+/** Hunger counts above 40, piety below 40. */
+export const NIGHT_TERROR = { base: 0.004, hunger: 0.001, ill: 0.03, piety: 0.001, morale: -6, visitorShare: 0.35 } as const;
+
+/* ───────────────────────── Phase 4: the Black Death ───────────────────────── */
+
+/** Omens from 1 June 1348; outbreak 1 Oct 1348 to 31 May 1349; aftermath to Lady Day 1350. */
+export const PLAGUE = {
+  omenFrom: [1348, 6, 1], outbreakFrom: [1348, 10, 1], outbreakTo: [1349, 5, 31], resolveOn: [1350, 3, 25],
+  omenChance: 0.08, infectDaily: 0.004, deathDaily: 0.1, villagerDeathDaily: 0.0018,
+  wageMult: 3, lordGrip: 1.6, morale: -1,
+} as const;
+
+/* ───────────────────────── Phase 4: death and bloodline ───────────────────────── */
+
+export const HEIR_MIN_AGE = 14;
+/** Share of standing (distance from 50) and of villager opinions the heir inherits. */
+export const INHERIT_STANDING = 0.5;
+export const INHERIT_OPINION = 0.7;
+export const GRIEF_MORALE = -25;
 export const CONFESS_HEATHEN_DAYS = 14;
