@@ -70,7 +70,14 @@ await shot('tutorial-hint');
 await holdUntil('ArrowUp', 'scene', 'cottage', 600);
 await page.keyboard.down('ArrowLeft'); await page.waitForTimeout(900); await page.keyboard.up('ArrowLeft');
 await page.keyboard.down('ArrowUp'); await page.waitForTimeout(900); await page.keyboard.up('ArrowUp');
-await press('KeyX', 400);
+// The wife wanders the room: if she is beside you, A talks to her instead. Close the talk and try again.
+for (let i = 0; i < 6; i++) {
+  const before = await data('menu');
+  await press('KeyX', 400);
+  if ((await data('menu')) !== before && /EAT|COOK|SLEEP/.test(await data('menu'))) break;
+  for (let k = 0; k < 4; k++) await press('KeyX', 250);
+  await press('KeyZ', 1500);
+}
 const menu = await data('menu');
 check('A at the hearth opens home actions', /EAT|COOK|SLEEP/.test(menu), menu);
 check('the hint moves on', (await data('hint')) === '1', await data('hint'));
