@@ -2,7 +2,7 @@
 Current phase: 4
 Resume point: none
 ## Checklist
-- [x] 1. Every system above is implemented and reachable in play. (Sim modules village, family, hallmote, station, dark, plague, bloodline; reachable via menus, the villager picker, manor hall, barrow, town and outlaw camp; e2e/phase4-verify.mjs 25/25.)
+- [x] 1. Every system above is implemented and reachable in play. (Sim modules village, family, hallmote, station, dark, plague, bloodline; reachable via menus, the villager picker, manor hall, barrow, town and outlaw camp; e2e/phase4-verify.mjs 22/22, locally and twice against the live site.)
 - [x] 2. Balance runs: simulate 2 game years for three playstyles (diligent, neglectful, fully absent). Write outcomes to docs/BALANCE.md. No starvation spiral for the diligent player, no money exploits, and neglect produces visible decline rather than instant death. (src/sim/balanceRuns.test.ts writes docs/BALANCE.md; src/sim/exploits.test.ts.)
 - [x] 3. The 1348 plague sequence fires and resolves. (src/sim/plague.test.ts; seen in the Parchment Log in the browser.)
 - [x] 4. Death → heir handoff works and the Chronicle records it. (src/sim/bloodline.test.ts; CHRONICLE page in the browser.)
