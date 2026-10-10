@@ -4,6 +4,7 @@ import { useUiRemap } from '../../render/palette';
 import { summarize } from '../../sim/summary';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
+import { probe } from '../probe';
 import type { Scene } from '../scene';
 
 /** "While you were away": the event log since the last session, summarised on parchment. */
@@ -23,6 +24,7 @@ export class ParchmentLogScene implements Scene {
     const s = this.game.sim();
     const sum = summarize(s.log, this.fromBlock, this.toBlock, s.members[0]!.name);
     this.lines = sum.lines.flatMap((l) => [...wrap(l.toUpperCase(), PARCHMENT_COLS), '']);
+    probe('parchment', sum.lines.join(' | '));
   }
 
   onAction(e: ActionEvent): void {

@@ -228,6 +228,11 @@ function refreshCountdown(s: SimState, bod: number): number {
 
 let weatherDay = -1;
 let weather: Weather | null = null;
+/** Called once per new game day drawn (the UI uses it for test probes). */
+let onDayChange: ((day: number, sky: string, moon: number, season: string) => void) | null = null;
+export function setDayListener(fn: typeof onDayChange): void {
+  onDayChange = fn;
+}
 
 /** Draw the world for the sim state at `now`. Reads sim state and the view only. */
 export function drawWorld(ctx: CanvasRenderingContext2D, s: SimState, view: WorldView, now: number): void {
@@ -237,6 +242,7 @@ export function drawWorld(ctx: CanvasRenderingContext2D, s: SimState, view: Worl
   if (day !== weatherDay) {
     weatherDay = day;
     weather = weatherFor(s.seed, day);
+    onDayChange?.(day, weather.sky, info.moon, info.season);
   }
   const plague = isPlagueYear(info.year);
   const dmg = dmgOn();

@@ -56,8 +56,8 @@ export const SEASON_REMAPS = {
   spring: IDENTITY,
   // Cold blue-grey: dead grass, bare wood, grey light.
   winter: remapOf({ [C.moss]: C.slate, [C.wood]: C.slate, [C.mud]: C.navy, [C.parchment]: C.mist, [C.gold]: C.mist, [C.ember]: C.blood, [C.sea]: C.mist }),
-  // Gold: ripe light, warm wood, bright water.
-  summer: remapOf({ [C.parchment]: C.gold, [C.mud]: C.wood, [C.teal]: C.sea, [C.slate]: C.mist }),
+  // Gold: sunlit walls and straw, warm wood, bright water (skin, which is parchment, is left alone).
+  summer: remapOf({ [C.bone]: C.gold, [C.mud]: C.wood, [C.teal]: C.sea, [C.slate]: C.mist, [C.moss]: C.moss }),
   // Ember: turning leaves and grass, low red sun.
   autumn: remapOf({ [C.moss]: C.wood, [C.wood]: C.ember, [C.gold]: C.ember, [C.parchment]: C.gold, [C.sea]: C.teal }),
 } as const;

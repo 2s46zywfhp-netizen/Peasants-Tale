@@ -3,7 +3,7 @@ import { ditherFill } from '../../render/draw';
 import { C } from '../../render/palette';
 import { COLS, OPPOSITE, SCENES, SCENE_OF, TILE, originY, tileAt, type Dir, type Npc, type SceneDef, type SceneId } from '../../render/scenes/maps';
 import { BODY_VARIANTS } from '../../render/sprites';
-import { drawWorld, type Actor, type WorldView } from '../../render/world';
+import { drawWorld, setDayListener, type Actor, type WorldView } from '../../render/world';
 import { updateWeather } from '../../render/weather';
 import { reserveTier } from '../../sim/body';
 import { dayInfo } from '../../sim/calendar';
@@ -12,6 +12,7 @@ import type { Location } from '../../sim/balance';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import type { Scene } from '../scene';
+import { probe } from '../probe';
 import { talk } from '../talk';
 import { ActionMenuScene } from './actionMenu';
 import { DialogueScene } from './dialogue';
@@ -75,6 +76,12 @@ export class WorldScene implements Scene {
   private view: WorldView;
 
   constructor(private game: Game) {
+    setDayListener((day, sky, moon, season) => {
+      probe('day', String(day));
+      probe('weather', sky);
+      probe('moon', String(moon));
+      probe('season', season);
+    });
     const s = game.sim();
     this.sceneId = SCENE_OF[s.location];
     this.player = mkActor(PEASANT[1]![0]!, 0, 0, 0);
@@ -90,6 +97,7 @@ export class WorldScene implements Scene {
   /** Enter a scene with the player standing on tile (col, row). */
   private load(id: SceneId, col: number, row: number): void {
     this.sceneId = id;
+    probe('scene', id);
     const sc = SCENES[id];
     this.x = col * TILE;
     this.y = originY(sc) + row * TILE;
@@ -185,6 +193,33 @@ export class WorldScene implements Scene {
     }
   }
 
+  /** Corner assist: blocked moving vertically, but an opening is a few pixels to one side? Ease toward it. */
+  private slideX(dy: number): void {
+    for (let k = 1; k <= 6; k++) {
+      if (!this.blocked(this.x - k, this.y + dy)) {
+        if (!this.blocked(this.x - 1, this.y)) this.x--;
+        return;
+      }
+      if (!this.blocked(this.x + k, this.y + dy)) {
+        if (!this.blocked(this.x + 1, this.y)) this.x++;
+        return;
+      }
+    }
+  }
+
+  private slideY(dx: number): void {
+    for (let k = 1; k <= 6; k++) {
+      if (!this.blocked(this.x + dx, this.y - k)) {
+        if (!this.blocked(this.x, this.y - 1)) this.y--;
+        return;
+      }
+      if (!this.blocked(this.x + dx, this.y + k)) {
+        if (!this.blocked(this.x, this.y + 1)) this.y++;
+        return;
+      }
+    }
+  }
+
   /** Is the feet box at (x, y) on anything solid? Corner by corner, without allocating. */
   private blocked(x: number, y: number): boolean {
     for (let k = 0; k < 4; k++) {
@@ -236,19 +271,23 @@ export class WorldScene implements Scene {
       while (this.subX >= 16) {
         this.subX -= 16;
         if (!this.blocked(this.x + 1, this.y)) this.x++;
+        else if (dy === 0) this.slideY(1);
       }
       while (this.subX <= -16) {
         this.subX += 16;
         if (!this.blocked(this.x - 1, this.y)) this.x--;
+        else if (dy === 0) this.slideY(-1);
       }
       this.subY = dy === 0 ? 0 : this.subY + dy * sub;
       while (this.subY >= 16) {
         this.subY -= 16;
         if (!this.blocked(this.x, this.y + 1)) this.y++;
+        else if (dx === 0) this.slideX(1);
       }
       while (this.subY <= -16) {
         this.subY += 16;
         if (!this.blocked(this.x, this.y - 1)) this.y--;
+        else if (dx === 0) this.slideX(-1);
       }
       this.stepAcc += sub;
       if (this.stepAcc >= 12 * 16) {

@@ -5,6 +5,7 @@ import { C, DMG, IDENTITY, PLAGUE, SEASON_REMAPS, TIME_REMAPS, compose, setRemap
 import { ANIMS } from '../../render/sprites';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
+import { probe } from '../probe';
 import type { Scene } from '../scene';
 
 /** Palettes the gallery cycles through. */
@@ -97,6 +98,7 @@ export class GalleryScene implements Scene {
   draw(ctx: CanvasRenderingContext2D, now: number): void {
     const pi = this.hold ? 0 : Math.floor(now / CYCLE_MS) % PALETTES.length;
     const [palName, remap] = PALETTES[pi]!;
+    probe('gallery', `${this.page + 1}/${this.pages.length} ${palName} ${this.all.length}`);
     useUiRemap();
     clear(ctx, C.night);
     const img = atlasImage(remap);
