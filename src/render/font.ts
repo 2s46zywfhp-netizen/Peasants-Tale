@@ -62,3 +62,24 @@ export function drawText(ctx: CanvasRenderingContext2D, text: string, x: number,
 export function drawTextCentered(ctx: CanvasRenderingContext2D, text: string, y: number, colour?: Colour, width = 160): void {
   drawText(ctx, text, Math.floor((width - text.length * GLYPH) / 2), y, colour);
 }
+
+/** Word-wraps text to lines of at most `cols` characters. */
+export function wrap(text: string, cols = 20): string[] {
+  const lines: string[] = [];
+  let line = '';
+  for (const word of text.split(/\s+/)) {
+    if (!word) continue;
+    if (line && line.length + 1 + word.length > cols) {
+      lines.push(line);
+      line = '';
+    }
+    let w = word;
+    while (w.length > cols) {
+      lines.push(w.slice(0, cols));
+      w = w.slice(cols);
+    }
+    line = line ? `${line} ${w}` : w;
+  }
+  if (line) lines.push(line);
+  return lines;
+}

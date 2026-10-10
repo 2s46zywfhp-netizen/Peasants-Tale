@@ -5,7 +5,9 @@ import { loadFont } from './render/font';
 import { Screen } from './render/screen';
 import { SaveManager } from './save/saveManager';
 import type { Settings } from './save/schema';
-import { advance } from './sim/sim';
+import { act, advance, type SimState } from './sim/sim';
+import { DEBUG_HOLD_MS } from './sim/balance';
+import { DebugScene } from './ui/scenes/debug';
 import type { Game } from './ui/game';
 import { onActivation } from './ui/gesture';
 import { SceneManager } from './ui/scene';
@@ -48,6 +50,17 @@ async function boot(): Promise<void> {
     applySettings() {
       audio.enabled = save.data.settings.sound;
     },
+    sim: () => save.data.sim,
+    act(id, param = null) {
+      const r = act(save.data.sim, id, Date.now(), param);
+      save.data = { ...save.data, sim: r.state };
+      void save.save(Date.now());
+      return { ok: r.ok, message: r.message };
+    },
+    setSim(s: SimState) {
+      save.data = { ...save.data, sim: s };
+      void save.save(Date.now());
+    },
   };
   game.applySettings();
 
@@ -83,7 +96,16 @@ async function boot(): Promise<void> {
   scenes.push(new TitleScene(game), false);
 
   let last = performance.now();
+  // Hold SELECT + START to open the debug panel.
+  let comboSince: number | null = null;
   const frame = (t: number) => {
+    if (input.isHeld('select') && input.isHeld('start')) {
+      comboSince ??= t;
+      if (t - comboSince >= DEBUG_HOLD_MS && !(scenes.top instanceof DebugScene)) {
+        scenes.push(new DebugScene(game), false);
+        comboSince = Infinity;
+      }
+    } else comboSince = null;
     const dt = Math.min(100, t - last);
     last = t;
     // The sim runs in whole blocks of real time; autosave after every block processed.

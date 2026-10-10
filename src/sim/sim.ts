@@ -19,7 +19,7 @@ export { stateHash, type SimState } from './state';
 /** Deep copy for pure updates. Log entries are never mutated after being written, so they are shared. */
 export function cloneState(s: SimState): SimState {
   const log = s.log;
-  const copy = structuredClone({ ...s, log: [] });
+  const copy: SimState = structuredClone({ ...s, log: [] });
   copy.log = log.slice();
   return copy;
 }
