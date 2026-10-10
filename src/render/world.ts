@@ -4,6 +4,7 @@ import { Rng } from '../sim/rng';
 import type { SimState } from '../sim/sim';
 import { weatherFor, type Weather } from '../sim/weather';
 import { anim, atlasImageKeyed, drawSprite, frameAt, spriteId, spriteSize, type Anim } from './atlas';
+import { cameraX, darknessOf, drawCottage } from './cottage';
 import { ditherFill, rect } from './draw';
 import { drawText } from './font';
 import { C, dmgOn, hex, remapKey, setRemap, useUiRemap, worldRemap, type Ci, type Remap } from './palette';
@@ -31,6 +32,19 @@ export interface WorldView {
   actors: Actor[];
   /** Short text at the bottom right (what A would do here). */
   prompt: string;
+}
+
+/** Sorts actors by y in place (insertion sort: no allocation). */
+function sortActors(act: Actor[]): void {
+  for (let i = 1; i < act.length; i++) {
+    const v = act[i]!;
+    let j = i - 1;
+    while (j >= 0 && act[j]!.y > v.y) {
+      act[j + 1] = act[j]!;
+      j--;
+    }
+    act[j + 1] = v;
+  }
 }
 
 /* ── remaps, indexed numerically so the frame loop never builds strings ── */
@@ -253,6 +267,22 @@ export function drawWorld(ctx: CanvasRenderingContext2D, s: SimState, view: Worl
   const scene = view.scene;
   setWeather(weather!.sky, info.season, scene.outdoor);
 
+  // A side-view interior: the room pans with the peasant; people by the fire are firelit, the rest in the dark.
+  if (scene.side) {
+    const cam = cameraX(view.px);
+    drawCottage(ctx, s, cam, bod, weather!.sky, dmg, now);
+    const act = view.actors;
+    sortActors(act);
+    const night = darknessOf(bod) === 2;
+    for (let i = 0; i < act.length; i++) {
+      const a = act[i]!;
+      if (!a.visible) continue;
+      drawSprite(ctx, night && a.x > 90 && a.x < 160 ? img : litImg, frameAt(a.anim, now, a.offset), a.x - cam, a.y);
+    }
+    hud(ctx, s, bod, now, view);
+    return;
+  }
+
   setRemap(world.r);
   if (scene.outdoor) drawSky(ctx, bod, info.moon, world.key, lit, view.px, now);
   else rect(ctx, 0, 0, 160, 144, C.black);
@@ -283,17 +313,9 @@ export function drawWorld(ctx: CanvasRenderingContext2D, s: SimState, view: Worl
     }
   }
 
-  // Actors in depth order (insertion sort in place: no allocation).
+  // Actors in depth order.
   const act = view.actors;
-  for (let i = 1; i < act.length; i++) {
-    const v = act[i]!;
-    let j = i - 1;
-    while (j >= 0 && act[j]!.y > v.y) {
-      act[j + 1] = act[j]!;
-      j--;
-    }
-    act[j + 1] = v;
-  }
+  sortActors(act);
   setRemap(lit.r);
   const ember = hex(C.ember);
   for (let i = 0; i < act.length; i++) {

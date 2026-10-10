@@ -4,6 +4,7 @@ import { C } from '../../render/palette';
 import { COLS, OPPOSITE, SCENES, SCENE_OF, TILE, originY, tileAt, type Dir, type Npc, type SceneDef, type SceneId } from '../../render/scenes/maps';
 import { BODY_VARIANTS } from '../../render/sprites';
 import { drawWorld, setDayListener, type Actor, type WorldView } from '../../render/world';
+import { BED_SLEEP, DOOR_X, FEET_MAX, FEET_MIN, ROOM_TOP, ROOM_W, SPOTS } from '../../render/cottage';
 import { updateWeather } from '../../render/weather';
 import { reserveTier } from '../../sim/body';
 import { dayInfo } from '../../sim/calendar';
@@ -34,15 +35,15 @@ type Pose = (typeof POSES)[number];
 const PEASANT: Anim[][] = BODY_VARIANTS.map((v) => POSES.map((p) => anim(`peasant.${v}.${p}`)));
 
 const SPAWN: Record<SceneId, [number, number]> = {
-  cottage: [4, 5], green: [1, 2], fields: [4, 2], woods: [8, 2], churchyard: [4, 2], church: [4, 6], manor: [5, 2], town: [1, 2], camp: [1, 2],
+  cottage: [7, 0], green: [1, 2], fields: [4, 2], woods: [8, 2], churchyard: [4, 2], church: [4, 6], manor: [5, 2], town: [1, 2], camp: [1, 2],
 };
 
 /** First-day hints, in order; each is passed by doing what it says. */
 export const HINTS = [
-  'D-PAD: WALK. A AT HEARTH, FIELD OR DOOR: ACT',
-  'CHOOSE WHAT TO DO. EACH TAKES A PART OF THE DAY',
+  'D-PAD: WALK. A: DO SOMETHING HERE',
+  'EACH TASK TAKES A PART OF THE DAY',
   'START: SEE HOW YOU AND YOURS FARE',
-  'AWAY, YOUR PEASANT LIVES ON BY HABIT. B: GO',
+  'AWAY, LIFE GOES ON BY HABIT. B: OK',
 ] as const;
 /** Probe values per hint step, built once (no strings made per frame). */
 const HINT_PROBE = [...HINTS.map((_, i) => String(i)), 'done'];
@@ -116,7 +117,8 @@ export class WorldScene implements Scene {
     probe('scene', id);
     const sc = SCENES[id];
     this.x = col * TILE;
-    this.y = originY(sc) + row * TILE;
+    // In a side room only the x matters: stand on the middle of the floor.
+    this.y = sc.side ? ROOM_TOP + ((FEET_MIN + FEET_MAX) >> 1) - 16 : originY(sc) + row * TILE;
     this.npcs = sc.npcs.map((def, i) => {
       const idle = anim(`${def.who}.idle`);
       const walk = anim(`${def.who}.walk`);
@@ -170,7 +172,15 @@ export class WorldScene implements Scene {
     this.facingRow = (cy - oy) >> 4;
   }
 
+  /** In a side room: the spot the peasant stands at (index into SPOTS), or -1. */
+  private sideSpot(): number {
+    const mid = this.x + 8;
+    for (let i = 0; i < SPOTS.length; i++) if (mid >= SPOTS[i]!.x0 && mid < SPOTS[i]!.x1) return i;
+    return -1;
+  }
+
   private hotspot(): Location | null {
+    if (this.scene.side) return this.sideSpot() >= 0 ? 'home' : null;
     this.faceTile();
     const t = tileAt(this.scene, this.facingCol, this.facingRow);
     if (t?.hotspot) return t.hotspot;
@@ -284,7 +294,8 @@ export class WorldScene implements Scene {
       if (inp.isHeld('down')) dy += 1;
     }
     this.moving = dx !== 0 || dy !== 0;
-    if (this.moving) {
+    if (this.moving && this.scene.side) this.walkSide(dx, dy, dt, now);
+    else if (this.moving) {
       this.stillSince = now;
       this.dir = dx < 0 ? 'west' : dx > 0 ? 'east' : dy < 0 ? 'up' : 'down';
       const sub = (dt * SPEED_SUB_Q8) >> 8;
@@ -346,6 +357,47 @@ export class WorldScene implements Scene {
     this.watchLog();
   }
 
+  /** Walking in a side room: along the floor and a little into its depth; out through the door on the right. */
+  private walkSide(dx: number, dy: number, dt: number, now: number): void {
+    this.stillSince = now;
+    this.dir = dx < 0 ? 'west' : dx > 0 ? 'east' : dy < 0 ? 'up' : 'down';
+    const sub = (dt * SPEED_SUB_Q8) >> 8;
+    this.subX = dx === 0 ? 0 : this.subX + dx * sub;
+    while (this.subX >= 16) {
+      this.subX -= 16;
+      this.x++;
+    }
+    while (this.subX <= -16) {
+      this.subX += 16;
+      this.x--;
+    }
+    this.subY = dy === 0 ? 0 : this.subY + dy * sub;
+    while (this.subY >= 32) {
+      this.subY -= 32;
+      this.y++;
+    }
+    while (this.subY <= -32) {
+      this.subY += 32;
+      this.y--;
+    }
+    const minY = ROOM_TOP + FEET_MIN - 16;
+    const maxY = ROOM_TOP + FEET_MAX - 16;
+    if (this.y < minY) this.y = minY;
+    if (this.y > maxY) this.y = maxY;
+    if (this.x < 2) this.x = 2;
+    if (this.x > ROOM_W - 18) this.x = ROOM_W - 18;
+    this.stepAcc += sub;
+    if (this.stepAcc >= 12 * 16) {
+      this.stepAcc = 0;
+      this.game.sfx('step');
+    }
+    const exit = this.scene.side!.exit;
+    if (dx > 0 && this.x >= DOOR_X) {
+      this.game.sfx('door');
+      this.go(exit.to, exit.col, exit.row);
+    }
+  }
+
   /** Flight, outlawry, capture: the sim moves the family; the world follows. */
   private followFortune(): void {
     if (this.fadeT >= 0) return;
@@ -391,8 +443,9 @@ export class WorldScene implements Scene {
     const p = this.player;
     p.anim = PEASANT[this.bodyVariant()]![POSES.indexOf(pose)]!;
     if (pose === 'sleep') {
-      p.x = 6 * TILE + 4; // on the pallet
-      p.y = originY(this.scene) + TILE - 6;
+      // On the bed.
+      p.x = BED_SLEEP.x;
+      p.y = ROOM_TOP + BED_SLEEP.y;
     } else {
       p.x = this.x;
       p.y = this.y;
@@ -437,7 +490,9 @@ export class WorldScene implements Scene {
     if (now > this.messageUntil) this.message = '';
     const near = this.nearNpc();
     const loc = near ? null : this.hotspot();
-    this.view.prompt = s.dead ? 'THE LINE IS ENDED' : this.message || (near ? 'A:TALK' : loc ? PROMPT[loc] : '');
+    const spot = this.scene.side ? this.sideSpot() : -1;
+    const label = spot >= 0 ? SPOTS[spot]!.label : this.scene.side && this.x > DOOR_X - 40 ? 'DOOR >' : loc ? PROMPT[loc] : '';
+    this.view.prompt = s.dead ? 'THE LINE IS ENDED' : this.message || (near ? 'A:TALK' : label);
   }
 
   /** Dark events in the log since last frame bring a low sting. */
@@ -467,8 +522,10 @@ export class WorldScene implements Scene {
       this.hintLines = wrap(HINTS[step]!, 18);
     }
     const h = 6 + this.hintLines.length * 9;
-    frame(ctx, 2, 2, 156, h, C.parchment, C.night);
-    for (let i = 0; i < this.hintLines.length; i++) drawText(ctx, this.hintLines[i]!, 7, 5 + i * 9, C.gold);
+    // Under the title bar, kept to two lines: the floor where people stand stays in view.
+    const y = 9;
+    frame(ctx, 2, y, 156, h, C.parchment, C.night);
+    for (let i = 0; i < this.hintLines.length; i++) drawText(ctx, this.hintLines[i]!, 7, y + 3 + i * 9, C.gold);
   }
 
   draw(ctx: CanvasRenderingContext2D, now: number): void {

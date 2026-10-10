@@ -67,9 +67,8 @@ check('with the first tutorial hint', (await data('hint')) === '0', await data('
 await shot('tutorial-hint');
 
 // ── The action menu at the hearth ──
-await holdUntil('ArrowUp', 'scene', 'cottage', 600);
-await page.keyboard.down('ArrowLeft'); await page.waitForTimeout(900); await page.keyboard.up('ArrowLeft');
-await page.keyboard.down('ArrowUp'); await page.waitForTimeout(900); await page.keyboard.up('ArrowUp');
+// The cottage is seen from the side: walk left to the fireplace.
+await page.keyboard.down('ArrowLeft'); await page.waitForTimeout(3000); await page.keyboard.up('ArrowLeft');
 // The wife wanders the room: if she is beside you, A talks to her instead. Close the talk and try again.
 for (let i = 0; i < 6; i++) {
   const before = await data('menu');
@@ -99,8 +98,7 @@ await press('KeyZ', 300);
 check('B passes the last hint', (await data('hint')) === 'done', await data('hint'));
 
 // ── Villagers in the world, talk tied to opinion ──
-await page.keyboard.down('ArrowRight'); await page.waitForTimeout(900); await page.keyboard.up('ArrowRight');
-check('out of the cottage to the green', await holdUntil('ArrowDown', 'scene', 'green'));
+check('out of the cottage to the green (walk right, through the door)', await holdUntil('ArrowRight', 'scene', 'green'));
 await shot('green-villagers');
 
 // ── Death and the heir (debug: HEADDIES is event 12) ──

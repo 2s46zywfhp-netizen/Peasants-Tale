@@ -25,6 +25,7 @@ function flood(s: SceneDef, c0: number, r0: number): Set<string> {
 /** Entrances/exits of a scene as tiles: door tiles, and walkable edge tiles for each exit. */
 function portals(s: SceneDef): { tile: [number, number]; to: SceneId }[] {
   const out: { tile: [number, number]; to: SceneId }[] = [];
+  if (s.side) out.push({ tile: [-1, -1], to: s.side.exit.to });
   s.rows.forEach((row, r) => [...row].forEach((_, c) => {
     const t = tileAt(s, c, r)!;
     if (t.door) out.push({ tile: [c, r], to: t.door.to });
@@ -40,7 +41,7 @@ describe('scene maps', () => {
   it('have the required scenes, well-formed rows and defined tiles', () => {
     expect(Object.keys(SCENES).sort()).toEqual(['camp', 'church', 'churchyard', 'cottage', 'fields', 'green', 'manor', 'town', 'woods']);
     for (const s of Object.values(SCENES)) {
-      expect(s.rows).toHaveLength(s.outdoor ? 6 : 8);
+      expect(s.rows).toHaveLength(s.side ? 0 : s.outdoor ? 6 : 8);
       for (const row of s.rows) {
         expect(row).toHaveLength(COLS);
         for (const ch of row) {
@@ -55,7 +56,7 @@ describe('scene maps', () => {
   });
   it('has cottage hearth/bed/pot/door, green cottages/well/alehouse, church inside and out, fields, manor gate, barrow and fairy ring', () => {
     const has = (id: SceneId, sprite: string) => Object.values(SCENES[id].legend).some((t) => t.sprite.endsWith(sprite) && SCENES[id].rows.join('').includes(Object.entries(SCENES[id].legend).find(([, v]) => v === t)![0]));
-    expect(['hearth', 'bed.l', 'pot', 'doorIn'].every((t) => has('cottage', t))).toBe(true);
+    expect(SCENES.cottage.side?.exit.to).toBe('green');
     expect(['thatch', 'well', 'sign', 'door'].every((t) => has('green', t))).toBe(true);
     expect(['churchDoor', 'stained', 'towerTop'].every((t) => has('churchyard', t))).toBe(true);
     expect(['altar', 'pew', 'candle', 'rood'].every((t) => has('church', t))).toBe(true);
@@ -99,9 +100,9 @@ describe('acceptance 3: all scenes are reachable and connected', () => {
   });
   it('doors lead to walkable ground, and back', () => {
     for (const s of Object.values(SCENES)) {
-      for (const p of portals(s).filter((x) => tileAt(s, ...x.tile)!.door)) {
+      for (const p of portals(s).filter((x) => tileAt(s, ...x.tile)?.door)) {
         const d = tileAt(s, ...p.tile)!.door!;
-        expect(walkable(SCENES[d.to], d.col, d.row), `${s.id} door -> ${d.to}`).toBe(true);
+        if (!SCENES[d.to].side) expect(walkable(SCENES[d.to], d.col, d.row), `${s.id} door -> ${d.to}`).toBe(true);
         expect(portals(SCENES[d.to]).some((q) => q.to === s.id), `${d.to} has no way back to ${s.id}`).toBe(true);
       }
     }
@@ -109,7 +110,7 @@ describe('acceptance 3: all scenes are reachable and connected', () => {
   it('within each scene, every entrance and exit can reach every other on foot', () => {
     for (const s of Object.values(SCENES)) {
       const ps = portals(s);
-      if (!ps.length) continue;
+      if (!ps.length || s.side) continue;
       const start = ps[0]!.tile;
       const area = flood(s, ...start);
       for (const p of ps) expect(area.has(p.tile.join(',')), `${s.id}: ${p.tile} cut off`).toBe(true);
@@ -118,7 +119,7 @@ describe('acceptance 3: all scenes are reachable and connected', () => {
   it('every sim location has a scene and something to act on there', () => {
     for (const loc of Object.keys(SCENE_OF) as (keyof typeof SCENE_OF)[]) {
       const s = SCENES[SCENE_OF[loc]];
-      const tileSpot = Object.values(s.legend).some((t) => t.hotspot === loc);
+      const tileSpot = Object.values(s.legend).some((t) => t.hotspot === loc && s.rows.join('').includes(Object.entries(s.legend).find(([, v]) => v === t)![0]));
       expect(tileSpot || s.ambient === loc, loc).toBe(true);
     }
     // ...and every action's location exists in the world.

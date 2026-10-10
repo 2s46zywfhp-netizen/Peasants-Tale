@@ -36,7 +36,7 @@ const OUTDOOR: Record<string, TileDef> = {
   '>': T('tile.thatch.r', { solid: true }),
   w: T('tile.daub', { solid: true }),
   o: T('tile.window', { solid: true, light: 'window' }),
-  d: T('tile.door', { door: { to: 'cottage', col: 4, row: 6 } }),
+  d: T('tile.door', { door: { to: 'cottage', col: 13, row: 0 } }),
   W: T('tile.well', { solid: true, hotspot: 'green' }),
   s: T('tile.sign', { solid: true, hotspot: 'tavern', light: 'window' }),
   a: T('tile.door', { solid: true, hotspot: 'tavern' }),
@@ -63,14 +63,6 @@ const OUTDOOR: Record<string, TileDef> = {
 };
 
 const INDOOR: Record<string, TileDef> = {
-  _: T('tile.rushes'),
-  H: T('tile.wallIn', { solid: true }),
-  h: T('anim:tile.hearth', { solid: true, hotspot: 'home', light: 'hearth' }),
-  L: T('tile.bed.l', { solid: true, hotspot: 'home' }),
-  J: T('tile.bed.r', { solid: true, hotspot: 'home' }),
-  p: T('tile.pot', { solid: true, hotspot: 'home' }),
-  k: T('tile.table', { solid: true, hotspot: 'home' }),
-  E: T('tile.doorIn', { door: { to: 'green', col: 1, row: 2 } }),
   F: T('tile.flagstone'),
   S: T('tile.stone', { solid: true }),
   G: T('tile.stained', { solid: true }),
@@ -125,24 +117,21 @@ export interface SceneDef {
   npcs: Npc[];
   /** Livestock pens: [kind, x, y]. */
   pens?: { kind: 'hen' | 'pig' | 'cow' | 'ox'; x: number; y: number }[];
+  /**
+   * A side-view interior (drawn by render/cottage, wider than the screen and panned) instead of a tile map.
+   * Entering, `col` of the door gives the room x in tiles; walking out of its door leads to `exit`.
+   */
+  side?: { exit: { to: SceneId; col: number; row: number } };
 }
 
 export const SCENES: Record<SceneId, SceneDef> = {
   cottage: {
-    id: 'cottage', name: 'COTTAGE', outdoor: false, legend: INDOOR, exits: {}, ambient: 'home',
-    rows: [
-      'HHHHHHHHHH',
-      'HhH_k_LJ_H',
-      'H_p______H',
-      'H________H',
-      'H________H',
-      'H________H',
-      'H________H',
-      'HHHHEHHHHH',
-    ],
+    id: 'cottage', name: 'COTTAGE', outdoor: false, legend: INDOOR, exits: {}, ambient: 'home', rows: [],
+    side: { exit: { to: 'green', col: 1, row: 2 } },
+    // Room coordinates: x along the 256-pixel room, y down from the room's top (feet at y + 16).
     npcs: [
-      { who: 'wife', x: 56, y: 36, wander: 24, when: 'spouse', talk: 'wife' },
-      { who: 'child', x: 88, y: 76, wander: 16, when: 'children', talk: 'family' },
+      { who: 'wife', x: 104, y: 86, wander: 30, when: 'spouse', talk: 'wife' },
+      { who: 'child', x: 64, y: 96, wander: 14, when: 'children', talk: 'family' },
     ],
   },
   green: {

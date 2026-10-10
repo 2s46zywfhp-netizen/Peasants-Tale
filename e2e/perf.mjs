@@ -19,7 +19,8 @@ if ((await page.evaluate(() => document.body.dataset.scene)) === 'naming') {
 }
 await page.waitForTimeout(800);
 // Walk out to the green: weather, NPCs, livestock, sky all active.
-await page.keyboard.down('ArrowDown'); await page.waitForTimeout(1000); await page.keyboard.up('ArrowDown');
+// STAY=1 measures the side-view cottage instead.
+if (!process.env.STAY) { await page.keyboard.down('ArrowRight'); await page.waitForTimeout(3500); await page.keyboard.up('ArrowRight'); }
 await page.waitForTimeout(Number(process.env.WARM ?? 10000)); // let the JIT optimise the hot paths
 const cdp = await ctx.newCDPSession(page);
 if (mode === 'alloc') {

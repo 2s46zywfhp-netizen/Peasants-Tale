@@ -1,5 +1,19 @@
 # Changelog
 
+## The cottage, seen from the side
+- Going indoors now leaves the overhead view: the cottage is a side-view room, wider than the screen,
+  and the camera pans as you walk. Left to right: a stone chimney with an arched hearth, a shelf of jars
+  and drying herbs, a window, a table with bread and a jug, a stool, a candlelit bedside table, the bed
+  and the door. Walk right through the door to go out.
+- The window shows the world outside: the sky by the hour, the ground by the season (snow in winter),
+  pines, stars and the moon at night, fog, falling rain and snow.
+- A new hearth fire: eight hand-built frames of licking flame over a coal bed and crossed logs, sparks
+  rising, and a flickering glow on the floor.
+- Lighting: daylight falls through the window onto the floor. At dusk and night, colours step down
+  toward night-blue away from the fire, and stay warm close to the hearth and the candle.
+- A, standing at the hearth, the table or the bed, opens the home actions. Sleep is shown on the bed.
+- First-day hints are shorter and sit under the title bar, clear of the floor.
+
 ## Phase 4: Life, village, darkness, death
 
 ### The village

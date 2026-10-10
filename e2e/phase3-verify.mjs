@@ -46,7 +46,7 @@ if ((await data('scene')) === 'naming') {
 const visited = [await data('scene')];
 const go = async (key, want, ms) => { const ok = await holdUntil(key, 'scene', want, ms); if (ok) { visited.push(want); await shot(`walk-${visited.length}-${want}`); } return ok; };
 check('start in cottage', visited[0] === 'cottage', visited[0]);
-check('cottage -> green (door)', await go('ArrowDown', 'green'));
+check('cottage -> green (door)', await go('ArrowRight', 'green'));
 check('green -> fields (west)', await go('ArrowLeft', 'fields'));
 check('fields -> woods (west)', await go('ArrowLeft', 'woods', 9000));
 check('woods -> fields (east)', await go('ArrowRight', 'fields', 9000));
@@ -63,7 +63,7 @@ check('green -> cottage (door)', await go('ArrowUp', 'cottage'));
 check('all 7 village scenes visited', new Set(visited).size === 7, [...new Set(visited)].join(','));
 
 // ── Criterion 4: day/night, seasons, weather, moon visibly change ──
-await holdUntil('ArrowDown', 'scene', 'green');
+await holdUntil('ArrowRight', 'scene', 'green');
 const midday = await pixels(); await shot('c4-green-midday');
 await page.clock.setFixedTime(T0 + 5 * BLOCK + 1000); await page.waitForTimeout(800);
 const night = await pixels(); await shot('c4-green-night');
