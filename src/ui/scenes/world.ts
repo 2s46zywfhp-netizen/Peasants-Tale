@@ -172,6 +172,14 @@ export class WorldScene implements Scene {
     this.facingRow = (cy - oy) >> 4;
   }
 
+  /** Standing just below our own cottage door on the green? */
+  private atHomeDoor(): boolean {
+    const sc = this.scene;
+    const col = (this.x + 8) >> 4;
+    const row = (this.y + 12 - originY(sc)) >> 4;
+    return tileAt(sc, col, row - 1)?.door?.to === 'cottage' || tileAt(sc, col, row)?.door?.to === 'cottage';
+  }
+
   /** In a side room: the spot the peasant stands at (index into SPOTS), or -1. */
   private sideSpot(): number {
     const mid = this.x + 8;
@@ -429,6 +437,7 @@ export class WorldScene implements Scene {
     if ((plan.action === 'workStrips' && id === 'fields') || ((plan.action === 'weekWork' || plan.action === 'hire') && id === 'manor') || (plan.action === 'gatherFirewood' && id === 'woods') || (plan.action === 'hire' && id === 'town') || (plan.action === 'poach' && (id === 'woods' || id === 'camp'))) return 'work';
     if (plan.action === 'sleep' && (id === 'camp' || id === 'town')) return 'sleep';
     if ((plan.action === 'pray' || plan.action === 'attendMass' || plan.action === 'confess') && id === 'church') return 'pray';
+    if (plan.action === 'prayHome' && id === 'cottage') return 'pray';
     return 'idle';
   }
 
@@ -492,6 +501,10 @@ export class WorldScene implements Scene {
     const near = this.nearNpc();
     const loc = near ? null : this.hotspot();
     const spot = this.scene.side ? this.sideSpot() : -1;
+    if (!this.scene.side && !near && !this.message && this.atHomeDoor()) {
+      this.view.prompt = 'UP:HOME';
+      return;
+    }
     const label = spot >= 0 ? SPOTS[spot]!.label : this.scene.side && this.x > DOOR_X - 40 ? 'DOOR >' : loc ? PROMPT[loc] : '';
     this.view.prompt = s.dead ? 'THE LINE IS ENDED' : this.message || (near ? 'A:TALK' : label);
   }

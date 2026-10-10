@@ -96,7 +96,7 @@ export function frameAt(a: Anim, nowMs: number, offset = 0): number {
 
 /* ── Browser side: one image per remap, cached ── */
 
-type Img = HTMLCanvasElement | ImageBitmap;
+export type Img = HTMLCanvasElement | ImageBitmap;
 const images = new Map<string, Img>();
 const MAX_IMAGES = 24;
 

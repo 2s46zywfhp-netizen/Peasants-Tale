@@ -203,7 +203,8 @@ export function runActionBlock(s: SimState, id: ActionId, param: string | null, 
     case 'attendMass':
       recordMass(s);
       return 'hears mass';
-    case 'pray': return 'prays';
+    case 'pray': return 'prays in the church';
+    case 'prayHome': return 'kneels by the bed and prays';
     case 'confess': {
       const t = s.tags.find((x) => x.id === 'heathen');
       if (t) t.untilDay -= CONFESS_HEATHEN_DAYS;

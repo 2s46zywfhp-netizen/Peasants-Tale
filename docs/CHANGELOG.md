@@ -1,5 +1,13 @@
 # Changelog
 
+## Core loop: home, heat, prayer
+- Our own cottage is marked on the green: a lantern hangs beside the door (lit from dusk to dawn) and
+  standing at it shows UP:HOME. The neighbours' doors stay shut.
+- The hearth shows the real fire: cold grey ash when there is no firewood, a banked fire of embers on a
+  mild day, a blazing fire when it is cold and the household burns wood. With the fire out, the room is
+  dark at night.
+- PRAY at home: kneel by the bed at any hour (a little less than prayer in church).
+
 ## Wider world, cozy air
 - Outdoor scenes are two screens wide and the camera pans with you: the green has another cottage to the
   east, the fields run further, the woods path continues, the churchyard and manor grounds spread out,

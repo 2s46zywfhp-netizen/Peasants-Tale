@@ -199,3 +199,15 @@ describe('time', () => {
     expect(stateHash(s)).toBe(before);
   });
 });
+
+describe('the hearth', () => {
+  it('is out with no wood, banked on a mild day, blazing when it is cold', async () => {
+    const { hearthOf } = await import('./sim');
+    const s = createLife(1, 0);
+    s.wealth.firewood = 0;
+    expect(hearthOf(s, 0)).toBe('out');
+    s.wealth.firewood = 3;
+    expect(hearthOf(s, 20)).toBe('banked');
+    expect(hearthOf(s, 2)).toBe('blazing');
+  });
+});

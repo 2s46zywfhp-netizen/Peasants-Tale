@@ -322,11 +322,16 @@ export function paintRoom(): Uint8Array {
   return b;
 }
 
+/** The hearth: 0 out (cold ash), 1 banked (embers and a low flame), 2 blazing. */
+export type Heat = 0 | 1 | 2;
+const FIRE_REACH: readonly number[] = [0, 50, 92];
+
 /** Light at a room pixel from the fire and the candle, 0..1. */
-function lightAt(rx: number, ry: number): number {
-  const df = Math.hypot(rx - FIRE_CX, (ry - FIRE_CY) * 1.4);
+function lightAt(rx: number, ry: number, heat: Heat): number {
+  const reach = FIRE_REACH[heat]!;
+  const df = reach ? 1 - Math.hypot(rx - FIRE_CX, (ry - FIRE_CY) * 1.4) / reach : 0;
   const dc = Math.hypot(rx - CANDLE_X, ry - CANDLE_Y);
-  return Math.max(0, 1 - df / 92, 1 - dc / 36);
+  return Math.max(0, df, 1 - dc / 36);
 }
 
 /** Darkness level for a block of the day: 0 daylight, 1 dawn/dusk, 2 night. */
@@ -344,7 +349,7 @@ export const DARKER: readonly number[] = [
  * (one step at dawn and dusk, two at night), dithered only where one step meets the next; close to the
  * fire the wood and stone are warmed instead.
  */
-export function litRoom(base: Uint8Array, level: 0 | 1 | 2): Uint8Array {
+export function litRoom(base: Uint8Array, level: 0 | 1 | 2, heat: Heat = 2): Uint8Array {
   const out = base.slice();
   const W = ROOM_W;
   const warmth = level === 0 ? 0.3 : level === 1 ? 0.75 : 1;
@@ -353,7 +358,7 @@ export function litRoom(base: Uint8Array, level: 0 | 1 | 2): Uint8Array {
       const i = ry * W + rx;
       let c = out[i]!;
       if (c === T) continue;
-      const l = lightAt(rx, ry);
+      const l = lightAt(rx, ry, heat);
       const d = bay(rx, ry);
       if (l > 0.6 && d < (l - 0.6) * 1.8 * warmth) {
         out[i] = c === C.mud ? C.wood : c === C.wood ? C.ember : c === C.slate ? C.mist : c === C.black ? C.gore : c === C.night ? C.mud : c;
@@ -389,15 +394,33 @@ export const FIRE_X = FIRE_CX - 15;
 export const FIRE_Y = 84 - FIRE_H;
 export const FIRE_FRAMES = 8;
 
-/** One frame of the hearth fire: licking flames over a coal bed and two crossed logs. */
-export function paintFire(f: number): Uint8Array {
+/**
+ * One frame of the hearth fire: licking flames over a coal bed and two crossed logs. A banked fire is
+ * embers and a low flame; a dead one is grey logs in cold ash.
+ */
+export function paintFire(f: number, heat: Heat = 2): Uint8Array {
   const w = FIRE_W;
   const h = FIRE_H;
   const b = new Uint8Array(w * h).fill(T);
   const base = h - 6;
+  if (heat === 0) {
+    for (let x = 2; x < w - 2; x++) {
+      b[(base + 2) * w + x] = hash(x, 2, 39) < 0.5 ? C.slate : C.mist;
+      if (hash(x, 3, 39) < 0.35) b[(base + 1) * w + x] = C.slate;
+    }
+    for (let x = 1; x < w - 1; x++) {
+      const y1 = base + 3 + Math.floor((x * 2) / w);
+      const y2 = base + 4 - Math.floor((x * 2) / w);
+      b[y1 * w + x] = x % 5 === 0 ? C.black : C.navy;
+      if (y1 + 1 < h) b[(y1 + 1) * w + x] = C.slate;
+      b[y2 * w + x] = C.slate;
+    }
+    return b;
+  }
+  const scale = heat === 1 ? 0.32 : 1;
   for (let x = 0; x < w; x++) {
     const n = (x - (w - 1) / 2) / ((w - 1) / 2);
-    const H = Math.max(0, 19 * (1 - n * n));
+    const H = Math.max(0, 19 * scale * (1 - n * n));
     const tongue = H * (0.5 + 0.5 * hash(x >> 1, f, 31)) + (hash(x, f, 32) < 0.12 ? 4 : 0);
     for (let y = 0; y <= tongue; y++) {
       const sway = Math.round(Math.sin((y + f * 2.3) / 3.2) * (y / 9));
@@ -526,27 +549,28 @@ function canvasOf(buf: Uint8Array, w: number, h: number, remap: Remap): HTMLCanv
 let roomBase: Uint8Array | null = null;
 const roomCache: (HTMLCanvasElement | undefined)[] = [];
 const fireCache: (HTMLCanvasElement | undefined)[] = [];
+const HEATS = 3;
 const glowCache: (HTMLCanvasElement | undefined)[] = [];
 const windowCache = new Map<number, HTMLCanvasElement>();
 const SEASONS: readonly Season[] = ['spring', 'summer', 'autumn', 'winter'];
 const SKIES: readonly Sky[] = ['fair', 'cloud', 'fog', 'rain', 'storm', 'snow'];
 
-function roomCanvas(level: 0 | 1 | 2, dmg: boolean): HTMLCanvasElement {
-  const k = level * 2 + (dmg ? 1 : 0);
+function roomCanvas(level: 0 | 1 | 2, heat: Heat, dmg: boolean): HTMLCanvasElement {
+  const k = (level * HEATS + heat) * 2 + (dmg ? 1 : 0);
   let c = roomCache[k];
   if (!c) {
     roomBase ??= paintRoom();
-    c = canvasOf(litRoom(roomBase, level), ROOM_W, ROOM_H, dmg ? DMG : IDENTITY);
+    c = canvasOf(litRoom(roomBase, level, heat), ROOM_W, ROOM_H, dmg ? DMG : IDENTITY);
     roomCache[k] = c;
   }
   return c;
 }
 
-function fireCanvas(f: number, dmg: boolean): HTMLCanvasElement {
-  const k = f * 2 + (dmg ? 1 : 0);
+function fireCanvas(f: number, heat: Heat, dmg: boolean): HTMLCanvasElement {
+  const k = (f * HEATS + heat) * 2 + (dmg ? 1 : 0);
   let c = fireCache[k];
   if (!c) {
-    c = canvasOf(paintFire(f), FIRE_W, FIRE_H, dmg ? DMG : IDENTITY);
+    c = canvasOf(paintFire(f, heat), FIRE_W, FIRE_H, dmg ? DMG : IDENTITY);
     fireCache[k] = c;
   }
   return c;
@@ -599,7 +623,7 @@ export function cameraX(px: number): number {
  * The room behind the actors, panned by `cam`. Reads sim state only.
  * `sky` is the day's weather, `bod` the block of the day.
  */
-export function drawCottage(ctx: CanvasRenderingContext2D, s: SimState, cam: number, bod: number, sky: Sky, dmg: boolean, now: number): void {
+export function drawCottage(ctx: CanvasRenderingContext2D, s: SimState, cam: number, bod: number, sky: Sky, heat: Heat, dmg: boolean, now: number): void {
   const info = dayInfo((s.block / 6) | 0);
   const level = darknessOf(bod);
   const top = ROOM_TOP;
@@ -617,27 +641,29 @@ export function drawCottage(ctx: CanvasRenderingContext2D, s: SimState, cam: num
       ctx.fillRect(gx + ((DROPS[i]! + sway) % GLASS.w), top + GLASS.y + y, 1, wet ? 3 : 1);
     }
   }
-  ctx.drawImage(roomCanvas(level, dmg), cam, 0, 160, ROOM_H, 0, top, 160, ROOM_H);
+  ctx.drawImage(roomCanvas(level, heat, dmg), cam, 0, 160, ROOM_H, 0, top, 160, ROOM_H);
   setRemap(dmg ? DMG : IDENTITY);
   if (info.season === 'winter') {
     ctx.fillStyle = hex(C.bone);
     ctx.fillRect(98 - cam, top + 59, 59, 1);
   }
-  // The fire, its sparks, and the light it throws on the floor.
-  const f = ((now * 3) >> 8) & (FIRE_FRAMES - 1);
+  // The fire, its sparks, and the light it throws on the floor (as much fire as there really is).
+  const f = heat === 0 ? 0 : ((now * (heat === 2 ? 3 : 1)) >> 8) & (FIRE_FRAMES - 1);
   const fx = FIRE_X - cam;
   if (fx > -FIRE_W) {
-    ctx.drawImage(fireCanvas(f, dmg), fx, top + FIRE_Y);
+    ctx.drawImage(fireCanvas(f, heat, dmg), fx, top + FIRE_Y);
     const ember = hex(C.ember);
     const gold = hex(C.gold);
-    for (let i = 0; i < SPARKS.length; i += 2) {
+    for (let i = 0; heat === 2 && i < SPARKS.length; i += 2) {
       const t = ((now >> 5) + SPARKS[i + 1]!) & 63;
       if (t > 26) continue;
       ctx.fillStyle = t & 4 ? gold : ember;
       ctx.fillRect(fx + SPARKS[i]! - 15 + ((t >> 3) & 1), top + 74 - t, 1, 1);
     }
-    const k = ((now >> 7) + (now >> 9)) % 3;
-    ctx.drawImage(glowCanvas(k, dmg), FIRE_CX - GLOW_W / 2 - cam, top + 89);
+    if (heat > 0) {
+      const k = heat === 2 ? ((now >> 7) + (now >> 9)) % 3 : 0;
+      ctx.drawImage(glowCanvas(k, dmg), FIRE_CX - GLOW_W / 2 - cam, top + 89);
+    }
   }
   // Dust turning slowly in the window light, by day.
   if (level === 0) {

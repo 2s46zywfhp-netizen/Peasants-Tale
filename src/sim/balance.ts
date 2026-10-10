@@ -244,7 +244,7 @@ export type ActionId =
   | 'eat' | 'cook' | 'brew' | 'sleep' | 'workStrips' | 'weekWork' | 'attendMass' | 'pray' | 'confess'
   | 'tavern' | 'gatherFirewood' | 'wash' | 'socialise' | 'trade' | 'rest'
   | 'court' | 'marry' | 'helpNeighbour' | 'askFavour' | 'accuse' | 'takeHolding' | 'buyFreedom' | 'hire' | 'beg'
-  | 'flee' | 'poach' | 'rob' | 'offering' | 'surrender';
+  | 'flee' | 'poach' | 'rob' | 'offering' | 'surrender' | 'prayHome';
 
 /** Plain numeric effects applied once per block the action runs (household stores, soul, standing, actor body). */
 export interface Effects {
@@ -298,6 +298,8 @@ export const ACTIONS: Readonly<Record<ActionId, ActionDef>> = {
   poach: { label: 'POACH', duration: 1, location: 'woods', blocks: [0, 4, 5], days: 'any', activity: 'work', effects: { filth: 2 } },
   rob: { label: 'ROB TRAVELLERS', duration: 1, location: 'woods', blocks: [3, 4], days: 'any', activity: 'heavy', effects: { filth: 2, privatePiety: -6 } },
   offering: { label: 'LEAVE OFFERING', duration: 1, location: 'barrow', blocks: [4, 5], days: 'any', activity: 'light', effects: { privatePiety: -3 } },
+  /** Prayers at home, kneeling by the bed: quieter than the church, but every day. */
+  prayHome: { label: 'PRAY', duration: 1, location: 'home', blocks: ALL, days: 'any', activity: 'rest', effects: { privatePiety: 1.5, morale: 1 } },
   surrender: { label: 'GIVE UP THE WOODS', duration: 1, location: 'manor', blocks: [1, 2], days: 'any', activity: 'rest', effects: {} },
 };
 

@@ -1,9 +1,9 @@
 import { PLAGUE_YEARS, REAL_DAY_MS, BLOCKS_PER_REAL_DAY } from '../sim/balance';
 import { dayInfo, type Season } from '../sim/calendar';
 import { Rng } from '../sim/rng';
-import type { SimState } from '../sim/sim';
+import { hearthOf, type SimState } from '../sim/sim';
 import { weatherFor, type Weather } from '../sim/weather';
-import { anim, atlasImageKeyed, drawSprite, frameAt, spriteId, spriteSize, type Anim } from './atlas';
+import { anim, atlasImageKeyed, drawSprite, frameAt, spriteId, spriteSize, type Anim, type Img } from './atlas';
 import { cameraX, darknessOf, drawCottage } from './cottage';
 import { ditherFill, rect } from './draw';
 import { drawText } from './font';
@@ -77,6 +77,9 @@ interface Compiled {
   lights: { x: number; y: number; glow: number; tile: number }[];
   /** Chimneys (pixel x, y of the roof ridge), one per thatched cottage. */
   smoke: Int16Array;
+  /** Our own door (pixel x, y of the tile), or x < 0 if this scene has none. */
+  homeX: number;
+  homeY: number;
 }
 const compiled = new Map<SceneId, Compiled>();
 
@@ -91,7 +94,10 @@ function compile(s: SceneDef): Compiled {
     const row = s.rows[r]!;
     for (let col = 1; col < COLS; col++) if (row[col] === '^' && row[col - 1] === '<') chimneys.push(col * TILE + 6, oy + r * TILE + 2);
   }
-  c = { cols: COLS, ids: new Int32Array(n).fill(-1), anims: new Array<Anim | null>(n).fill(null), fields: new Int8Array(n).fill(-1), lights: [], smoke: Int16Array.from(chimneys) };
+  c = {
+    cols: COLS, ids: new Int32Array(n).fill(-1), anims: new Array<Anim | null>(n).fill(null), fields: new Int8Array(n).fill(-1), lights: [],
+    smoke: Int16Array.from(chimneys), homeX: -1, homeY: 0,
+  };
   for (let r = 0; r < s.rows.length; r++) {
     for (let col = 0; col < COLS; col++) {
       const t = s.legend[s.rows[r]![col]!]!;
@@ -99,6 +105,10 @@ function compile(s: SceneDef): Compiled {
       if (t.sprite.startsWith('anim:')) c.anims[i] = anim(t.sprite.slice(5));
       else c.ids[i] = spriteId(t.sprite);
       if (t.field !== undefined) c.fields[i] = t.field;
+      if (t.door?.to === 'cottage') {
+        c.homeX = col * TILE;
+        c.homeY = oy + r * TILE;
+      }
       if (t.light) {
         const glow = spriteId(`glow.${t.light}`);
         const [gw, gh] = spriteSize(glow);
@@ -130,6 +140,26 @@ function fieldSprite(s: SimState, n: number): number {
     case 'growing': return f.weatherDays < 45 ? cropIds.sprout : cropIds.growing;
     case 'ripe': return cropIds.ripe;
     case 'harvested': return cropIds.stubble;
+  }
+}
+
+/* ── our door ── */
+
+let lanternGlow = -1;
+function drawHomeLantern(ctx: CanvasRenderingContext2D, x: number, y: number, lit: boolean, litImg: Img, now: number): void {
+  if (x < -24 || x > 176) return;
+  const lx = x + 13;
+  ctx.fillStyle = hex(C.black);
+  ctx.fillRect(lx - 1, y + 1, 4, 1); // bracket
+  ctx.fillRect(lx + 1, y + 2, 1, 1); // chain
+  ctx.fillRect(lx, y + 3, 3, 1); // cap
+  ctx.fillRect(lx, y + 7, 3, 1); // base
+  ctx.fillStyle = hex(lit ? ((now >> 7) % 3 === 0 ? C.ember : C.gold) : C.slate);
+  ctx.fillRect(lx, y + 4, 3, 3);
+  if (lit) {
+    lanternGlow = lanternGlow < 0 ? spriteId('glow.candle') : lanternGlow;
+    const [gw, gh] = spriteSize(lanternGlow);
+    drawSprite(ctx, litImg, lanternGlow, lx + 1 - (gw >> 1), y + 5 - (gh >> 1));
   }
 }
 
@@ -328,7 +358,8 @@ export function drawWorld(ctx: CanvasRenderingContext2D, s: SimState, view: Worl
   // A side-view interior: the room pans with the peasant; people by the fire are firelit, the rest in the dark.
   if (scene.side) {
     const cam = cameraX(view.px);
-    drawCottage(ctx, s, cam, bod, weather!.sky, dmg, now);
+    const h = hearthOf(s, weather!.tempC);
+    drawCottage(ctx, s, cam, bod, weather!.sky, h === 'out' ? 0 : h === 'banked' ? 1 : 2, dmg, now);
     const act = view.actors;
     sortActors(act);
     const night = darknessOf(bod) === 2;
@@ -376,6 +407,9 @@ export function drawWorld(ctx: CanvasRenderingContext2D, s: SimState, view: Worl
       drawSprite(ctx, litImg, L.glow, L.x - cam + flick, L.y);
     }
   }
+
+  // Our own door: a lantern on an iron bracket beside it, lit from dusk to dawn.
+  if (c.homeX >= 0) drawHomeLantern(ctx, c.homeX - cam, c.homeY, dark, litImg, now);
 
   // Actors in depth order.
   const act = view.actors;

@@ -14,7 +14,7 @@ describe('actions', () => {
     expect(ACTION_IDS.sort()).toEqual(
       [
         'attendMass', 'brew', 'confess', 'cook', 'eat', 'gatherFirewood', 'pray', 'rest', 'sleep', 'socialise', 'tavern', 'trade', 'wash', 'weekWork', 'workStrips',
-        'court', 'marry', 'helpNeighbour', 'askFavour', 'accuse', 'takeHolding', 'buyFreedom', 'hire', 'beg', 'flee', 'poach', 'rob', 'offering', 'surrender',
+        'court', 'marry', 'helpNeighbour', 'askFavour', 'accuse', 'takeHolding', 'buyFreedom', 'hire', 'beg', 'flee', 'poach', 'rob', 'offering', 'surrender', 'prayHome',
       ].sort(),
     );
     for (const id of ACTION_IDS) {
@@ -135,5 +135,15 @@ describe('events', () => {
     };
     expect(count(true)).toBeGreaterThan(count(false) * 1.5);
     expect(EVENTS.some((e) => !e.negative)).toBe(true);
+  });
+});
+
+describe('the MVP at home', () => {
+  it('one can pray at home, every block of the day', () => {
+    const s = createState(1, 0);
+    for (let bod = 0; bod < 6; bod++) expect(availability(s, 'prayHome', monday, bod)).toBeNull();
+    const before = s.soul.privatePiety;
+    runActionBlock(s, 'prayHome', null, monday, 5, true);
+    expect(s.soul.privatePiety).toBeGreaterThan(before);
   });
 });

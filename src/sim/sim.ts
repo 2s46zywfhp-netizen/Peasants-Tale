@@ -96,6 +96,16 @@ export function clock(s: SimState, nowMs: number): Clock {
   return { info: dayInfo(day), bod, blockName: BLOCK_NAMES[bod]!, weather: weatherFor(s.seed, day), msToNext: Math.max(0, end - nowMs) };
 }
 
+/**
+ * The hearth as the family would see it: out (no wood), banked (embers for the pot, on a mild day) or
+ * blazing (wood on a cold day, which is when the household burns it).
+ */
+export type Hearth = 'out' | 'banked' | 'blazing';
+export function hearthOf(s: SimState, tempC: number): Hearth {
+  if (s.wealth.firewood <= 0) return 'out';
+  return tempC < FIRE_BELOW_C ? 'blazing' : 'banked';
+}
+
 /* ───────────── daily processing ───────────── */
 
 function dawn(s: SimState, info: DayInfo, w: Weather): void {

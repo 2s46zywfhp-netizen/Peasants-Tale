@@ -81,3 +81,20 @@ describe('the side-view cottage', () => {
     expect(foggy.join()).not.toBe(summerDay.join());
   });
 });
+
+describe('the hearth shows the real fire', () => {
+  it('a dead fire is grey ash, a banked one embers and a low flame, a blazing one fills the arch', () => {
+    const flame = (b: Uint8Array) => b.filter((v) => v === 15 || v === 9 || v === 5).length;
+    const out = paintFire(0, 0);
+    const banked = paintFire(0, 1);
+    const blazing = paintFire(0, 2);
+    expect(flame(out)).toBe(0);
+    expect(flame(banked)).toBeGreaterThan(0);
+    expect(flame(blazing)).toBeGreaterThan(flame(banked) * 2);
+  });
+  it('with the fire out, the room by the hearth is dark at night', () => {
+    const room = paintRoom();
+    const dark = (b: Uint8Array) => [...Array(30).keys()].filter((k) => [0, 1, 2].includes(b[(60 + k) * ROOM_W + 70]!)).length;
+    expect(dark(litRoom(room, 2, 0))).toBeGreaterThan(dark(litRoom(room, 2, 2)));
+  });
+});
