@@ -1,5 +1,12 @@
 # Changelog
 
+## Wider world, cozy air
+- Outdoor scenes are two screens wide and the camera pans with you: the green has another cottage to the
+  east, the fields run further, the woods path continues, the churchyard and manor grounds spread out,
+  and the town and the outlaw camp are larger.
+- Woodsmoke curls from every cottage chimney. Fireflies blink over the grass on spring and summer evenings.
+  Dust drifts in the window light inside the cottage.
+
 ## The cottage, seen from the side
 - Going indoors now leaves the overhead view: the cottage is a side-view room, wider than the screen,
   and the camera pans as you walk. Left to right: a stone chimney with an arched hearth, a shelf of jars

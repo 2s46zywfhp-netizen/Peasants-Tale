@@ -8,7 +8,7 @@ import { cameraX, darknessOf, drawCottage } from './cottage';
 import { ditherFill, rect } from './draw';
 import { drawText } from './font';
 import { C, dmgOn, hex, remapKey, setRemap, useUiRemap, worldRemap, type Ci, type Remap } from './palette';
-import { SCENES, TILE, COLS, originY, type SceneDef, type SceneId } from './scenes/maps';
+import { SCENES, TILE, camOf, colsOf, originY, type SceneDef, type SceneId } from './scenes/maps';
 import { drawWeather, setWeather } from './weather';
 
 /** Something standing in the world. The UI owns and reuses these objects; the renderer only reads them. */
@@ -70,19 +70,28 @@ export function isPlagueYear(year: number): boolean {
 /* ── compiled scenes: sprite numbers per tile ── */
 
 interface Compiled {
+  cols: number;
   ids: Int32Array;
   anims: (Anim | null)[];
   fields: Int8Array;
   lights: { x: number; y: number; glow: number; tile: number }[];
+  /** Chimneys (pixel x, y of the roof ridge), one per thatched cottage. */
+  smoke: Int16Array;
 }
 const compiled = new Map<SceneId, Compiled>();
 
 function compile(s: SceneDef): Compiled {
   let c = compiled.get(s.id);
   if (c) return c;
+  const COLS = colsOf(s);
   const n = s.rows.length * COLS;
-  c = { ids: new Int32Array(n).fill(-1), anims: new Array<Anim | null>(n).fill(null), fields: new Int8Array(n).fill(-1), lights: [] };
+  const chimneys: number[] = [];
   const oy = originY(s);
+  for (let r = 0; r < s.rows.length; r++) {
+    const row = s.rows[r]!;
+    for (let col = 1; col < COLS; col++) if (row[col] === '^' && row[col - 1] === '<') chimneys.push(col * TILE + 6, oy + r * TILE + 2);
+  }
+  c = { cols: COLS, ids: new Int32Array(n).fill(-1), anims: new Array<Anim | null>(n).fill(null), fields: new Int8Array(n).fill(-1), lights: [], smoke: Int16Array.from(chimneys) };
   for (let r = 0; r < s.rows.length; r++) {
     for (let col = 0; col < COLS; col++) {
       const t = s.legend[s.rows[r]![col]!]!;
@@ -121,6 +130,55 @@ function fieldSprite(s: SimState, n: number): number {
     case 'growing': return f.weatherDays < 45 ? cropIds.sprout : cropIds.growing;
     case 'ripe': return cropIds.ripe;
     case 'harvested': return cropIds.stubble;
+  }
+}
+
+/* ── small life in the air: smoke, fireflies ── */
+
+/** sin in 64 steps, scaled to ±64: integer maths in the frame loop. */
+const SIN = Int8Array.from({ length: 64 }, (_, i) => Math.round(Math.sin((i / 64) * Math.PI * 2) * 64));
+const FLIES = (() => {
+  const r = new Rng(1348);
+  const a = new Int16Array(36);
+  for (let i = 0; i < 36; i += 3) {
+    a[i] = Math.floor(r.next() * 320);
+    a[i + 1] = 66 + Math.floor(r.next() * 60);
+    a[i + 2] = Math.floor(r.next() * 64);
+  }
+  return a;
+})();
+
+/** Woodsmoke curling up from every chimney, leaning with the wind. */
+function drawSmoke(ctx: CanvasRenderingContext2D, smoke: Int16Array, cam: number, now: number, dark: boolean): void {
+  const near = hex(dark ? C.slate : C.mist);
+  const far = hex(dark ? C.navy : C.slate);
+  for (let k = 0; k < smoke.length; k += 2) {
+    const sx = smoke[k]! - cam;
+    if (sx < -30 || sx > 190) continue;
+    for (let p = 0; p < 6; p++) {
+      const t = ((now >> 6) + p * 8 + k * 5) % 48;
+      if (t > 40) continue;
+      ctx.fillStyle = t < 20 ? near : far;
+      const x = sx + (t >> 2) + (SIN[(t * 2 + k) & 63]! >> 5);
+      const size = t < 12 ? 2 : t < 28 ? 3 : 2;
+      ctx.fillRect(x, smoke[k + 1]! - (t >> 1) - 2, size, size - 1);
+    }
+  }
+}
+
+/** Fireflies over the grass on warm evenings: small warm lights in the cool dark. */
+function drawFireflies(ctx: CanvasRenderingContext2D, cam: number, width: number, now: number): void {
+  const gold = hex(C.gold);
+  const ember = hex(C.ember);
+  for (let i = 0; i < FLIES.length; i += 3) {
+    const ph = FLIES[i + 2]!;
+    const x = ((FLIES[i]! + (SIN[((now >> 6) + ph) & 63]! >> 2)) % width) - cam;
+    if (x < 0 || x > 159) continue;
+    const y = FLIES[i + 1]! + (SIN[((now >> 5) + ph * 3) & 63]! >> 4);
+    const blink = ((now >> 8) + ph) % 7;
+    if (blink === 0) continue;
+    ctx.fillStyle = blink < 3 ? gold : ember;
+    ctx.fillRect(x, y, 1, 1);
   }
 }
 
@@ -287,16 +345,20 @@ export function drawWorld(ctx: CanvasRenderingContext2D, s: SimState, view: Worl
   if (scene.outdoor) drawSky(ctx, bod, info.moon, world.key, lit, view.px, now);
   else rect(ctx, 0, 0, 160, 144, C.black);
 
-  // Tiles.
+  // Tiles: only the columns in view, offset by the camera.
   const c = compile(scene);
+  const COLS = c.cols;
+  const cam = camOf(scene, view.px);
   const oy = originY(scene);
   const rows = scene.rows.length;
+  const c0 = cam >> 4;
+  const c1 = Math.min(COLS, c0 + 11);
   for (let r = 0; r < rows; r++) {
-    for (let col = 0; col < COLS; col++) {
+    for (let col = c0; col < c1; col++) {
       const i = r * COLS + col;
       const a = c.anims[i];
       const id = c.fields[i]! >= 0 ? fieldSprite(s, c.fields[i]!) : a ? frameAt(a, now, i * 97) : c.ids[i]!;
-      drawSprite(ctx, img, id, col * TILE, oy + r * TILE);
+      drawSprite(ctx, img, id, col * TILE - cam, oy + r * TILE);
     }
   }
 
@@ -307,9 +369,11 @@ export function drawWorld(ctx: CanvasRenderingContext2D, s: SimState, view: Worl
       const L = c.lights[k]!;
       const ti = L.tile;
       const a = c.anims[ti];
-      drawSprite(ctx, litImg, a ? frameAt(a, now, ti * 97) : c.ids[ti]!, (ti % COLS) * TILE, oy + ((ti / COLS) | 0) * TILE);
+      const tx = (ti % COLS) * TILE - cam;
+      if (tx < -40 || tx > 200) continue;
+      drawSprite(ctx, litImg, a ? frameAt(a, now, ti * 97) : c.ids[ti]!, tx, oy + ((ti / COLS) | 0) * TILE);
       const flick = (now >> 7) % 3 === 0 ? 1 : 0;
-      drawSprite(ctx, litImg, L.glow, L.x + flick, L.y);
+      drawSprite(ctx, litImg, L.glow, L.x - cam + flick, L.y);
     }
   }
 
@@ -321,11 +385,20 @@ export function drawWorld(ctx: CanvasRenderingContext2D, s: SimState, view: Worl
   for (let i = 0; i < act.length; i++) {
     const a = act[i]!;
     if (!a.visible) continue;
-    drawSprite(ctx, img, frameAt(a.anim, now, a.offset), a.x, a.y);
+    drawSprite(ctx, img, frameAt(a.anim, now, a.offset), a.x - cam, a.y);
     if (a.eyeX >= 0) {
       ctx.fillStyle = ember;
-      ctx.fillRect((a.x | 0) + a.eyeX, (a.y | 0) + a.eyeY, 1, 1);
+      ctx.fillRect((a.x | 0) - cam + a.eyeX, (a.y | 0) + a.eyeY, 1, 1);
     }
+  }
+
+  // Woodsmoke from the chimneys; fireflies on spring and summer evenings.
+  if (scene.outdoor) {
+    setRemap(lit.r);
+    drawSmoke(ctx, c.smoke, cam, now, dark);
+    const warm = info.season === 'summer' || info.season === 'spring';
+    const wet = weather!.sky === 'rain' || weather!.sky === 'storm' || weather!.sky === 'snow';
+    if (warm && !wet && (bod === 4 || bod === 5)) drawFireflies(ctx, cam, COLS * TILE, now);
   }
 
   // Fog drifting over the ground (fog days, and every dawn outdoors).

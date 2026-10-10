@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ACTIONS } from '../../sim/balance';
 import { ANIMS, SPRITES } from '../sprites';
-import { COLS, OPPOSITE, SCENES, SCENE_OF, tileAt, type Dir, type SceneDef, type SceneId } from './maps';
+import { COLS, OPPOSITE, SCENES, SCENE_OF, camOf, colsOf, tileAt, type Dir, type SceneDef, type SceneId } from './maps';
 
 const walkable = (s: SceneDef, c: number, r: number) => {
   const t = tileAt(s, c, r);
@@ -31,7 +31,7 @@ function portals(s: SceneDef): { tile: [number, number]; to: SceneId }[] {
     if (t.door) out.push({ tile: [c, r], to: t.door.to });
   }));
   for (const [dir, to] of Object.entries(s.exits) as [Dir, SceneId][]) {
-    const c = dir === 'west' ? 0 : COLS - 1;
+    const c = dir === 'west' ? 0 : colsOf(s) - 1;
     s.rows.forEach((_, r) => { if (walkable(s, c, r)) out.push({ tile: [c, r], to }); });
   }
   return out;
@@ -43,7 +43,7 @@ describe('scene maps', () => {
     for (const s of Object.values(SCENES)) {
       expect(s.rows).toHaveLength(s.side ? 0 : s.outdoor ? 6 : 8);
       for (const row of s.rows) {
-        expect(row).toHaveLength(COLS);
+        expect(row).toHaveLength(colsOf(s));
         for (const ch of row) {
           const t = s.legend[ch];
           expect(t, `${s.id} '${ch}'`).toBeDefined();
@@ -69,6 +69,17 @@ describe('scene maps', () => {
 /** Places reached only by a change of fortune (flight, outlawry), never on foot. */
 const REFUGES: readonly SceneId[] = ['town', 'camp'];
 
+describe('panning', () => {
+  it('outdoor scenes are two screens wide and the camera follows the player within them', () => {
+    for (const s of Object.values(SCENES)) if (s.outdoor) expect(colsOf(s), s.id).toBe(COLS * 2);
+    const g = SCENES.green;
+    expect(camOf(g, 0)).toBe(0);
+    expect(camOf(g, 200)).toBe(128);
+    expect(camOf(g, 1000)).toBe(160);
+    expect(camOf(SCENES.church, 100)).toBe(0);
+  });
+});
+
 describe('acceptance 3: all scenes are reachable and connected', () => {
   it('every village scene is reachable from the cottage; the town and the outlaw camp stand apart', () => {
     const seen = new Set<SceneId>(['cottage']);
@@ -91,8 +102,8 @@ describe('acceptance 3: all scenes are reachable and connected', () => {
       for (const [dir, to] of Object.entries(s.exits) as [Dir, SceneId][]) {
         const other = SCENES[to];
         expect(other.exits[OPPOSITE[dir]], `${s.id} ${dir} -> ${to}`).toBe(s.id);
-        const c = dir === 'west' ? 0 : COLS - 1;
-        const oc = dir === 'west' ? COLS - 1 : 0;
+        const c = dir === 'west' ? 0 : colsOf(s) - 1;
+        const oc = dir === 'west' ? colsOf(other) - 1 : 0;
         const rows = s.rows.map((_, r) => r).filter((r) => walkable(s, c, r) && walkable(other, oc, r));
         expect(rows.length, `${s.id} ${dir}: no shared walkable row`).toBeGreaterThan(0);
       }

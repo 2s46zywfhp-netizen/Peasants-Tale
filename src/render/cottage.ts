@@ -584,6 +584,8 @@ const DROPS = (() => {
   }
   return a;
 })();
+/** Dust motes in the light under the window: [x, y, phase]. */
+const MOTES = Int16Array.from({ length: 24 }, (_, i) => (i % 3 === 0 ? 110 + Math.floor(hash(i, 8, 53) * 40) : i % 3 === 1 ? 60 + Math.floor(hash(i, 9, 53) * 30) : Math.floor(hash(i, 10, 53) * 128)));
 /** Sparks up the chimney: [x, phase]. */
 const SPARKS = Int16Array.from({ length: 12 }, (_, i) => (i % 2 === 0 ? 20 + Math.floor(hash(i, 6, 52) * 22) : Math.floor(hash(i, 7, 52) * 64)));
 
@@ -636,6 +638,16 @@ export function drawCottage(ctx: CanvasRenderingContext2D, s: SimState, cam: num
     }
     const k = ((now >> 7) + (now >> 9)) % 3;
     ctx.drawImage(glowCanvas(k, dmg), FIRE_CX - GLOW_W / 2 - cam, top + 89);
+  }
+  // Dust turning slowly in the window light, by day.
+  if (level === 0) {
+    ctx.fillStyle = hex(C.parchment);
+    for (let i = 0; i < 24; i += 3) {
+      const t = ((now >> 7) + MOTES[i + 2]!) & 127;
+      const x = MOTES[i]! + (t >> 3) - cam;
+      const y = top + MOTES[i + 1]! + (t >> 2) - 16;
+      if ((t & 31) !== 0 && x > 0 && x < 160) ctx.fillRect(x, y, 1, 1);
+    }
   }
   // The candle flame.
   const cx = CANDLE_X - cam;

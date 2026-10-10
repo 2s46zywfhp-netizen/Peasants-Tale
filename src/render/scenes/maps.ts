@@ -4,7 +4,20 @@ export type SceneId = 'cottage' | 'green' | 'fields' | 'woods' | 'churchyard' | 
 export type Dir = 'west' | 'east';
 
 export const TILE = 16;
+/** Tiles across one screen. Outdoor scenes are wider (two screens) and the camera pans. */
 export const COLS = 10;
+
+/** Width of a scene's tile map in tiles. */
+export function colsOf(s: SceneDef): number {
+  return s.rows[0]?.length ?? COLS;
+}
+
+/** Camera x (pixels) for a player sprite at map x `px`, clamped to the scene. */
+export function camOf(s: SceneDef, px: number): number {
+  const max = colsOf(s) * TILE - 160;
+  const c = px + 8 - 80;
+  return c < 0 || max <= 0 ? 0 : c > max ? max : c;
+}
 
 export interface TileDef {
   /** Sprite (tile.*) or animation (anim:tile.*) name. */
@@ -37,6 +50,8 @@ const OUTDOOR: Record<string, TileDef> = {
   w: T('tile.daub', { solid: true }),
   o: T('tile.window', { solid: true, light: 'window' }),
   d: T('tile.door', { door: { to: 'cottage', col: 13, row: 0 } }),
+  /** A neighbour's door: shut to you. */
+  n: T('tile.door', { solid: true, light: 'window' }),
   W: T('tile.well', { solid: true, hotspot: 'green' }),
   s: T('tile.sign', { solid: true, hotspot: 'tavern', light: 'window' }),
   a: T('tile.door', { solid: true, hotspot: 'tavern' }),
@@ -137,19 +152,19 @@ export const SCENES: Record<SceneId, SceneDef> = {
   green: {
     id: 'green', name: 'VILLAGE GREEN', outdoor: true, legend: OUTDOOR, exits: { west: 'fields', east: 'churchyard' }, ambient: 'green',
     rows: [
-      '<^>.T.<^^>',
-      'wdo.b.wsaw',
-      '==========',
-      '.,..W...,.',
-      '..,....,..',
-      '.....,....',
+      '<^>.T.<^^>T.<^^>.T..',
+      'wdo.b.wsaw..wonw.b..',
+      '====================',
+      '.,..W...,..T..,..T.,',
+      '..,....,..,..b...,..',
+      '.....,......T..,..T.',
     ],
     npcs: [
       { who: 'smith', villager: 'smith', x: 92, y: 44, wander: 8, when: 'day', talk: 'villager' },
       { who: 'goodwife', villager: 'margery', x: 120, y: 64, wander: 20, when: 'day', talk: 'villager' },
       { who: 'goodwife', villager: 'brewster', x: 128, y: 30, wander: 4, when: 'night', talk: 'villager' },
       { who: 'wife', villager: 'emma', x: 60, y: 60, wander: 18, when: 'feast', talk: 'villager' },
-      { who: 'reeve', villager: 'thomas', x: 20, y: 64, wander: 10, when: 'feast', talk: 'villager' },
+      { who: 'reeve', villager: 'thomas', x: 236, y: 64, wander: 18, when: 'feast', talk: 'villager' },
       { who: 'child', x: 40, y: 72, wander: 30, when: 'day', talk: 'child' },
       { who: 'elder', villager: 'godric', x: 112, y: 30, wander: 4, talk: 'villager' },
       { who: 'beggar', villager: 'nicholas', x: 144, y: 64, wander: 2, talk: 'villager' },
@@ -159,29 +174,29 @@ export const SCENES: Record<SceneId, SceneDef> = {
   fields: {
     id: 'fields', name: 'STRIP FIELDS', outdoor: true, legend: OUTDOOR, exits: { west: 'woods', east: 'green' }, ambient: 'strips',
     rows: [
-      'ffffffffff',
-      '1111=22222',
-      '==========',
-      '3333=33333',
-      '3333=33333',
-      'fffff..fff',
+      'ffffffffffffffffffff',
+      '1111=2222222222=1111',
+      '====================',
+      '3333=3333333333=3333',
+      '3333=33333.T..b..,..',
+      'fffff..ffffff..T.fff',
     ],
     npcs: [
       { who: 'reeve', villager: 'reeve', x: 72, y: 26, wander: 40, when: 'day', talk: 'villager' },
       { who: 'shepherd', villager: 'shepherd', x: 104, y: 76, wander: 30, when: 'day', talk: 'villager' },
-      { who: 'shepherd', villager: 'peter', x: 24, y: 58, wander: 20, when: 'day', talk: 'villager' },
+      { who: 'shepherd', villager: 'peter', x: 216, y: 58, wander: 30, when: 'day', talk: 'villager' },
     ],
     pens: [{ kind: 'cow', x: 88, y: 76 }, { kind: 'ox', x: 112, y: 76 }],
   },
   woods: {
     id: 'woods', name: 'WOODS EDGE', outdoor: true, legend: OUTDOOR, exits: { east: 'fields' }, ambient: 'woods',
     rows: [
-      'DDDTDDDTDD',
-      'DT..,(O)DD',
-      'D..r..,..=',
-      '...I...,..',
-      '~~~~~~~~..',
-      'D,..D..TDD',
+      'DDDTDDDTDDTDDDTDDTDD',
+      'DT..,(O)DDD..T...D.T',
+      'D..r..,..===========',
+      '...I...,...,..T..,..',
+      '~~~~~~~~....~~~~....',
+      'D,..D..TDDDD..T..DDD',
     ],
     npcs: [
       { who: 'blackDog', x: 96, y: 52, wander: 10, when: 'night', talk: 'dog' },
@@ -191,16 +206,16 @@ export const SCENES: Record<SceneId, SceneDef> = {
   churchyard: {
     id: 'churchyard', name: 'CHURCHYARD', outdoor: true, legend: OUTDOOR, exits: { west: 'green', east: 'manor' },
     rows: [
-      '..RRXRR.y.',
-      '..SGCGS.y.',
-      '==========',
-      '.t.t..,.t.',
-      '..,.t..t..',
-      'y.t.....,y',
+      '..RRXRR.y..y..y...y.',
+      '..SGCGS.y.......y...',
+      '====================',
+      '.t.t..,.t..t..t.t...',
+      '..,.t..t....t...,.t.',
+      'y.t.....,yy...t...,.',
     ],
     npcs: [
       { who: 'priest', villager: 'priest', x: 120, y: 64, wander: 16, when: 'night', talk: 'villager' },
-      { who: 'smith', villager: 'miller', x: 24, y: 64, wander: 12, when: 'day', talk: 'villager' },
+      { who: 'smith', villager: 'miller', x: 230, y: 64, wander: 16, when: 'day', talk: 'villager' },
     ],
   },
   church: {
@@ -225,12 +240,12 @@ export const SCENES: Record<SceneId, SceneDef> = {
   manor: {
     id: 'manor', name: 'MANOR GATE', outdoor: true, legend: OUTDOOR, exits: { west: 'churchyard' },
     rows: [
-      'MBMMMMMMBM',
-      'MMMMPgPMMM',
-      '======...T',
-      'T.,..=....',
-      '..,....,.T',
-      '.T....,...',
+      'MBMMMMMMBMMMMBMMMMBM',
+      'MMMMPgPMMMMMMMMMMMMM',
+      '======...T...=====..',
+      'T.,..=.......T..=..T',
+      '..,....,.TT..,..=...',
+      '.T....,.....T..,..T.',
     ],
     npcs: [
       { who: 'steward', villager: 'steward', x: 104, y: 30, wander: 6, when: 'day', talk: 'villager' },
@@ -241,12 +256,12 @@ export const SCENES: Record<SceneId, SceneDef> = {
   town: {
     id: 'town', name: 'THE TOWN', outdoor: true, legend: TOWN, exits: {}, ambient: 'town',
     rows: [
-      'RRRXRR<^^>',
-      'SGSCSGwsaw',
-      '##########',
-      '#,#.W.#,##',
-      '##########',
-      'R^>#RRR#<>',
+      'RRRXRR<^^><^^><^>RRR',
+      'SGSCSGwsawwonwwnwSGS',
+      '####################',
+      '#,#.W.#,###.##,#..##',
+      '####################',
+      'R^>#RRR#<><>#RRR#<^>',
     ],
     npcs: [
       { who: 'steward', x: 104, y: 52, wander: 30, when: 'day', talk: 'townsman' },
@@ -258,12 +273,12 @@ export const SCENES: Record<SceneId, SceneDef> = {
   camp: {
     id: 'camp', name: 'OUTLAW CAMP', outdoor: true, legend: CAMP, exits: {}, ambient: 'camp',
     rows: [
-      'DDDTDDDTDD',
-      'DT..,...DD',
-      'D...h..,.D',
-      'T..,.....T',
-      'D.,...~~~D',
-      'DDDTDDDDDD',
+      'DDDTDDDTDDDDDTDDDDTD',
+      'DT..,...DD...,..T..D',
+      'D...h..,......D....D',
+      'T..,..........b....T',
+      'D.,...~~~~~~...,...D',
+      'DDDTDDDDDDDDDDTDDDDD',
     ],
     npcs: [{ who: 'blackDog', x: 120, y: 30, wander: 6, when: 'night', talk: 'dog' }],
   },

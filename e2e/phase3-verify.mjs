@@ -58,7 +58,7 @@ check('church -> churchyard (door)', await go('ArrowDown', 'churchyard'));
 check('churchyard -> manor (east)', await go('ArrowRight', 'manor', 9000));
 check('manor -> churchyard (west)', await go('ArrowLeft', 'churchyard', 9000));
 check('churchyard -> green (west)', await go('ArrowLeft', 'green', 9000));
-await hold('ArrowLeft', 3200); // back to the cottage door (col 1)
+await hold('ArrowLeft', 7000); // back along the wide green to the cottage door (col 1)
 check('green -> cottage (door)', await go('ArrowUp', 'cottage'));
 check('all 7 village scenes visited', new Set(visited).size === 7, [...new Set(visited)].join(','));
 

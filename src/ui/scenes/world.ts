@@ -1,7 +1,7 @@
 import { anim, type Anim } from '../../render/atlas';
 import { ditherFill } from '../../render/draw';
 import { C } from '../../render/palette';
-import { COLS, OPPOSITE, SCENES, SCENE_OF, TILE, originY, tileAt, type Dir, type Npc, type SceneDef, type SceneId } from '../../render/scenes/maps';
+import { OPPOSITE, SCENES, colsOf, SCENE_OF, TILE, originY, tileAt, type Dir, type Npc, type SceneDef, type SceneId } from '../../render/scenes/maps';
 import { BODY_VARIANTS } from '../../render/sprites';
 import { drawWorld, setDayListener, type Actor, type WorldView } from '../../render/world';
 import { BED_SLEEP, DOOR_X, FEET_MAX, FEET_MIN, ROOM_TOP, ROOM_W, SPOTS } from '../../render/cottage';
@@ -265,7 +265,7 @@ export class WorldScene implements Scene {
   private solidAt(fx: number, fy: number): boolean {
     const sc = this.scene;
     const col = fx >> 4;
-    if (col < 0 || col >= COLS) return false; // edges are handled as exits
+    if (col < 0 || col >= colsOf(sc)) return false; // edges are handled as exits
     const t = tileAt(sc, col, (fy - originY(sc)) >> 4);
     return !t || t.solid === true;
   }
@@ -334,15 +334,16 @@ export class WorldScene implements Scene {
       if (this.y < minY) this.y = minY;
       if (this.y > maxY) this.y = maxY;
       // Edges: walk off into the next scene, or stop.
-      if (this.x < -6 || this.x > 160 - 10) {
+      const right = colsOf(sc) * TILE - 10;
+      if (this.x < -6 || this.x > right) {
         const d: Dir = this.x < 0 ? 'west' : 'east';
         const to = sc.exits[d];
         if (to) {
           const row = Math.max(0, Math.min(SCENES[to].rows.length - 1, Math.round((this.y - oy) / TILE)));
-          this.go(to, OPPOSITE[d] === 'west' ? 0 : COLS - 1, row);
+          this.go(to, OPPOSITE[d] === 'west' ? 0 : colsOf(SCENES[to]) - 1, row);
         }
         if (this.x < -6) this.x = -6;
-        if (this.x > 150) this.x = 150;
+        if (this.x > right) this.x = right;
       }
       // Doors underfoot.
       const under = tileAt(sc, (this.x + 8) >> 4, (this.y + 12 - oy) >> 4);
