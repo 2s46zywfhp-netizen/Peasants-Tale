@@ -1,6 +1,7 @@
 import { DAMP_LOSS, EVENT_DAILY_CHANCE, HEATHEN_EVENT_MULT, type IllnessKind } from './balance';
 import { injure, sicken } from './body';
 import type { DayInfo } from './calendar';
+import { bury } from './bloodline';
 import { log } from './log';
 import { summonToChurchCourt, summonToManorCourt } from './obligations';
 import { clamp, hasTag, peasant, rand, type SimState } from './state';
@@ -70,6 +71,12 @@ export const EVENTS: readonly GameEvent[] = [
     apply: (s) => { s.wealth.bread += 3; s.soul.morale = clamp(s.soul.morale + 4); log(s, 'event', 'A neighbour leaves three loaves at the door.'); },
   },
   { id: 'manorSummons', negative: true, weight: () => 0, apply: (s, i) => summonToManorCourt(s, i.dayIndex) },
+  // Debug-only (weight 0): reach the Phase 4 systems on demand.
+  { id: 'headDies', negative: true, weight: () => 0, apply: (s) => bury(s, peasant(s), 'struck down') },
+  { id: 'childDue', negative: false, weight: () => 0, apply: (s, i) => { s.family.pregnantSince = i.dayIndex - 270; } },
+  { id: 'pestilence', negative: true, weight: () => 0, apply: (s, i) => { for (const m of s.members) if (m.alive) sicken(m.body, 'pestilence', 0.5); log(s, 'plague', `The tokens on every skin in the house. (${i.year})`); } },
+  { id: 'deepDebt', negative: true, weight: () => 0, apply: (s) => { s.obligations.debt += 80; log(s, 'manor', 'The steward writes 80d against your name.'); } },
+  { id: 'vacantLand', negative: false, weight: () => 0, apply: (s) => { s.plague.vacant += 1; s.wealth.pence += 10; log(s, 'manor', 'A holding falls vacant. 10d found in the thatch.'); } },
   { id: 'churchSummons', negative: true, weight: () => 0, apply: (s, i) => summonToChurchCourt(s, i.dayIndex) },
 ];
 

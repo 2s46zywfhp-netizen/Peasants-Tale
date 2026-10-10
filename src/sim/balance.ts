@@ -283,7 +283,7 @@ export const ACTIONS: Readonly<Record<ActionId, ActionDef>> = {
   gatherFirewood: { label: 'GATHER WOOD', duration: 1, location: 'woods', blocks: DAYTIME, days: 'any', activity: 'work', effects: { firewood: 3, filth: 1 } },
   wash: { label: 'WASH', duration: 1, location: 'stream', blocks: DAYTIME, days: 'any', activity: 'light', effects: { filth: -60, warmth: -10, morale: 1 } },
   socialise: { label: 'SOCIALISE', duration: 1, location: 'green', blocks: [1, 2, 3, 4, 5], days: 'any', activity: 'rest', effects: { village: 1, morale: 3 } },
-  trade: { label: 'TRADE', duration: 1, location: 'green', blocks: [1, 2, 3], days: 'any', activity: 'light', effects: {} },
+  trade: { label: 'TRADE', duration: 1, location: 'green', blocks: [1, 2, 3, 4], days: 'any', activity: 'light', effects: {} },
   rest: { label: 'REST', duration: 1, location: 'home', blocks: ALL, days: 'any', activity: 'rest', effects: { morale: 0.5 } },
   court: { label: 'COURT', duration: 1, location: 'green', blocks: [2, 3, 4], days: 'any', activity: 'rest', effects: { morale: 3 } },
   marry: { label: 'MARRY', duration: 1, location: 'church', blocks: [1, 2], days: 'any', activity: 'rest', effects: { morale: 15 } },
@@ -292,9 +292,9 @@ export const ACTIONS: Readonly<Record<ActionId, ActionDef>> = {
   accuse: { label: 'ACCUSE', duration: 1, location: 'church', blocks: [1, 2, 3], days: 'any', activity: 'rest', effects: {} },
   takeHolding: { label: 'TAKE A HOLDING', duration: 1, location: 'manor', blocks: [1, 2, 3], days: 'any', activity: 'rest', effects: {} },
   buyFreedom: { label: 'BUY FREEDOM', duration: 1, location: 'manor', blocks: [1, 2, 3], days: 'any', activity: 'rest', effects: {} },
-  hire: { label: 'WORK FOR HIRE', duration: 3, location: 'any', blocks: [1, 2], days: 'any', activity: 'heavy', effects: { filth: 1 } },
+  hire: { label: 'WORK FOR HIRE', duration: 3, location: 'any', blocks: [1, 2], days: 'any', activity: 'work', effects: { filth: 1 } },
   beg: { label: 'BEG', duration: 1, location: 'church', blocks: [1, 2, 3, 4], days: 'any', activity: 'rest', effects: { morale: -2 } },
-  flee: { label: 'FLEE TO TOWN', duration: 1, location: 'town', blocks: [0, 1], days: 'any', activity: 'heavy', effects: {} },
+  flee: { label: 'FLEE TO TOWN', duration: 1, location: 'woods', blocks: [0, 1], days: 'any', activity: 'heavy', effects: {} },
   poach: { label: 'POACH', duration: 1, location: 'woods', blocks: [0, 4, 5], days: 'any', activity: 'work', effects: { filth: 2 } },
   rob: { label: 'ROB TRAVELLERS', duration: 1, location: 'woods', blocks: [3, 4], days: 'any', activity: 'heavy', effects: { filth: 2, privatePiety: -6 } },
   offering: { label: 'LEAVE OFFERING', duration: 1, location: 'barrow', blocks: [4, 5], days: 'any', activity: 'light', effects: { privatePiety: -3 } },
@@ -387,9 +387,16 @@ export const FREEDOM = { pence: 240, minLord: 55, plagueDiscount: 0.5 } as const
 /** Debt: seizure of a beast above this; eviction above EVICT_AT when nothing is left to take. */
 export const DEBT = { seizeAt: 24, evictAt: 60 } as const;
 export const BEAST_VALUE = { ox: 60, cow: 40, pig: 12, hens: 1 } as const;
-/** Wages per block of hired labour; ×PLAGUE.wageMult in the aftermath. */
-export const WAGE_PER_BLOCK = 1;
-export const TOWN_WAGE_PER_BLOCK = 1.5;
+/**
+ * Wages per block of hired labour (about a penny a day for three blocks); ×PLAGUE.wageMult in the aftermath.
+ * The rest of the household works too: each other adult adds HOUSEHOLD_EARNER, each working child half that.
+ */
+export const WAGE_PER_BLOCK = 0.35;
+export const TOWN_WAGE_PER_BLOCK = 0.5;
+export const HOUSEHOLD_EARNER = 0.5;
+/** Pence a day for a roof when you hold no land: a cot in the village, a garret in the town. Unpaid: sleep rough. */
+export const LODGING_PER_DAY = { village: 0.25, town: 0.75 } as const;
+export const SLEEP_ROUGH_MORALE = -3;
 /** A labourer with nothing becomes a beggar after this many hungry days. */
 export const BEGGAR_AFTER_DAYS = 10;
 export const BEG = { breadChance: 0.5, bread: 2, pennyChance: 0.2 } as const;

@@ -7,5 +7,7 @@ installed in the cloud container, not a project dependency.
 
 - `phase3-verify.mjs [url]`: walks all seven scenes, checks day/night, seasons, weather and moon
   change on screen, the Parchment Log after a debug fast-forward of one week, and the Sprite Gallery.
+- `phase4-verify.mjs [url]`: naming and intro, tutorial hints, the family, village and chronicle pages,
+  the heir taking over after a death, flight to the town, and the 1348 pestilence in the Parchment Log.
 - `perf.mjs <url> alloc [walk]`: heap-sampling profile of allocations inside the frame loop.
 - `perf.mjs <url> fps <throttle>`: frame times and per-frame script/task time under CPU throttling.

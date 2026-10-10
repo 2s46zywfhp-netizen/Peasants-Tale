@@ -37,6 +37,12 @@ async function pixels() {
 
 // ── Criterion 3: walk every scene in the real app ──
 await page.keyboard.press('Enter'); await page.waitForTimeout(900);
+// Phase 4: a fresh save is named first (keep the suggested names), then the intro is skipped.
+if ((await data('scene')) === 'naming') {
+  await page.keyboard.press('Enter'); await page.waitForTimeout(300);
+  await page.keyboard.press('Enter'); await page.waitForTimeout(600);
+  await page.keyboard.press('KeyZ'); await page.waitForTimeout(900);
+}
 const visited = [await data('scene')];
 const go = async (key, want, ms) => { const ok = await holdUntil(key, 'scene', want, ms); if (ok) { visited.push(want); await shot(`walk-${visited.length}-${want}`); } return ok; };
 check('start in cottage', visited[0] === 'cottage', visited[0]);
@@ -54,7 +60,7 @@ check('manor -> churchyard (west)', await go('ArrowLeft', 'churchyard', 9000));
 check('churchyard -> green (west)', await go('ArrowLeft', 'green', 9000));
 await hold('ArrowLeft', 3200); // back to the cottage door (col 1)
 check('green -> cottage (door)', await go('ArrowUp', 'cottage'));
-check('all 7 scenes visited', new Set(visited).size === 7, [...new Set(visited)].join(','));
+check('all 7 village scenes visited', new Set(visited).size === 7, [...new Set(visited)].join(','));
 
 // ── Criterion 4: day/night, seasons, weather, moon visibly change ──
 await holdUntil('ArrowDown', 'scene', 'green');

@@ -1,11 +1,11 @@
 import {
-  BEAST_VALUE, BEG, BEGGAR_AFTER_DAYS, DEBT, DEED, EVICTION, FLIGHT, FREEDOM, HOLDING, LORD_HIT, POACH, PRICES, RANK_ACRES, RENT_FREE_PER_ACRE,
+  ADULT_AGE, BEAST_VALUE, CHILD_WORK_AGE, HOUSEHOLD_EARNER, LODGING_PER_DAY, SLEEP_ROUGH_MORALE, BEG, BEGGAR_AFTER_DAYS, DEBT, DEED, EVICTION, FLIGHT, FREEDOM, HOLDING, LORD_HIT, POACH, PRICES, RANK_ACRES, RENT_FREE_PER_ACRE,
   OUTLAW_TAKEN_DAILY, RENT_PER_ACRE, ROB, SURRENDER_FINE, TOWN_WAGE_PER_BLOCK, WAGE_PER_BLOCK, type ActionId, type Location,
 } from './balance';
 import type { DayInfo } from './calendar';
 import { note } from './family';
 import { log } from './log';
-import { clamp, peasant, rand, today, type SimState } from './state';
+import { ageOf, clamp, peasant, rand, today, type SimState } from './state';
 import { deed } from './village';
 
 export type Rank =
@@ -43,11 +43,10 @@ export function rentDue(s: SimState): number {
 /** The actual place an action happens, given where the family lives. */
 export function placeFor(s: SimState, id: ActionId, loc: Location | 'any'): Location {
   const r = s.station.residence;
-  if (id === 'hire') return r === 'town' ? 'town' : 'demesne';
-  if (loc === 'any') return s.location;
-  if (r === 'town' && (loc === 'home' || loc === 'church' || loc === 'tavern' || loc === 'green' || loc === 'stream')) return 'town';
-  if (r === 'camp' && (loc === 'home' || loc === 'stream')) return 'camp';
-  return loc;
+  if (r === 'town') return 'town';
+  if (r === 'camp') return 'camp';
+  if (id === 'hire') return 'demesne';
+  return loc === 'any' ? s.location : loc;
 }
 
 /** Actions open to an outlaw in the woods and to a fugitive in the town. */
@@ -82,9 +81,19 @@ export const entryFine = (): number => Math.round(HOLDING.entryPerAcre * HOLDING
 export const freedomPrice = (s: SimState): number =>
   Math.round(FREEDOM.pence * (s.plague.phase === 'aftermath' || s.plague.phase === 'over' ? FREEDOM.plagueDiscount : 1));
 
+/** Pence earned by a block of hired work: the head's wage, with the rest of the household's labour. */
 export function wage(s: SimState): number {
   const base = s.station.residence === 'town' ? TOWN_WAGE_PER_BLOCK * (s.station.craft ? 2 : 1) : WAGE_PER_BLOCK;
-  return base * s.wageMult;
+  const day = today(s);
+  let hands = 1;
+  for (let i = 1; i < s.members.length; i++) {
+    const m = s.members[i]!;
+    if (!m.alive) continue;
+    const a = ageOf(m.bornDay, day);
+    if (a >= ADULT_AGE) hands += HOUSEHOLD_EARNER;
+    else if (a >= CHILD_WORK_AGE) hands += HOUSEHOLD_EARNER / 2;
+  }
+  return Math.round(base * hands * s.wageMult * 100) / 100;
 }
 
 /* ───────────── land ───────────── */
@@ -140,8 +149,8 @@ export function buyFreedom(s: SimState): string {
 
 export function hire(s: SimState): string {
   const w = wage(s);
-  s.wealth.pence += w;
-  return s.station.residence === 'town' ? `works for wages in the town (${w}d)` : `labours for hire (${w}d)`;
+  s.wealth.pence = Math.round((s.wealth.pence + w) * 100) / 100;
+  return s.station.residence === 'town' ? 'works for wages in the town' : 'labours for hire';
 }
 
 export function beg(s: SimState): string {
@@ -209,6 +218,7 @@ export function rob(s: SimState): CrimeResult {
 export function surrender(s: SimState): string {
   s.station.outlaw = false;
   s.station.residence = 'village';
+  s.location = 'home';
   s.obligations.debt += SURRENDER_FINE;
   log(s, 'rank', `You kneel before the steward. Inlawed again, at a price of ${SURRENDER_FINE}d, owed.`);
   return 'gives up the greenwood';
@@ -219,6 +229,7 @@ export function flee(s: SimState): string {
   if (!s.obligations.evicted) loseLand(s, 'The holding is abandoned. The lord will want you back.');
   s.station.fledDay = today(s);
   s.station.residence = 'town';
+  s.location = 'town';
   s.station.outlaw = false;
   s.station.beggar = false;
   s.standing.lord = clamp(s.standing.lord - 30);
@@ -244,6 +255,12 @@ export function dailyStation(s: SimState, info: DayInfo): void {
     } else if (o.debt > DEBT.evictAt) {
       evict(s);
     }
+  }
+  // A roof costs money when you hold no land of your own.
+  if (o.evicted && !st.outlaw) {
+    const rent = st.residence === 'town' ? LODGING_PER_DAY.town : LODGING_PER_DAY.village;
+    if (w.pence >= rent) w.pence = Math.round((w.pence - rent) * 100) / 100;
+    else s.soul.morale = clamp(s.soul.morale + SLEEP_ROUGH_MORALE);
   }
   if (o.evicted && !st.outlaw && st.fledDay === null) {
     const foodless = w.grain < 0.5 && w.bread < 1 && w.pottage < 1 && w.meat < 1 && w.eggs < 2;

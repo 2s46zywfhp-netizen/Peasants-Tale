@@ -4,6 +4,7 @@ import type { SaveManager } from '../save/saveManager';
 import type { Settings } from '../save/schema';
 import type { ActionId } from '../sim/balance';
 import type { SimState } from '../sim/sim';
+import type { LifeOptions } from '../sim/state';
 import type { SceneManager } from './scene';
 
 /** What scenes are allowed to touch. */
@@ -29,4 +30,10 @@ export interface Game {
   setSim(s: SimState): void;
   /** The player has read the log up to this block. */
   markSeen(block: number): void;
+  /** Begins a named life now (onboarding done), keeping the settings; persists. */
+  newLife(names: LifeOptions): void;
+  /** Index of the next first-day hint (past the end = done). */
+  tutorial(): number;
+  /** Passes hint `step` if it is the current one. */
+  advanceTutorial(step: number): void;
 }

@@ -192,7 +192,7 @@ export function askFavour(s: SimState, id: string, info: DayInfo): string {
   const v = villager(s, id);
   if (!v || !present(v)) return 'finds nobody at home';
   if (v.owes <= 0 && v.opinion < FAVOUR.askOpinionMin) {
-    remember(v, today(s), 'asked for help unearned', -2);
+    remember(v, today(s), `${peasant(s).name} ${s.familyName} came begging help, owed none.`, -2);
     return `asks ${v.name} for help and is refused`;
   }
   v.owes -= 1;
@@ -222,7 +222,7 @@ function callIns(s: SimState, day: number): void {
       v.owes += 1;
       log(s, 'village', `${v.name} calls in a favour: a bushel of grain.`);
     } else {
-      remember(v, day, 'did not repay a kindness', FAVOUR.calledInOpinion);
+      remember(v, day, `${peasant(s).name} ${s.familyName} did not repay a kindness.`, FAVOUR.calledInOpinion);
       log(s, 'village', `${v.name} asked for what is owed. You had nothing to give.`);
     }
   }
@@ -242,7 +242,7 @@ export function accuse(s: SimState, id: string): string {
     s.standing.priest = clamp(s.standing.priest + ACCUSE.priestGain);
     // The accused's friends will not forget it.
     s.village.forEach((o, j) => {
-      if (j !== i && present(o) && o.ties[i]! > 30) remember(o, day, `helped drive out ${v.name}`, DEED.accuseFail);
+      if (j !== i && present(o) && o.ties[i]! > 30) remember(o, day, `${peasant(s).name} ${s.familyName} helped drive out ${v.name}.`, DEED.accuseFail);
     });
     deed(s, DEED.accuseWin, `${peasant(s).name} ${s.familyName} named ${v.name} before the priest.`);
     log(s, 'village', `${v.name} is named before the parish and driven from Ashby. Nobody meets your eye.`);
@@ -266,7 +266,7 @@ function witchRisk(s: SimState, info: DayInfo): void {
   log(s, 'dark', `${accuser.name} says the ${s.familyName} blight came from your door: a hare seen at dusk, milk turned in the pail.`, [accuser.name]);
   if (helpers.length >= WITCH.oathHelpers) {
     log(s, 'court', `Before the church court ${helpers.slice(0, WITCH.oathHelpers).map((v) => v.name).join(', ')} swear for you. Cleared.`);
-    remember(accuser, info.dayIndex, 'was proved a liar', -10);
+    remember(accuser, info.dayIndex, `The ${s.familyName}s shamed me before the church court.`, -10);
     return;
   }
   addTag(s, 'witch', info.dayIndex + TAG_DAYS.witch);

@@ -7,6 +7,9 @@ import { drawWorld, setDayListener, type Actor, type WorldView } from '../../ren
 import { updateWeather } from '../../render/weather';
 import { reserveTier } from '../../sim/body';
 import { dayInfo } from '../../sim/calendar';
+import { idx, present } from '../../sim/village';
+import { frame } from '../../render/draw';
+import { drawText, wrap } from '../../render/font';
 import { isBoonDay, isWeekWorkDay } from '../../sim/obligations';
 import type { Location } from '../../sim/balance';
 import type { ActionEvent } from '../../input/input';
@@ -17,6 +20,7 @@ import { talk } from '../talk';
 import { ActionMenuScene } from './actionMenu';
 import { DialogueScene } from './dialogue';
 import { StatusScene } from './status';
+import { TitleScene } from './title';
 
 const SPEED = 42; // px per second
 /** SPEED in sixteenths of a pixel per ms, in 8.8 fixed point (42 * 16 / 1000 * 256 ≈ 172). */
@@ -30,8 +34,18 @@ type Pose = (typeof POSES)[number];
 const PEASANT: Anim[][] = BODY_VARIANTS.map((v) => POSES.map((p) => anim(`peasant.${v}.${p}`)));
 
 const SPAWN: Record<SceneId, [number, number]> = {
-  cottage: [4, 5], green: [1, 2], fields: [4, 2], woods: [8, 2], churchyard: [4, 2], church: [4, 6], manor: [5, 2],
+  cottage: [4, 5], green: [1, 2], fields: [4, 2], woods: [8, 2], churchyard: [4, 2], church: [4, 6], manor: [5, 2], town: [1, 2], camp: [1, 2],
 };
+
+/** First-day hints, in order; each is passed by doing what it says. */
+export const HINTS = [
+  'D-PAD: WALK. A AT HEARTH, FIELD OR DOOR: ACT',
+  'CHOOSE WHAT TO DO. EACH TAKES A PART OF THE DAY',
+  'START: SEE HOW YOU AND YOURS FARE',
+  'AWAY, YOUR PEASANT LIVES ON BY HABIT. B: GO',
+] as const;
+/** Probe values per hint step, built once (no strings made per frame). */
+const HINT_PROBE = [...HINTS.map((_, i) => String(i)), 'done'];
 
 const PROMPT: Record<Location, string> = {
   home: 'A:HOME', green: 'A:GREEN', tavern: 'A:ALEHOUSE', strips: 'A:STRIPS', demesne: 'A:DEMESNE',
@@ -48,6 +62,8 @@ interface NpcRt {
   idle: Anim;
   walk: Anim;
   phase: number;
+  /** Index of the villager this NPC stands for, or -1. */
+  vIdx: number;
 }
 
 const mkActor = (a: Anim, x: number, y: number, offset: number): Actor => ({ anim: a, x, y, offset, eyeX: -1, eyeY: -1, visible: true });
@@ -109,7 +125,7 @@ export class WorldScene implements Scene {
         a.eyeX = 11;
         a.eyeY = 11;
       }
-      return { def, actor: a, idle, walk, phase: i * 1.7 };
+      return { def, actor: a, idle, walk, phase: i * 1.7, vIdx: def.villager ? idx(def.villager) : -1 };
     });
     this.pens = [];
     for (const p of sc.pens ?? []) {
@@ -176,20 +192,26 @@ export class WorldScene implements Scene {
     if (this.fadeT >= 0) return;
     const g = this.game;
     if (e.action === 'confirm' && !e.repeat) {
-      if (g.sim().dead) return g.sfx('error');
+      // The line has ended: back to the title, where a new life can begin.
+      if (g.sim().dead) return g.scenes.replace(new TitleScene(g));
       const npc = this.nearNpc();
       if (npc) {
-        const t = talk(npc.def.talk!, g.sim());
+        const t = talk(npc.def.talk!, g.sim(), npc.def.villager);
         g.scenes.push(new DialogueScene(g, t.speaker, t.pages), false);
         return;
       }
       const loc = this.hotspot();
       if (!loc) return g.sfx('error');
       g.sfx('confirm');
+      g.advanceTutorial(0);
       g.scenes.push(new ActionMenuScene(g, loc, LOCATION_TITLE[loc], this.onMenuReport), false);
     } else if (e.action === 'start' && !e.repeat) {
       g.sfx('confirm');
+      g.advanceTutorial(2);
       g.scenes.push(new StatusScene(g));
+    } else if (e.action === 'cancel' && !e.repeat && g.tutorial() === 3) {
+      g.sfx('confirm');
+      g.advanceTutorial(3);
     }
   }
 
@@ -319,12 +341,24 @@ export class WorldScene implements Scene {
       }
     }
 
+    this.followFortune();
     this.updateActors(now);
     this.watchLog();
   }
 
+  /** Flight, outlawry, capture: the sim moves the family; the world follows. */
+  private followFortune(): void {
+    if (this.fadeT >= 0) return;
+    const r = this.game.sim().station.residence;
+    const want: SceneId | null = r === 'town' ? 'town' : r === 'camp' ? 'camp' : null;
+    if (want !== null && this.sceneId !== want) this.go(want, SPAWN[want][0], SPAWN[want][1]);
+    else if (want === null && (this.sceneId === 'town' || this.sceneId === 'camp')) this.go('cottage', SPAWN.cottage[0], SPAWN.cottage[1]);
+  }
+
   private bodyVariant(): number {
-    const b = this.game.sim().members[0]!.body;
+    const head = this.game.sim().members[0];
+    if (!head) return 0;
+    const b = head.body;
     if (b.illness) return BODY_VARIANTS.indexOf('sick');
     if (b.warmth < 30) return BODY_VARIANTS.indexOf('cold');
     return BODY_VARIANTS.indexOf(reserveTier(b.reserve));
@@ -339,9 +373,16 @@ export class WorldScene implements Scene {
     if (!plan) return 'idle';
     const id = this.sceneId;
     if (plan.action === 'sleep' && id === 'cottage') return 'sleep';
-    if ((plan.action === 'workStrips' && id === 'fields') || (plan.action === 'weekWork' && id === 'manor') || (plan.action === 'gatherFirewood' && id === 'woods')) return 'work';
+    if ((plan.action === 'workStrips' && id === 'fields') || ((plan.action === 'weekWork' || plan.action === 'hire') && id === 'manor') || (plan.action === 'gatherFirewood' && id === 'woods') || (plan.action === 'hire' && id === 'town') || (plan.action === 'poach' && (id === 'woods' || id === 'camp'))) return 'work';
+    if (plan.action === 'sleep' && (id === 'camp' || id === 'town')) return 'sleep';
     if ((plan.action === 'pray' || plan.action === 'attendMass' || plan.action === 'confess') && id === 'church') return 'pray';
     return 'idle';
+  }
+
+  private hasRole(role: string): boolean {
+    const ms = this.game.sim().members;
+    for (let i = 0; i < ms.length; i++) if (ms[i]!.role === role && ms[i]!.alive) return true;
+    return false;
   }
 
   private updateActors(now: number): void {
@@ -373,8 +414,10 @@ export class WorldScene implements Scene {
         : w === 'sundayMorning' ? info.isSunday && bod <= 2
         : w === 'weekWork' ? (isWeekWorkDay(info) || isBoonDay(info)) && daytime
         : w === 'feast' ? info.feasts.length > 0 || info.isSunday
-        : w === 'spouse' ? s.members[1]?.alive === true
+        : w === 'spouse' ? this.hasRole('spouse')
+        : w === 'children' ? this.hasRole('child')
         : true;
+      if (n.vIdx >= 0 && !present(s.village[n.vIdx]!)) n.actor.visible = false;
       const range = n.def.wander ?? 0;
       if (range > 0) {
         const t = now / 2600 + n.phase;
@@ -394,7 +437,7 @@ export class WorldScene implements Scene {
     if (now > this.messageUntil) this.message = '';
     const near = this.nearNpc();
     const loc = near ? null : this.hotspot();
-    this.view.prompt = this.message || (near ? 'A:TALK' : loc ? PROMPT[loc] : '');
+    this.view.prompt = s.dead ? 'THE LINE IS ENDED' : this.message || (near ? 'A:TALK' : loc ? PROMPT[loc] : '');
   }
 
   /** Dark events in the log since last frame bring a low sting. */
@@ -411,8 +454,26 @@ export class WorldScene implements Scene {
     this.logSeen = log.length;
   }
 
+  /** Wrapped lines of the current hint, rebuilt only when the step changes. */
+  private hintStep = -1;
+  private hintLines: string[] = [];
+
+  private drawHint(ctx: CanvasRenderingContext2D): void {
+    const step = this.game.tutorial();
+    probe('hint', HINT_PROBE[Math.min(step, HINTS.length)]!);
+    if (step >= HINTS.length || this.game.scenes.top !== this) return;
+    if (step !== this.hintStep) {
+      this.hintStep = step;
+      this.hintLines = wrap(HINTS[step]!, 18);
+    }
+    const h = 6 + this.hintLines.length * 9;
+    frame(ctx, 2, 2, 156, h, C.parchment, C.night);
+    for (let i = 0; i < this.hintLines.length; i++) drawText(ctx, this.hintLines[i]!, 7, 5 + i * 9, C.gold);
+  }
+
   draw(ctx: CanvasRenderingContext2D, now: number): void {
     drawWorld(ctx, this.game.sim(), this.view, now);
+    this.drawHint(ctx);
     if (this.fadeT >= 0) {
       const half = FADE_MS / 2;
       const a = this.fadeT < half ? this.fadeT / half : 1 - (this.fadeT - half) / half;

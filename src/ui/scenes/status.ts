@@ -4,15 +4,18 @@ import { useUiRemap } from '../../render/palette';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import type { Scene } from '../scene';
-import { almanacLines, dutyLines, householdLines, selfLines, soulLines, standingLines } from '../symptoms';
+import { almanacLines, chronicleLines, dutyLines, householdLines, selfLines, soulLines, standingLines, villageLines } from '../symptoms';
+import { probe } from '../probe';
 import { TitleScene } from './title';
 
 const PAGES = [
   ['YOURSELF', (g: Game) => selfLines(g.sim())],
-  ['HOUSEHOLD', (g: Game) => householdLines(g.sim())],
+  ['FAMILY', (g: Game) => householdLines(g.sim())],
   ['SOUL', (g: Game) => soulLines(g.sim())],
   ['STANDING', (g: Game) => standingLines(g.sim())],
+  ['VILLAGE', (g: Game) => villageLines(g.sim())],
   ['FIELDS & DUTIES', (g: Game) => dutyLines(g.sim())],
+  ['CHRONICLE', (g: Game) => chronicleLines(g.sim())],
   ['ALMANAC', (g: Game) => almanacLines(g.sim(), g.now())],
 ] as const;
 
@@ -30,8 +33,10 @@ export class StatusScene implements Scene {
   }
 
   private build(): void {
-    this.lines = PAGES[this.page]![1](this.game).flatMap((l) => [...wrap(l.toUpperCase(), PARCHMENT_COLS), '']);
+    const raw = PAGES[this.page]![1](this.game);
+    this.lines = raw.flatMap((l) => [...wrap(l.toUpperCase(), PARCHMENT_COLS), '']);
     this.scroll = 0;
+    probe('page', `${PAGES[this.page]![0]}: ${raw.join(' ')}`);
   }
 
   onAction(e: ActionEvent): void {

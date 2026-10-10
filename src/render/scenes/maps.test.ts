@@ -38,7 +38,7 @@ function portals(s: SceneDef): { tile: [number, number]; to: SceneId }[] {
 
 describe('scene maps', () => {
   it('have the required scenes, well-formed rows and defined tiles', () => {
-    expect(Object.keys(SCENES).sort()).toEqual(['church', 'churchyard', 'cottage', 'fields', 'green', 'manor', 'woods']);
+    expect(Object.keys(SCENES).sort()).toEqual(['camp', 'church', 'churchyard', 'cottage', 'fields', 'green', 'manor', 'town', 'woods']);
     for (const s of Object.values(SCENES)) {
       expect(s.rows).toHaveLength(s.outdoor ? 6 : 8);
       for (const row of s.rows) {
@@ -65,12 +65,25 @@ describe('scene maps', () => {
   });
 });
 
+/** Places reached only by a change of fortune (flight, outlawry), never on foot. */
+const REFUGES: readonly SceneId[] = ['town', 'camp'];
+
 describe('acceptance 3: all scenes are reachable and connected', () => {
-  it('every scene is reachable from the cottage', () => {
+  it('every village scene is reachable from the cottage; the town and the outlaw camp stand apart', () => {
     const seen = new Set<SceneId>(['cottage']);
     const q: SceneId[] = ['cottage'];
     while (q.length) for (const p of portals(SCENES[q.pop()!])) if (!seen.has(p.to)) { seen.add(p.to); q.push(p.to); }
-    expect([...seen].sort()).toEqual(Object.keys(SCENES).sort());
+    expect([...seen].sort()).toEqual(Object.keys(SCENES).filter((k) => !REFUGES.includes(k as SceneId)).sort());
+    for (const r of REFUGES) {
+      expect(portals(SCENES[r])).toHaveLength(0);
+      // From the middle of the scene you can walk up to the place where things are done.
+      const area = flood(SCENES[r], 1, 2);
+      const spot = SCENES[r].rows.some((row, rr) => [...row].some((_, c) => {
+        const t = tileAt(SCENES[r], c, rr)!;
+        return !!t.hotspot && [[c, rr + 1], [c, rr - 1], [c + 1, rr], [c - 1, rr]].some(([a, b]) => area.has(`${a},${b}`));
+      }));
+      expect(spot, r).toBe(true);
+    }
   });
   it('edge exits are two-way and line up on walkable ground', () => {
     for (const s of Object.values(SCENES)) {
@@ -96,6 +109,7 @@ describe('acceptance 3: all scenes are reachable and connected', () => {
   it('within each scene, every entrance and exit can reach every other on foot', () => {
     for (const s of Object.values(SCENES)) {
       const ps = portals(s);
+      if (!ps.length) continue;
       const start = ps[0]!.tile;
       const area = flood(s, ...start);
       for (const p of ps) expect(area.has(p.tile.join(',')), `${s.id}: ${p.tile} cut off`).toBe(true);

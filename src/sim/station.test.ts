@@ -87,7 +87,7 @@ describe('decline', () => {
     expect(availability(s, 'workStrips', monday, 1)).toBe('NO LAND');
     const p = s.wealth.pence;
     hire(s);
-    expect(s.wealth.pence).toBe(p + WAGE_PER_BLOCK);
+    expect(s.wealth.pence).toBeCloseTo(p + WAGE_PER_BLOCK * 1.5, 1); // the wife works too
     Object.assign(s.wealth, { grain: 0, bread: 0, pottage: 0, meat: 0, eggs: 0, pence: 0 });
     for (let d = 8; d < 8 + BEGGAR_AFTER_DAYS; d++) dailyStation(s, dayInfo(d));
     expect(rankOf(s)).toBe('BEGGAR');
@@ -140,8 +140,9 @@ describe('decline', () => {
 
   it('wages treble after the pestilence', () => {
     const s = createLife(10, 0);
+    const before = wage(s);
     s.wageMult = PLAGUE.wageMult;
-    expect(wage(s)).toBe(WAGE_PER_BLOCK * 3);
+    expect(wage(s)).toBeCloseTo(before * 3, 1);
   });
 });
 

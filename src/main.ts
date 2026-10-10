@@ -6,7 +6,7 @@ import { loadFont } from './render/font';
 import { IDENTITY, setDmgMode, useUiRemap } from './render/palette';
 import { Screen } from './render/screen';
 import { SaveManager } from './save/saveManager';
-import type { Settings } from './save/schema';
+import { newSave, type Settings } from './save/schema';
 import { act, advance, type SimState } from './sim/sim';
 import { dayInfo } from './sim/calendar';
 import { BLOCKS_PER_REAL_DAY, DEBUG_HOLD_MS, REAL_DAY_MS } from './sim/balance';
@@ -38,6 +38,11 @@ async function boot(): Promise<void> {
   const audio = new Audio();
   const [save] = await Promise.all([SaveManager.open(newSeed(), Date.now()), loadFont(), initSprites(IDENTITY)]);
   const scenes = new SceneManager(input);
+  // Frame clock: integer ms since boot keeps numbers small (unboxed) in the render loop.
+  let frameNow = 0;
+  let lastFrame = performance.now() | 0;
+  // When to next look at the wall clock (frame time). Date.now() allocates, so it is not read every frame.
+  let clockCheckAt = 0;
 
   const game: Game = {
     scenes,
@@ -59,7 +64,7 @@ async function boot(): Promise<void> {
     sim: () => save.data.sim,
     act(id, param = null) {
       const r = act(save.data.sim, id, Date.now(), param);
-      save.data = { ...save.data, sim: r.state };
+      save.data = { ...save.data, sim: r.state, tutorial: r.ok && save.data.tutorial === 1 ? 2 : save.data.tutorial };
       void save.save(Date.now());
       return { ok: r.ok, message: r.message };
     },
@@ -70,6 +75,17 @@ async function boot(): Promise<void> {
     frameNow: () => frameNow,
     markSeen(block: number) {
       save.data = { ...save.data, seenBlock: Math.max(save.data.seenBlock, block) };
+      void save.save(Date.now());
+    },
+    newLife(names) {
+      const now = Date.now();
+      void save.replace({ ...newSave(newSeed(), now, save.data.settings, names), onboarded: true }, now);
+      clockCheckAt = 0;
+    },
+    tutorial: () => save.data.tutorial,
+    advanceTutorial(step: number) {
+      if (save.data.tutorial !== step) return;
+      save.data = { ...save.data, tutorial: step + 1 };
       void save.save(Date.now());
     },
   };
@@ -107,11 +123,6 @@ async function boot(): Promise<void> {
 
   scenes.push(new TitleScene(game), false);
 
-  // Frame clock: integer ms since boot keeps numbers small (unboxed) in the render loop.
-  let frameNow = 0;
-  let lastFrame = performance.now() | 0;
-  // When to next look at the wall clock (frame time). Date.now() allocates, so it is not read every frame.
-  let clockCheckAt = 0;
   // Hold SELECT + START to open the debug panel.
   let comboSince: number | null = null;
   const frame = (t: number) => {
@@ -131,7 +142,8 @@ async function boot(): Promise<void> {
     const sim = save.data.sim;
     // Is a block due? The wall clock is read when the current block should end, and at least once
     // a second (Date.now() allocates, so it is not read every frame).
-    if (frameNow >= clockCheckAt) {
+    // Before the new life is named, no time passes for it.
+    if (frameNow >= clockCheckAt && save.data.onboarded) {
       const wall = Date.now();
       if (Math.floor(((wall - sim.anchorMs) * BLOCKS_PER_REAL_DAY) / REAL_DAY_MS) > sim.block && wall >= sim.lastSimMs) {
         const { state, blocksRun } = advance(sim, wall);

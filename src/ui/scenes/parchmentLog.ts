@@ -22,7 +22,7 @@ export class ParchmentLogScene implements Scene {
 
   enter(): void {
     const s = this.game.sim();
-    const sum = summarize(s.log, this.fromBlock, this.toBlock, s.members[0]!.name);
+    const sum = summarize(s.log, this.fromBlock, this.toBlock, s.members[0]?.name ?? `The ${s.familyName}s`);
     this.lines = sum.lines.flatMap((l) => [...wrap(l.toUpperCase(), PARCHMENT_COLS), '']);
     probe('parchment', sum.lines.join(' | '));
   }

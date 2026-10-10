@@ -83,6 +83,8 @@ function neighbourToHelp(s: SimState): string | null {
 function tradeNeed(s: SimState): TradeKind | null {
   const w = s.wealth;
   if ((w.grain < LOW_GRAIN || foodServings(s) < 2) && w.pence >= PRICES.grainBuy) return 'buyGrain';
+  // In the town there is no wood to gather: it is bought.
+  if (s.station.residence === 'town' && w.firewood < 2 && w.pence >= PRICES.firewoodBuy) return 'buyFirewood';
   if (w.grain > SURPLUS_GRAIN && w.pence < RENT_PENCE) return 'sellGrain';
   if (w.eggs >= PRICES.eggsPerPenny * 2) return 'sellEggs';
   return null;
@@ -126,7 +128,8 @@ export function chooseAction(s: SimState, info: DayInfo, bod: number, w: Weather
       case 'wash': need = b.filth > 50 ? 2 + (b.filth - 50) / 10 : 0; break;
       case 'trade':
         need = param === 'buyGrain' ? 4 : param === 'sellGrain' ? (info.month === 8 || info.month === 9 ? 5 : 2) : 1;
-        if (param === 'buyGrain' && b.hunger >= URGENT_HUNGER) override = 10;
+        if (param === 'buyGrain' && (b.hunger >= URGENT_HUNGER || foodServings(s) < 2 * s.members.length)) override = 10;
+        if (param === 'buyFirewood') need = 5;
         break;
       case 'tavern': vice = lowMorale(s) ? 1 + (VICE_MORALE - s.soul.morale) / 5 : 0; break;
       case 'socialise': need = s.soul.morale < 45 ? 0.5 : 0; break;

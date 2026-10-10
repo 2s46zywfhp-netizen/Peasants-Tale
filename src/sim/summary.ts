@@ -8,7 +8,10 @@ export function entryBlock(e: LogEntry): number {
 }
 
 /** Entries kept verbatim in the Parchment Log: things that happened, not routine. */
-export const NOTABLE: ReadonlySet<LogType> = new Set(['farm', 'manor', 'church', 'illness', 'death', 'event', 'feast', 'neglect', 'body', 'weather', 'trade']);
+export const NOTABLE: ReadonlySet<LogType> = new Set([
+  'farm', 'manor', 'church', 'illness', 'death', 'event', 'feast', 'neglect', 'body', 'weather', 'trade',
+  'village', 'family', 'court', 'dark', 'plague', 'rank',
+]);
 
 /** How each kind of action is told in summary: [phrase for one, phrase for many]. */
 const PHRASE: Partial<Record<ActionId, readonly [string, string]>> = {
@@ -26,6 +29,11 @@ const PHRASE: Partial<Record<ActionId, readonly [string, string]>> = {
   trade: ['traded once', 'traded # times'],
   sleep: ['slept once', 'slept # times'],
   rest: ['rested once', 'rested # times'],
+  hire: ['worked for wages once', 'worked for wages # times'],
+  beg: ['begged once', 'begged # times'],
+  poach: ['poached once', 'poached # times'],
+  helpNeighbour: ['helped a neighbour', 'helped neighbours # times'],
+  court: ['went courting', 'went courting # times'],
 };
 
 export interface Summary {

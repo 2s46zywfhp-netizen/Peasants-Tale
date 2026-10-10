@@ -59,7 +59,7 @@ export function court(s: SimState, id: string, info: DayInfo): string {
   const v = villager(s, id)!;
   const feast = info.feasts.length > 0 || info.isSunday;
   v.courtship += feast ? COURTSHIP.feast : COURTSHIP.ordinary;
-  remember(v, info.dayIndex, 'walked out together', COURTSHIP.opinionGain);
+  remember(v, info.dayIndex, `Walked out with ${peasant(s).name}${feast ? ' on the feast day' : ''}.`, COURTSHIP.opinionGain);
   if (v.courtship >= COURTSHIP.needed && v.opinion > 0) log(s, 'family', `${v.name} would say yes, if asked. The merchet must be paid.`, [v.name]);
   return feast ? `dances with ${v.name} at the feast` : `walks out with ${v.name}`;
 }

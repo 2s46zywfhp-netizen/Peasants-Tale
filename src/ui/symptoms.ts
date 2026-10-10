@@ -1,7 +1,9 @@
 import { reserveTier } from '../sim/body';
 import { MOON_PHASES, formatDate } from '../sim/calendar';
 import { clock } from '../sim/sim';
-import type { Body, SimState } from '../sim/state';
+import { ageOf, type Body, type Member, type SimState } from '../sim/state';
+import { rankOf } from '../sim/station';
+import { present, opinionWord } from '../sim/village';
 
 /** The stat screen speaks in symptoms, never numbers. */
 
@@ -42,15 +44,41 @@ function bodyLines(b: Body, self: boolean, name: string): string[] {
   return out;
 }
 
+const RANK_WORD: Record<string, string> = {
+  OUTLAW: 'an outlaw, wolf\'s-head, outside the law', FUGITIVE: 'a runaway serf hiding in the town', BEGGAR: 'a beggar at the church door',
+  LABOURER: 'a landless labourer', COTTAR: 'a cottar with a few acres', VILLEIN: 'a villein of the manor', VIRGATER: 'a villein with a full virgate',
+  REEVE: 'reeve of the manor', 'FREE TENANT': 'a free tenant', YEOMAN: 'a yeoman, free and landed', CRAFTSMAN: 'a free craftsman',
+};
+
+function ageWord(m: Member, day: number): string {
+  const a = ageOf(m.bornDay, day);
+  return a < 1 ? 'a babe in arms' : a < 4 ? 'a small child' : a < 7 ? 'a child' : a < 14 ? 'old enough to work' : a < 18 ? 'nearly grown' : a < 50 ? 'grown' : 'old';
+}
+
+const KIN: Record<string, [string, string]> = { spouse: ['Your husband', 'Your wife'], parent: ['Your father', 'Your mother'], child: ['Your son', 'Your daughter'] };
+
 export function selfLines(s: SimState): string[] {
-  const p = s.members[0]!;
-  return p.alive ? bodyLines(p.body, true, p.name) : [`${p.name} is dead.`];
+  const p = s.members[0];
+  if (!p || s.dead) return [`The ${s.familyName} line has ended.`];
+  const day = Math.floor(s.block / 6);
+  const out = [`${p.name} ${s.familyName}, ${RANK_WORD[rankOf(s)]}.`];
+  if (ageOf(p.bornDay, day) < 14) out.push('Young to be the head of a house.');
+  out.push(...bodyLines(p.body, true, p.name));
+  if (s.family.pregnantSince !== null && p.sex === 'f') out.push('You are with child.');
+  return out;
 }
 
 export function householdLines(s: SimState): string[] {
   const out: string[] = [];
-  const sp = s.members[1];
-  if (sp) out.push(...(sp.alive ? bodyLines(sp.body, false, sp.name) : [`${sp.name} lies in the churchyard.`]));
+  const day = Math.floor(s.block / 6);
+  for (const m of s.members.slice(1)) {
+    if (!m.alive) continue;
+    const kin = KIN[m.role] ?? ['Kin', 'Kin'];
+    out.push(`${kin[m.sex === 'm' ? 0 : 1]} ${m.name}, ${ageWord(m, day)}.`);
+    out.push(...bodyLines(m.body, false, m.name));
+    if (m.role === 'spouse' && m.sex === 'f' && s.family.pregnantSince !== null) out.push(`${m.name} is with child.`);
+  }
+  if (s.members.length === 1) out.push('You are alone in the house.');
   const w = s.wealth;
   out.push(w.grain >= 40 ? 'The grain chest is full.' : w.grain >= 15 ? 'The grain chest is half empty.' : w.grain >= 3 ? 'The grain chest is nearly bare.' : 'There is no grain.');
   const cooked = w.bread + w.pottage;
@@ -82,6 +110,9 @@ const TAGS: Record<string, string> = {
   debtor: 'You owe the manor.',
   suspect: 'The reeve has marked you a shirker.',
   penitent: 'You wear the penitent\'s sheet.',
+  witch: 'They cross themselves when you pass. Witch, they whisper.',
+  omen: 'Since the black dog, you cannot get warm.',
+  brawler: 'Men remember the fight at the alehouse.',
 };
 
 export function standingLines(s: SimState): string[] {
@@ -91,7 +122,51 @@ export function standingLines(s: SimState): string[] {
     regard(st.priest, 'The priest greets you by name.', 'The priest says nothing to you.', 'The priest will not meet your eye.'),
     regard(st.village, 'Neighbours share their fire with you.', 'Neighbours keep to themselves.', 'Doors close when you walk by.'),
     ...s.tags.map((t) => TAGS[t.id] ?? ''),
+    s.station.free ? 'You are free: no man\'s villein.' : 'You are the lord\'s villein, body and chattels.',
+    s.hallmote.reeve === 'player' && rankOf(s) === 'REEVE' ? 'You are reeve this year: the lord\'s man among your neighbours.' : '',
   ].filter(Boolean);
+}
+
+const FEELING: Record<string, string> = {
+  DEVOTED: 'would do anything for you', FRIENDLY: 'is fond of your house', CIVIL: 'is civil', COLD: 'is cold to you', HOSTILE: 'hates your house',
+};
+
+/** What each soul in Ashby thinks of the family, and what is owed either way. */
+export function villageLines(s: SimState): string[] {
+  const out: string[] = [];
+  for (const v of s.village) {
+    if (!v.alive) {
+      out.push(`${v.name} lies in the churchyard.`);
+      continue;
+    }
+    if (v.gone) {
+      if (!s.members.some((m) => m.name === v.name.split(' ')[0] && m.role === 'spouse')) out.push(`${v.name} is gone from Ashby.`);
+      continue;
+    }
+    let line = `${v.name} ${FEELING[opinionWord(v.opinion)]}`;
+    if (v.owes > 0) line += v.owes > 1 ? ', and owes you favours' : ', and owes you a favour';
+    else if (v.owes < 0) line += v.owes < -1 ? '. You owe them favours' : '. You owe them a favour';
+    out.push(`${line}.`);
+  }
+  const live = s.village.filter(present).length;
+  if (s.plague.vacant > 0) out.push(s.plague.vacant > 1 ? 'Holdings lie vacant for want of tenants.' : 'One holding lies vacant.');
+  if (live < 8) out.push('The village is half empty.');
+  return out;
+}
+
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+
+/** Every generation of the family, in order. */
+export function chronicleLines(s: SimState): string[] {
+  const out: string[] = [`THE ${s.familyName} FAMILY OF ASHBY`];
+  for (const c of s.chronicle) {
+    const life = c.diedYear === null ? `born ${c.bornYear}, living` : `${c.bornYear}-${c.diedYear}`;
+    out.push(`${ROMAN[c.generation - 1] ?? c.generation}. ${c.name}, ${life}. ${c.rank.toLowerCase()}.`);
+    out.push(...c.notes);
+    if (c.diedYear !== null) out.push(`Died ${c.cause}.`);
+  }
+  if (s.dead) out.push('The line is ended.');
+  return out;
 }
 
 const STAGE: Record<string, string> = {

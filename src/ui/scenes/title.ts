@@ -9,6 +9,7 @@ import type { Game } from '../game';
 import type { Scene } from '../scene';
 import { SettingsScene } from './settings';
 import { ParchmentLogScene } from './parchmentLog';
+import { NameEntryScene } from './onboarding';
 import { WorldScene } from './world';
 
 /** Candle-light glow: concentric dithered rings [radius offset, colour, density]. */
@@ -33,6 +34,8 @@ export class TitleScene implements Scene {
     if (e.action === 'start' || e.action === 'confirm') {
       const g = this.game;
       g.sfx('start');
+      // A new life (or one after the line has ended) begins by naming the peasant.
+      if (!g.save.data.onboarded || g.sim().dead) return g.scenes.replace(new NameEntryScene(g));
       g.scenes.replace(new WorldScene(g));
       // Returning after time away: the Parchment Log tells what happened.
       const seen = g.save.data.seenBlock;
@@ -74,7 +77,9 @@ export class TitleScene implements Scene {
 
     drawTextCentered(ctx, "PEASANT'S LIFE", 16, C.gold);
     drawTextCentered(ctx, 'ANNO DOMINI 1345', 30, C.blood);
-    if (Math.floor(now / TITLE_BLINK_MS) % 2 === 0) drawTextCentered(ctx, 'PRESS START', 118, C.bone);
+    const ended = this.game.sim().dead && this.game.save.data.onboarded;
+    if (ended) drawTextCentered(ctx, `THE ${this.game.sim().familyName} LINE IS ENDED`.slice(0, 20), 44, C.slate);
+    if (Math.floor(now / TITLE_BLINK_MS) % 2 === 0) drawTextCentered(ctx, ended || !this.game.save.data.onboarded ? 'START: NEW LIFE' : 'PRESS START', 118, C.bone);
     drawTextCentered(ctx, 'SELECT: SETTINGS', 134, C.slate);
   }
 }
