@@ -1,13 +1,12 @@
 # Progress
-Current phase: 3
-Resume point: Phase 3 complete and pushed; next is Phase 4 (await its spec).
+Current phase: 4
+Resume point: none
 ## Checklist
-- [x] 1. Every sprite, variant and animation above exists. (`src/render/sprites/sprites.test.ts`: peasant 4-direction walk (2 frames), idle, work, eat, sleep, pray in all 7 body states (stout, healthy, thin, gaunt, skeletal, sick, cold/hunched); wife, child, elder, priest, reeve, steward, lord and 4 villagers (smith, shepherd, goodwife, beggar) with idle and walk; hens, pig, cow, ox and the black dog; all scene tiles; 8 moon phases, clouds, silhouette, treeline. 177 gallery entries.)
-- [x] 2. A Sprite Gallery debug screen shows all sprites and animations, cycling palettes. (Debug → SPRITE GALLERY: 12 pages, animations play, palette cycles base/4 seasons/dawn/dusk/night/plague/DMG every 1.8s; verified in the browser: pages and palette change on screen.)
-- [x] 3. All scenes are reachable and connected. (`src/render/scenes/maps.test.ts`: every scene reachable from the cottage, exits two-way on walkable rows, doors land on walkable ground and lead back, every entrance/exit reachable on foot inside each scene. Browser: walked cottage → green → fields → woods → back → churchyard → church → manor → green → cottage.)
-- [x] 4. Seasons, day/night, weather and moon phase visibly change. (`src/render/atmosphere.test.ts` on the real atlas: each season repaints >10% of pixels, night much darker, dusk redder, plague tint, DMG 4 shades, particles follow rain/storm/snow/autumn leaves, moon cycles 8 phases. Browser: day vs night screenshots differ; after FF a week the moon phase changed; after FF a season spring → summer; wet and dry days seen on screen.)
-- [x] 5. The Parchment Log correctly summarizes a debug fast-forward of 1 week. (`src/sim/summary.test.ts`: every action begun and every meal in the week counted, every notable entry listed verbatim, nothing from before the week. Browser: debug FF 1 WEEK opens "7 days have passed. 25 MAR 1345 to 01 APR 1345 ..." and the world is 7 days on.)
-- [x] 6. 60fps on a mid-range phone; no per-frame allocations in the render loop. (Chromium at 390px, production build: 60fps at 1x/4x/6x CPU throttle (proxy for a mid-range phone), script 3ms per frame at 6x. Heap sampling (incl. objects collected by GC) over 3s standing in the world: 0 bytes per frame; the only allocation is the countdown text rebuilt once a second. While walking, allocations are event-driven: Web Audio nodes per footstep (~4/s) and input repeats. Scripts in `e2e/`. Not run on a physical phone.)
-- [x] 7. No colour outside the palette (automated test that scans sprite data). (`sprites.test.ts` scans every sprite for characters outside 0-f/'.', checks every remap maps into the 16 indices; `src/palette.test.ts` scans source, CSS, HTML and manifest.)
+- [ ] 1. Every system above is implemented and reachable in play.
+- [ ] 2. Balance runs: simulate 2 game years for three playstyles (diligent, neglectful, fully absent). Write outcomes to docs/BALANCE.md. No starvation spiral for the diligent player, no money exploits, and neglect produces visible decline rather than instant death.
+- [ ] 3. The 1348 plague sequence fires and resolves.
+- [ ] 4. Death → heir handoff works and the Chronicle records it.
+- [ ] 5. 60fps maintained; full test suite green.
+- [ ] 6. Changelog written to docs/CHANGELOG.md.
 ## Blocked
 - **Phase 1 #1 (iOS home screen):** needs a check on a real iPhone, which isn't possible from the cloud container. Everything it depends on is in place: apple-mobile-web-app-capable, black-translucent status bar, apple-touch-icon, viewport-fit=cover with safe-area padding, manifest display fullscreen/standalone and portrait. To check: Safari -> Share -> Add to Home Screen -> launch.
