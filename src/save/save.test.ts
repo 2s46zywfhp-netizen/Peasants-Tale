@@ -18,6 +18,19 @@ describe('migrations', () => {
     expect(() => migrate('nope', 3, registry)).toThrow(SaveError);
     expect(() => migrate({}, 3, registry)).toThrow(SaveError);
   });
+  it('migrates a real Phase 1 (schema 1) save to the current schema', () => {
+    const v1 = {
+      schema: 1, savedAt: 500,
+      settings: { textSpeed: 'fast', sound: false, scanlines: true, dmg: false },
+      sim: { seed: 77, rngState: 77, startedAt: 400, processedTo: 400, blocks: 0 },
+    };
+    const s = loadSave(v1);
+    expect(s.schema).toBe(SCHEMA_VERSION);
+    expect(s.settings.textSpeed).toBe('fast');
+    expect(s.sim.seed).toBe(77);
+    expect(s.sim.anchorMs).toBe(400);
+    expect(s.sim.version).toBe(2);
+  });
   it('rejects a migration that forgets to bump the schema', () => {
     expect(() => migrate({ schema: 1 }, 2, { 1: (s) => s })).toThrow(/did not produce/);
   });

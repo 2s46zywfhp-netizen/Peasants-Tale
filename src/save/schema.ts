@@ -1,6 +1,6 @@
-import { createSim, type SimState } from '../sim/sim';
+import { createLife, type SimState } from '../sim/sim';
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export type TextSpeed = 'slow' | 'normal' | 'fast';
 
@@ -21,7 +21,7 @@ export interface SaveData {
 export const DEFAULT_SETTINGS: Settings = { textSpeed: 'normal', sound: true, scanlines: false, dmg: false };
 
 export function newSave(seed: number, now: number, settings: Settings = DEFAULT_SETTINGS): SaveData {
-  return { schema: SCHEMA_VERSION, savedAt: now, settings: { ...settings }, sim: createSim(seed, now) };
+  return { schema: SCHEMA_VERSION, savedAt: now, settings: { ...settings }, sim: createLife(seed, now) };
 }
 
 /** migrations[n] upgrades a schema-n save to schema n+1. */
@@ -29,7 +29,13 @@ export type Migration = (old: Record<string, unknown>) => Record<string, unknown
 export type MigrationRegistry = Readonly<Record<number, Migration>>;
 
 export const MIGRATIONS: MigrationRegistry = {
-  // Add entries here when SCHEMA_VERSION is bumped, e.g. 1: (s) => ({ ...s, schema: 2, newField: x }).
+  // v1 (Phase 1) only had a placeholder block counter: start a real life from the same seed and start time.
+  1: (s) => {
+    const old = s.sim as { seed?: unknown; startedAt?: unknown } | undefined;
+    const seed = typeof old?.seed === 'number' ? old.seed : 1;
+    const startedAt = typeof old?.startedAt === 'number' ? old.startedAt : typeof s.savedAt === 'number' ? s.savedAt : 0;
+    return { ...s, schema: 2, sim: createLife(seed, startedAt) };
+  },
 };
 
 export class SaveError extends Error {}
@@ -63,8 +69,12 @@ export function validate(data: Record<string, unknown>): SaveData {
   if (!s || !sim) throw new SaveError('missing settings or sim');
   if (!['slow', 'normal', 'fast'].includes(s.textSpeed as string)) throw new SaveError('bad textSpeed');
   for (const k of ['sound', 'scanlines', 'dmg']) if (typeof s[k] !== 'boolean') throw new SaveError(`bad ${k}`);
-  for (const k of ['seed', 'rngState', 'startedAt', 'processedTo', 'blocks'])
-    if (!isNum(sim[k])) throw new SaveError(`bad sim.${k}`);
+  if (sim.version !== 2) throw new SaveError('bad sim.version');
+  for (const k of ['seed', 'rng', 'anchorMs', 'lastSimMs', 'block']) if (!isNum(sim[k])) throw new SaveError(`bad sim.${k}`);
+  for (const k of ['members', 'fields', 'log', 'tags']) if (!Array.isArray(sim[k])) throw new SaveError(`bad sim.${k}`);
+  for (const k of ['soul', 'standing', 'wealth', 'obligations', 'habits']) {
+    if (typeof sim[k] !== 'object' || sim[k] === null) throw new SaveError(`bad sim.${k}`);
+  }
   if (!isNum(data.savedAt)) throw new SaveError('bad savedAt');
   return data as unknown as SaveData;
 }

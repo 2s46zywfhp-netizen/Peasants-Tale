@@ -1,66 +1,270 @@
-import { MAX_CATCHUP_BLOCKS, SIM_BLOCK_MS, START_DAY, START_HOUR, START_MONTH, START_YEAR } from './balance';
-import { mulberry32Next } from './rng';
+import {
+  ACTIONS, BLOCKS_PER_DAY, BLOCKS_PER_REAL_DAY, CATCHUP_CAP_BLOCKS, EGGS_PER_HEN_PER_DAY, FEAST_MORALE, FOOD_SPOIL_PER_DAY, FIREWOOD_PER_HOME_BLOCK,
+  FIRE_BELOW_C, MARTINMAS_PORK, MORALE_COLD_BLOCK, MORALE_DRIFT, MORALE_HUNGRY_BLOCK, MORALE_ILL_BLOCK, NEGLECT, PIETY_DAILY_DECAY,
+  REAL_DAY_MS, STANDING_DRIFT, URGENT_HUNGER, WARMTH_COLD, type ActionId, type Food,
+} from './balance';
+import { dailyHealth, injure, injuryChance, tickBody } from './body';
+import { BLOCK_NAMES, dayInfo, type DayInfo } from './calendar';
+import { dailyFarm } from './farm';
+import { availability, eat, runActionBlock } from './actions';
+import { dailyEvents, triggerEvent } from './events';
+import { chooseAction, planLength, recordAction, recordMeal, seedDefaultHabits, shouldAutoEat, slotOf, weeklyHabitDecay } from './habits';
+import { log } from './log';
+import { dawnObligations, endOfDayObligations } from './obligations';
+import { clamp, createState, peasant, rand, type SimState } from './state';
+import { weatherFor, type Weather } from './weather';
 
-export interface SimState {
-  seed: number;
-  rngState: number;
-  /** Real-world ms timestamp at which this life began. */
-  startedAt: number;
-  /** Real-world ms timestamp up to which blocks have been processed. */
-  processedTo: number;
-  /** Total sim blocks processed. */
-  blocks: number;
+export { stateHash, type SimState } from './state';
+
+/** Deep copy for pure updates. Log entries are never mutated after being written, so they are shared. */
+export function cloneState(s: SimState): SimState {
+  const log = s.log;
+  const copy = structuredClone({ ...s, log: [] });
+  copy.log = log.slice();
+  return copy;
 }
 
-export function createSim(seed: number, now: number): SimState {
-  return { seed: seed >>> 0, rngState: seed >>> 0, startedAt: now, processedTo: now, blocks: 0 };
+/** A new life: the default routine is seeded into the habits so the autopilot works from the first block. */
+export function createLife(seed: number, nowMs: number): SimState {
+  const s = createState(seed, nowMs);
+  seedDefaultHabits(s);
+  log(s, 'feast', 'Lady Day, 1345. A new year. The Lenten fast is nearly done.');
+  return s;
 }
 
-function runBlock(s: SimState): SimState {
-  // Phase 1: a block only advances the PRNG and the counter. Later phases simulate life here.
-  const { state } = mulberry32Next(s.rngState);
-  return { ...s, rngState: state, blocks: s.blocks + 1, processedTo: s.processedTo + SIM_BLOCK_MS };
+/** Index of the block containing real time `nowMs`. */
+export function blockAt(s: SimState, nowMs: number): number {
+  return Math.floor(((nowMs - s.anchorMs) * BLOCKS_PER_REAL_DAY) / REAL_DAY_MS);
 }
 
-/** Processes every whole block between processedTo and now. Pure: returns a new state. */
-export function advance(state: SimState, now: number): { state: SimState; blocksRun: number } {
-  if (now < state.processedTo) return { state, blocksRun: 0 };
-  let due = Math.floor((now - state.processedTo) / SIM_BLOCK_MS);
-  let s = state;
-  if (due > MAX_CATCHUP_BLOCKS) {
-    // Skip ancient history in one jump; only the most recent window is simulated in detail.
-    const skipped = due - MAX_CATCHUP_BLOCKS;
-    s = { ...s, processedTo: s.processedTo + skipped * SIM_BLOCK_MS, blocks: s.blocks + skipped };
-    due = MAX_CATCHUP_BLOCKS;
+export interface Clock {
+  info: DayInfo;
+  bod: number;
+  blockName: (typeof BLOCK_NAMES)[number];
+  weather: Weather;
+  /** Real ms until the current block ends. */
+  msToNext: number;
+}
+
+export function clock(s: SimState, nowMs: number): Clock {
+  const day = Math.floor(s.block / BLOCKS_PER_DAY);
+  const bod = s.block % BLOCKS_PER_DAY;
+  const end = s.anchorMs + ((s.block + 1) * REAL_DAY_MS) / BLOCKS_PER_REAL_DAY;
+  return { info: dayInfo(day), bod, blockName: BLOCK_NAMES[bod]!, weather: weatherFor(s.seed, day), msToNext: Math.max(0, end - nowMs) };
+}
+
+/* ───────────── daily processing ───────────── */
+
+function dawn(s: SimState, info: DayInfo, w: Weather): void {
+  const day = info.dayIndex;
+  s.soul.morale = clamp(s.soul.morale + w.morale);
+  if (w.sky === 'storm' || w.sky === 'snow') log(s, 'weather', w.sky === 'storm' ? 'A storm howls over the village.' : 'Snow lies on the thatch.');
+  for (const f of info.feasts) {
+    s.soul.morale = clamp(s.soul.morale + FEAST_MORALE[f]);
+    if (f !== 'lent' && f !== 'twelveDays') log(s, 'feast', FEAST_TEXT[f]);
   }
-  for (let i = 0; i < due; i++) s = runBlock(s);
-  return { state: s, blocksRun: due };
+  if (info.feasts.includes('martinmas') && s.wealth.pig > 0) {
+    s.wealth.meat += MARTINMAS_PORK;
+    log(s, 'feast', 'Martinmas: the pig is killed and salted for winter. A piglet is kept on.');
+  }
+  s.soul.privatePiety = clamp(s.soul.privatePiety - PIETY_DAILY_DECAY.privatePiety);
+  s.soul.publicPiety = clamp(s.soul.publicPiety - PIETY_DAILY_DECAY.publicPiety);
+  s.tags = s.tags.filter((t) => t.untilDay > day);
+  for (const k of ['lord', 'priest', 'village'] as const) s.standing[k] = clamp(s.standing[k] + (50 - s.standing[k]) * STANDING_DRIFT);
+  if (info.isSunday) {
+    s.counters.tavernThisWeek = 0;
+    s.counters.socialThisWeek = 0;
+    weeklyHabitDecay(s);
+  }
+  s.wealth.eggs += s.wealth.hens * EGGS_PER_HEN_PER_DAY;
+  s.wealth.pottage *= 1 - FOOD_SPOIL_PER_DAY.pottage;
+  s.wealth.bread *= 1 - FOOD_SPOIL_PER_DAY.bread;
+  s.wealth.eggs *= 1 - FOOD_SPOIL_PER_DAY.eggs;
+  dailyFarm(s, info, w);
+  dawnObligations(s, info);
+  const wet = w.sky === 'rain' || w.sky === 'storm' || w.sky === 'snow';
+  for (const m of s.members) {
+    if (!m.alive) continue;
+    const r = { illness: rand(s), kind: rand(s), severity: rand(s), infection: rand(s) };
+    const out = dailyHealth(m.body, info.season, wet, r);
+    if (out.fellIll) log(s, 'illness', `${m.name} falls ill: ${ILLNESS_TEXT[out.fellIll]}.`, [m.name]);
+    if (out.recovered) log(s, 'illness', `${m.name} recovers from the ${ILLNESS_TEXT[out.recovered]}.`, [m.name]);
+    if (out.died) {
+      m.alive = false;
+      log(s, 'death', `${m.name} is dead. The bell tolls.`, [m.name]);
+      if (m.role === 'peasant') s.dead = true;
+    }
+  }
+  if (!s.dead) dailyEvents(s, info);
 }
 
-export interface GameClock {
-  year: number;
-  month: number;
-  day: number;
-  hour: number;
-  minute: number;
-  /** Day number of this life, starting at 1. */
-  dayOfLife: number;
+const ILLNESS_TEXT = { ague: 'ague', flux: 'flux', fever: 'fever', infectedInjury: 'festering wound' } as const;
+
+const FEAST_TEXT: Record<DayInfo['feasts'][number], string> = {
+  ladyDay: 'Lady Day. The year turns.',
+  ashWednesday: 'Ash Wednesday. Lent begins: no meat until Easter.',
+  lent: '',
+  goodFriday: 'Good Friday. The church is stripped and dark.',
+  easter: 'Easter Day. The bells ring and the fast is broken.',
+  ploughMonday: 'Plough Monday. The plough is dragged round the village for pennies.',
+  mayDay: 'May Day. Greenery over the doors, dancing on the green.',
+  midsummer: 'Midsummer Eve. Bonfires on the hill against the dark.',
+  lammas: 'Lammas. A loaf of the new grain is blessed at mass.',
+  michaelmas: 'Michaelmas. Rents fall due.',
+  martinmas: 'Martinmas. The killing time.',
+  christmas: 'Christmas Day. Twelve days of rest begin.',
+  twelveDays: '',
+  epiphany: 'Twelfth Day. The feast ends; the work returns.',
+};
+
+/* ───────────── block resolution ───────────── */
+
+function resolveBlock(s: SimState): void {
+  const day = Math.floor(s.block / BLOCKS_PER_DAY);
+  const bod = s.block % BLOCKS_PER_DAY;
+  const info = dayInfo(day);
+  const w = weatherFor(s.seed, day);
+  if (bod === 0) dawn(s, info, w);
+  if (s.dead) {
+    s.block += 1;
+    return;
+  }
+  const p = peasant(s);
+  let plan = s.plan && s.block >= s.plan.from && s.block < s.plan.until ? s.plan : null;
+  const present = plan?.byPlayer === true;
+  if (!present && shouldAutoEat(s, info, bod)) {
+    const food = eat(s, info);
+    if (food) log(s, 'auto', `${p.name} eats ${food}${p.body.hunger >= URGENT_HUNGER ? ', ravenous' : ''}.`);
+  }
+  if (!plan) {
+    const c = chooseAction(s, info, bod, w);
+    plan = { action: c.action, param: c.param, from: s.block, until: s.block + planLength(c.action, bod), byPlayer: false };
+    s.plan = plan;
+  }
+  const first = plan.from === s.block;
+  const did = runActionBlock(s, plan.action, plan.param, info, bod, first);
+  if (first && !plan.byPlayer) log(s, 'auto', `${p.name} ${did}.`);
+
+  // Hearth: burns whenever it is cold and there is wood; the spouse keeps it.
+  const fireLit = w.tempC < FIRE_BELOW_C && s.wealth.firewood > 0;
+  if (fireLit) s.wealth.firewood = Math.max(0, s.wealth.firewood - FIREWOOD_PER_HOME_BLOCK);
+  const activity = ACTIONS[plan.action].activity;
+  tickBody(p.body, { activity, tempC: w.tempC, atHome: s.location === 'home', fireLit, night: bod === 5 });
+  for (const m of s.members) {
+    if (m === p || !m.alive) continue;
+    tickBody(m.body, { activity: bod === 5 ? 'sleep' : 'light', tempC: w.tempC, atHome: true, fireLit, night: bod === 5 });
+  }
+  if (rand(s) < injuryChance(p.body, activity)) {
+    injure(p.body);
+    log(s, 'body', `${p.name} is hurt, worn out at the work.`);
+  }
+  const m = s.soul;
+  m.morale = clamp(m.morale + (50 - m.morale) * MORALE_DRIFT);
+  if (p.body.hunger >= URGENT_HUNGER) m.morale = clamp(m.morale + MORALE_HUNGRY_BLOCK);
+  if (p.body.illness) m.morale = clamp(m.morale + MORALE_ILL_BLOCK);
+  if (p.body.warmth < WARMTH_COLD) m.morale = clamp(m.morale + MORALE_COLD_BLOCK);
+
+  if (bod === BLOCKS_PER_DAY - 1) endOfDayObligations(s, info);
+  s.block += 1;
+  s.ateThisBlock = false;
+  if (s.plan && s.block >= s.plan.until) s.plan = null;
 }
 
-/** The peasant lives in real time: game time is real elapsed time offset onto 1345. */
-export function gameClock(state: SimState, now: number): GameClock {
-  const elapsedMin = Math.max(0, Math.floor((now - state.startedAt) / 60_000)) + START_HOUR * 60;
-  const dayOffset = Math.floor(elapsedMin / 1440);
-  const minOfDay = elapsedMin % 1440;
-  // Calendar maths only, not a clock read. 2001 shares 1345's leap-year phase (Julian 1348 ~ 2004).
-  const d = new Date(Date.UTC(2001, START_MONTH - 1, START_DAY + dayOffset));
-  const yearOffset = d.getUTCFullYear() - 2001;
-  return {
-    year: START_YEAR + yearOffset,
-    month: d.getUTCMonth() + 1,
-    day: d.getUTCDate(),
-    hour: Math.floor(minOfDay / 60),
-    minute: minOfDay % 60,
-    dayOfLife: dayOffset + 1,
-  };
+function runTo(s: SimState, target: number): number {
+  let n = 0;
+  while (s.block < target) {
+    resolveBlock(s);
+    n++;
+  }
+  return n;
+}
+
+export interface AdvanceResult {
+  state: SimState;
+  blocksRun: number;
+  neglected: boolean;
+}
+
+/**
+ * Simulates every whole block elapsed up to `nowMs`. Pure: returns a new state (or the same one when
+ * nothing is due). Never rewinds: if `nowMs` is before the last simulation, nothing happens. A gap longer
+ * than the catch-up cap is treated as the cap; the rest is dropped and the peasant is marked neglected.
+ */
+export function advance(state: SimState, nowMs: number): AdvanceResult {
+  if (nowMs < state.lastSimMs) return { state, blocksRun: 0, neglected: false };
+  const due = blockAt(state, nowMs) - state.block;
+  if (due <= 0) return { state, blocksRun: 0, neglected: false };
+  const s = cloneState(state);
+  let run = due;
+  let neglected = false;
+  if (due > CATCHUP_CAP_BLOCKS) {
+    const dropped = due - CATCHUP_CAP_BLOCKS;
+    s.anchorMs += (dropped * REAL_DAY_MS) / BLOCKS_PER_REAL_DAY;
+    run = CATCHUP_CAP_BLOCKS;
+    neglected = true;
+    s.neglect = true;
+    s.soul.morale = clamp(s.soul.morale + NEGLECT.morale);
+    s.standing.village = clamp(s.standing.village + NEGLECT.village);
+    log(s, 'neglect', `Left to fend alone for over ${Math.round(due / BLOCKS_PER_REAL_DAY)} days. The neighbours whisper.`);
+  }
+  runTo(s, s.block + run);
+  s.lastSimMs = nowMs;
+  return { state: s, blocksRun: run, neglected };
+}
+
+export interface ActResult {
+  state: SimState;
+  ok: boolean;
+  message: string;
+}
+
+/** The player commits an action in the current block. Catches the sim up to `nowMs` first. */
+export function act(state: SimState, id: ActionId, nowMs: number, param: string | null = null): ActResult {
+  const caught = advance(state, nowMs).state;
+  const s = caught === state ? cloneState(state) : caught;
+  const bod = s.block % BLOCKS_PER_DAY;
+  const info = dayInfo(Math.floor(s.block / BLOCKS_PER_DAY));
+  const why = availability(s, id, info, bod, param);
+  if (why) return { state: caught, ok: false, message: why };
+  s.neglect = false;
+  s.counters.lastPlayerBlock = s.block;
+  const p = peasant(s);
+  const slot = slotOf(info.weekday, bod);
+  if (id === 'eat') {
+    const food = eat(s, info, (param as Food | null) ?? null);
+    recordMeal(s, slot);
+    log(s, 'meal', `${p.name} eats ${food}.`);
+    return { state: s, ok: true, message: `ATE ${String(food).toUpperCase()}` };
+  }
+  const ongoing = s.plan && s.block >= s.plan.from && s.block < s.plan.until ? s.plan : null;
+  if (ongoing && ongoing.action === id && ongoing.param === param) {
+    // Choosing what you are already doing just carries on with it.
+    ongoing.byPlayer = true;
+    return { state: s, ok: true, message: ACTIONS[id].label };
+  }
+  s.plan = { action: id, param, from: s.block, until: s.block + planLength(id, bod), byPlayer: true };
+  const def = ACTIONS[id];
+  if (def.location !== 'any') s.location = def.location;
+  recordAction(s, slot, id);
+  log(s, 'action', `${p.name} chooses to ${def.label.toLowerCase()}.`);
+  return { state: s, ok: true, message: def.label };
+}
+
+/* ───────────── debug ───────────── */
+
+/** Jumps the life forward by `blocks`, simulating every block (no catch-up cap, no neglect). */
+export function debugFastForward(state: SimState, blocks: number, nowMs: number): SimState {
+  const s = cloneState(state);
+  s.anchorMs -= (blocks * REAL_DAY_MS) / BLOCKS_PER_REAL_DAY;
+  runTo(s, Math.max(s.block, blockAt(s, nowMs)));
+  s.lastSimMs = Math.max(s.lastSimMs, nowMs);
+  log(s, 'debug', `Debug: fast-forwarded ${blocks} blocks.`);
+  return s;
+}
+
+export function debugTrigger(state: SimState, id: string): SimState {
+  const s = cloneState(state);
+  const ok = triggerEvent(s, id, dayInfo(Math.floor(s.block / BLOCKS_PER_DAY)));
+  log(s, 'debug', `Debug: triggered ${id}${ok ? '' : ' (unknown)'}.`);
+  return s;
 }

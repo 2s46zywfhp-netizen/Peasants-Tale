@@ -17,6 +17,7 @@ export default tseslint.config(
   },
   {
     files: ['src/sim/**/*.ts'],
+    ignores: ['src/sim/**/*.test.ts'],
     languageOptions: { globals: {} },
     rules: {
       'no-restricted-properties': [
