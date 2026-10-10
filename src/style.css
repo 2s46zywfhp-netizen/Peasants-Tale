@@ -192,3 +192,8 @@ body {
   #rotate { display: flex; }
   #gb { display: none; }
 }
+
+/* Netlify injects a "Powered by Netlify" badge iframe that covers the START button. */
+#nl-badge-frame {
+  display: none !important;
+}
