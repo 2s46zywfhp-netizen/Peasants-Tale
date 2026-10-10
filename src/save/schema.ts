@@ -1,6 +1,6 @@
 import { createLife, type SimState } from '../sim/sim';
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export type TextSpeed = 'slow' | 'normal' | 'fast';
 
@@ -16,12 +16,14 @@ export interface SaveData {
   savedAt: number;
   settings: Settings;
   sim: SimState;
+  /** The block up to which the player has read the log (the Parchment Log shows what came after). */
+  seenBlock: number;
 }
 
 export const DEFAULT_SETTINGS: Settings = { textSpeed: 'normal', sound: true, scanlines: false, dmg: false };
 
 export function newSave(seed: number, now: number, settings: Settings = DEFAULT_SETTINGS): SaveData {
-  return { schema: SCHEMA_VERSION, savedAt: now, settings: { ...settings }, sim: createLife(seed, now) };
+  return { schema: SCHEMA_VERSION, savedAt: now, settings: { ...settings }, sim: createLife(seed, now), seenBlock: 0 };
 }
 
 /** migrations[n] upgrades a schema-n save to schema n+1. */
@@ -36,6 +38,8 @@ export const MIGRATIONS: MigrationRegistry = {
     const startedAt = typeof old?.startedAt === 'number' ? old.startedAt : typeof s.savedAt === 'number' ? s.savedAt : 0;
     return { ...s, schema: 2, sim: createLife(seed, startedAt) };
   },
+  // v3 (Phase 3) remembers how much of the log the player has seen; treat everything so far as read.
+  2: (s) => ({ ...s, schema: 3, seenBlock: (s.sim as { block?: number } | undefined)?.block ?? 0 }),
 };
 
 export class SaveError extends Error {}
@@ -76,6 +80,7 @@ export function validate(data: Record<string, unknown>): SaveData {
     if (typeof sim[k] !== 'object' || sim[k] === null) throw new SaveError(`bad sim.${k}`);
   }
   if (!isNum(data.savedAt)) throw new SaveError('bad savedAt');
+  if (!isNum(data.seenBlock)) throw new SaveError('bad seenBlock');
   return data as unknown as SaveData;
 }
 

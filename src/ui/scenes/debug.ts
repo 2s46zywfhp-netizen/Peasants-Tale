@@ -1,9 +1,11 @@
 import { clear, rect } from '../../render/draw';
 import { drawText, drawTextCentered, wrap } from '../../render/font';
-import { C } from '../../render/palette';
+import { C, useUiRemap } from '../../render/palette';
 import { BLOCKS_PER_DAY } from '../../sim/balance';
 import { EVENT_IDS } from '../../sim/events';
 import { createLife, debugFastForward, debugTrigger, stateHash } from '../../sim/sim';
+import { GalleryScene } from './gallery';
+import { ParchmentLogScene } from './parchmentLog';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import { withActivation } from '../gesture';
@@ -26,8 +28,10 @@ export class DebugScene implements Scene {
       label,
       run: () => {
         const g = this.game;
+        const from = g.sim().block;
         g.setSim(debugFastForward(g.sim(), days * BLOCKS_PER_DAY, g.now()));
         this.note = `+${days} DAYS`;
+        g.scenes.push(new ParchmentLogScene(g, from, g.sim().block, label.replace('FF', 'AFTER')), false);
       },
     };
   }
@@ -64,6 +68,7 @@ export class DebugScene implements Scene {
         }),
       },
       { label: 'TRIGGER EVENT >', run: () => { this.events = true; this.cursor = 0; this.scroll = 0; } },
+      { label: 'SPRITE GALLERY', run: () => g.scenes.push(new GalleryScene(g), false) },
       { label: 'CLOSE', run: () => g.scenes.pop(false) },
     ];
   }
@@ -84,6 +89,7 @@ export class DebugScene implements Scene {
 
   draw(ctx: CanvasRenderingContext2D): void {
     const s = this.game.sim();
+    useUiRemap();
     clear(ctx, C.black);
     drawTextCentered(ctx, 'DEBUG', 2, C.blood);
     drawText(ctx, `SEED ${s.seed}`.slice(0, 20), 0, 12, C.mist);

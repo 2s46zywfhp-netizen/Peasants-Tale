@@ -25,6 +25,9 @@ export const NEW_MOON_REF_JDN = 2451550.26;
 
 export const LOG_MAX_ENTRIES = 3000;
 
+/** Years of the pestilence in England (the Black Death and its returns): the world takes on a sickly tint. */
+export const PLAGUE_YEARS: readonly number[] = [1348, 1349, 1361, 1362, 1369];
+
 /* ───────────────────────── Body ───────────────────────── */
 
 export type Activity = 'sleep' | 'rest' | 'light' | 'work' | 'heavy';

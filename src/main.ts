@@ -1,13 +1,18 @@
 import './style.css';
 import { Audio, type Sfx } from './audio/sfx';
 import { Input } from './input/input';
+import { initSprites } from './render/atlas';
 import { loadFont } from './render/font';
+import { IDENTITY, setDmgMode, useUiRemap } from './render/palette';
 import { Screen } from './render/screen';
 import { SaveManager } from './save/saveManager';
 import type { Settings } from './save/schema';
 import { act, advance, type SimState } from './sim/sim';
-import { DEBUG_HOLD_MS } from './sim/balance';
+import { dayInfo } from './sim/calendar';
+import { BLOCKS_PER_REAL_DAY, DEBUG_HOLD_MS, REAL_DAY_MS } from './sim/balance';
 import { DebugScene } from './ui/scenes/debug';
+import { ParchmentLogScene } from './ui/scenes/parchmentLog';
+import { WorldScene } from './ui/scenes/world';
 import type { Game } from './ui/game';
 import { onActivation } from './ui/gesture';
 import { SceneManager } from './ui/scene';
@@ -31,7 +36,7 @@ async function boot(): Promise<void> {
   const display = new Screen(canvas);
   const input = new Input();
   const audio = new Audio();
-  const [save] = await Promise.all([SaveManager.open(newSeed(), Date.now()), loadFont()]);
+  const [save] = await Promise.all([SaveManager.open(newSeed(), Date.now()), loadFont(), initSprites(IDENTITY)]);
   const scenes = new SceneManager(input);
 
   const game: Game = {
@@ -48,7 +53,8 @@ async function boot(): Promise<void> {
       void save.save(Date.now());
     },
     applySettings() {
-      audio.enabled = save.data.settings.sound;
+      audio.setEnabled(save.data.settings.sound);
+      setDmgMode(save.data.settings.dmg);
     },
     sim: () => save.data.sim,
     act(id, param = null) {
@@ -59,6 +65,11 @@ async function boot(): Promise<void> {
     },
     setSim(s: SimState) {
       save.data = { ...save.data, sim: s };
+      void save.save(Date.now());
+    },
+    frameNow: () => frameNow,
+    markSeen(block: number) {
+      save.data = { ...save.data, seenBlock: Math.max(save.data.seenBlock, block) };
       void save.save(Date.now());
     },
   };
@@ -85,17 +96,22 @@ async function boot(): Promise<void> {
 
   // Autosave whenever the app is hidden (home button, app switch, lock screen).
   const flush = () => void save.save(Date.now());
+  let returned = false;
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
       input.releaseAll();
       flush();
-    }
+    } else returned = true;
   });
   window.addEventListener('pagehide', flush);
 
   scenes.push(new TitleScene(game), false);
 
-  let last = performance.now();
+  // Frame clock: integer ms since boot keeps numbers small (unboxed) in the render loop.
+  let frameNow = 0;
+  let lastFrame = performance.now() | 0;
+  // When to next look at the wall clock (frame time). Date.now() allocates, so it is not read every frame.
+  let clockCheckAt = 0;
   // Hold SELECT + START to open the debug panel.
   let comboSince: number | null = null;
   const frame = (t: number) => {
@@ -106,17 +122,42 @@ async function boot(): Promise<void> {
         comboSince = Infinity;
       }
     } else comboSince = null;
-    const dt = Math.min(100, t - last);
-    last = t;
+    frameNow = t | 0;
+    let dt = frameNow - lastFrame;
+    if (dt > 100) dt = 100;
+    lastFrame = frameNow;
     // The sim runs in whole blocks of real time; autosave after every block processed.
-    const { state, blocksRun } = advance(save.data.sim, Date.now());
-    if (blocksRun > 0) {
-      save.data = { ...save.data, sim: state };
-      flush();
+    // The cheap check first: advance() is only called (and only allocates) when a block is due.
+    const sim = save.data.sim;
+    // Is a block due? The wall clock is read when the current block should end, and at least once
+    // a second (Date.now() allocates, so it is not read every frame).
+    if (frameNow >= clockCheckAt) {
+      const wall = Date.now();
+      if (Math.floor(((wall - sim.anchorMs) * BLOCKS_PER_REAL_DAY) / REAL_DAY_MS) > sim.block && wall >= sim.lastSimMs) {
+        const { state, blocksRun } = advance(sim, wall);
+        if (blocksRun > 0) {
+          // While the player watches the world, what happens there counts as seen.
+          const watching = scenes.top instanceof WorldScene && document.visibilityState === 'visible' && !returned;
+          save.data = { ...save.data, sim: state, seenBlock: watching ? state.block : save.data.seenBlock };
+          flush();
+          if (blocksRun <= 2) audio.bell((state.block % 6) % 3 + 1); // the church bell marks the hour
+        }
+      }
+      const cur = save.data.sim;
+      const endOfBlock = cur.anchorMs + ((cur.block + 1) * REAL_DAY_MS) / BLOCKS_PER_REAL_DAY;
+      clockCheckAt = frameNow + Math.max(16, Math.min(1000, Math.ceil(endOfBlock - wall)));
     }
-    input.update(t);
-    scenes.update(dt, Date.now());
-    scenes.draw(display.ctx, Date.now());
+    if (returned) {
+      returned = false;
+      if (scenes.top instanceof WorldScene && save.data.sim.block > save.data.seenBlock) {
+        scenes.push(new ParchmentLogScene(game, save.data.seenBlock, save.data.sim.block), false);
+      }
+    }
+    audio.setSeason(dayInfo((save.data.sim.block / 6) | 0).season);
+    input.update(frameNow);
+    scenes.update(dt, frameNow);
+    useUiRemap();
+    scenes.draw(display.ctx, frameNow);
     display.present(save.data.settings);
     requestAnimationFrame(frame);
   };

@@ -30,6 +30,12 @@ describe('migrations', () => {
     expect(s.sim.seed).toBe(77);
     expect(s.sim.anchorMs).toBe(400);
     expect(s.sim.version).toBe(2);
+    expect(s.seenBlock).toBe(0);
+  });
+  it('migrates a schema 2 save, treating the log so far as read', () => {
+    const v2 = { ...newSave(5, 10), schema: 2, sim: { ...newSave(5, 10).sim, block: 99 } } as Record<string, unknown>;
+    delete v2.seenBlock;
+    expect(loadSave(v2).seenBlock).toBe(99);
   });
   it('rejects a migration that forgets to bump the schema', () => {
     expect(() => migrate({ schema: 1 }, 2, { 1: (s) => s })).toThrow(/did not produce/);

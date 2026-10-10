@@ -134,7 +134,7 @@ function resolveBlock(s: SimState): void {
   const present = plan?.byPlayer === true;
   if (!present && shouldAutoEat(s, info, bod)) {
     const food = eat(s, info);
-    if (food) log(s, 'auto', `${p.name} eats ${food}${p.body.hunger >= URGENT_HUNGER ? ', ravenous' : ''}.`);
+    if (food) log(s, 'auto', `${p.name} eats ${food}${p.body.hunger >= URGENT_HUNGER ? ', ravenous' : ''}.`, undefined, 'eat');
   }
   if (!plan) {
     const c = chooseAction(s, info, bod, w);
@@ -143,7 +143,7 @@ function resolveBlock(s: SimState): void {
   }
   const first = plan.from === s.block;
   const did = runActionBlock(s, plan.action, plan.param, info, bod, first);
-  if (first && !plan.byPlayer) log(s, 'auto', `${p.name} ${did}.`);
+  if (first && !plan.byPlayer) log(s, 'auto', `${p.name} ${did}.`, undefined, plan.action);
 
   // Hearth: burns whenever it is cold and there is wood; the spouse keeps it.
   const fireLit = w.tempC < FIRE_BELOW_C && s.wealth.firewood > 0;
@@ -233,7 +233,7 @@ export function act(state: SimState, id: ActionId, nowMs: number, param: string 
   if (id === 'eat') {
     const food = eat(s, info, (param as Food | null) ?? null);
     recordMeal(s, slot);
-    log(s, 'meal', `${p.name} eats ${food}.`);
+    log(s, 'meal', `${p.name} eats ${food}.`, undefined, 'eat');
     return { state: s, ok: true, message: `ATE ${String(food).toUpperCase()}` };
   }
   const ongoing = s.plan && s.block >= s.plan.from && s.block < s.plan.until ? s.plan : null;
@@ -246,7 +246,7 @@ export function act(state: SimState, id: ActionId, nowMs: number, param: string 
   const def = ACTIONS[id];
   if (def.location !== 'any') s.location = def.location;
   recordAction(s, slot, id);
-  log(s, 'action', `${p.name} chooses to ${def.label.toLowerCase()}.`);
+  log(s, 'action', `${p.name} chooses to ${def.label.toLowerCase()}.`, undefined, id);
   return { state: s, ok: true, message: def.label };
 }
 

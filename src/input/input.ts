@@ -17,7 +17,6 @@ export const BUTTON_ACTIONS: Readonly<Record<Button, Action>> = {
   select: 'select',
 };
 
-const REPEATS: ReadonlySet<Button> = new Set(['up', 'down', 'left', 'right']);
 
 export interface ActionEvent {
   action: Action;
@@ -25,63 +24,67 @@ export interface ActionEvent {
 }
 export type ActionListener = (e: ActionEvent) => void;
 
-interface Held {
-  sources: Set<string>;
-  nextRepeat: number;
-}
+const INDEX: Readonly<Record<Button, number>> = { up: 0, down: 1, left: 2, right: 3, a: 4, b: 5, start: 6, select: 7 };
+/** One frozen event per (button, repeat): emitting allocates nothing. */
+const EVENTS: readonly (readonly [ActionEvent, ActionEvent])[] = BUTTONS.map((b) => [
+  Object.freeze({ action: BUTTON_ACTIONS[b], repeat: false }),
+  Object.freeze({ action: BUTTON_ACTIONS[b], repeat: true }),
+] as const);
 
 /**
  * Collects presses from any number of sources (touch pointers, keyboard) and
  * emits actions. Held directions repeat; other buttons fire once per press.
+ * State lives in fixed per-button arrays so update() allocates nothing.
  */
 export class Input {
-  private held = new Map<Button, Held>();
-  private listeners = new Set<ActionListener>();
+  private sources: Set<string>[] = BUTTONS.map(() => new Set<string>());
+  private nextRepeat = new Float64Array(BUTTONS.length);
+  private listeners: ActionListener[] = [];
   /** Called on every fresh press (haptics, sound). */
   onPress: ((b: Button) => void) | null = null;
 
   subscribe(fn: ActionListener): () => void {
-    this.listeners.add(fn);
-    return () => this.listeners.delete(fn);
+    this.listeners = [...this.listeners, fn];
+    return () => {
+      this.listeners = this.listeners.filter((l) => l !== fn);
+    };
   }
 
   isHeld(b: Button): boolean {
-    return this.held.has(b);
+    return this.sources[INDEX[b]]!.size > 0;
   }
 
   press(b: Button, source: string, now: number): void {
-    const h = this.held.get(b);
-    if (h) {
-      h.sources.add(source);
-      return;
-    }
-    this.held.set(b, { sources: new Set([source]), nextRepeat: now + INPUT_REPEAT_DELAY_MS });
+    const set = this.sources[INDEX[b]]!;
+    const fresh = set.size === 0;
+    set.add(source);
+    if (!fresh) return;
+    this.nextRepeat[INDEX[b]] = now + INPUT_REPEAT_DELAY_MS;
     this.onPress?.(b);
-    this.emit({ action: BUTTON_ACTIONS[b], repeat: false });
+    this.emit(EVENTS[INDEX[b]]![0]!);
   }
 
   release(b: Button, source: string): void {
-    const h = this.held.get(b);
-    if (!h) return;
-    h.sources.delete(source);
-    if (h.sources.size === 0) this.held.delete(b);
+    this.sources[INDEX[b]]!.delete(source);
   }
 
   releaseAll(): void {
-    this.held.clear();
+    for (let i = 0; i < this.sources.length; i++) this.sources[i]!.clear();
   }
 
   update(now: number): void {
-    for (const [b, h] of this.held) {
-      if (!REPEATS.has(b)) continue;
-      while (now >= h.nextRepeat) {
-        h.nextRepeat += INPUT_REPEAT_INTERVAL_MS;
-        this.emit({ action: BUTTON_ACTIONS[b], repeat: true });
+    for (let i = 0; i < 4; i++) {
+      if (this.sources[i]!.size === 0) continue;
+      while (now >= this.nextRepeat[i]!) {
+        this.nextRepeat[i] = this.nextRepeat[i]! + INPUT_REPEAT_INTERVAL_MS;
+        this.emit(EVENTS[i]![1]!);
       }
     }
   }
 
+  /** Listeners are replaced, never mutated, so iterating the current array is safe without a copy. */
   private emit(e: ActionEvent): void {
-    for (const fn of [...this.listeners]) fn(e);
+    const ls = this.listeners;
+    for (let i = 0; i < ls.length; i++) ls[i]!(e);
   }
 }

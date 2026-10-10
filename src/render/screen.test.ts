@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DMG_SHADES, PALETTE, buildDmgMap } from './palette';
+import { DMG, DMG_SHADES } from './palette';
 import { integerScale } from './screen';
 
 describe('integerScale', () => {
@@ -12,10 +12,8 @@ describe('integerScale', () => {
 });
 
 describe('DMG map', () => {
-  it('covers every palette colour with one of four shades', () => {
-    const m = buildDmgMap();
-    expect(m.size).toBe(PALETTE.length);
-    expect(new Set(m.values())).toEqual(new Set([0, 1, 2, 3]));
-    expect(DMG_SHADES.every((s) => (PALETTE as readonly string[]).includes(s))).toBe(true);
+  it('collapses every palette colour to one of four shades, using all four', () => {
+    expect(DMG).toHaveLength(16);
+    expect(new Set(DMG)).toEqual(new Set(DMG_SHADES));
   });
 });

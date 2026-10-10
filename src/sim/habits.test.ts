@@ -98,7 +98,9 @@ describe('autopilot', () => {
     // Every block either starts an autonomous action (logged) or continues a multi-block one.
     expect(starts.size).toBeGreaterThan(30);
     for (const e of s.log) {
-      expect(Object.keys(e).sort()).toEqual(['actors', 'block', 'date', 'day', 'text', 'type']);
+      const keys = Object.keys(e).filter((k) => k !== 'action').sort();
+      expect(keys).toEqual(['actors', 'block', 'date', 'day', 'text', 'type']);
+      if (e.type === 'auto') expect(e.action).toBeDefined();
       expect(e.actors.length).toBeGreaterThan(0);
     }
   });

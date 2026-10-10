@@ -30,7 +30,7 @@ export class SettingsScene implements Scene {
   constructor(private game: Game) {}
 
   private say(text: string): void {
-    this.msg.show(text.toUpperCase().slice(0, 18), this.game.now(), this.game.save.data.settings.textSpeed);
+    this.msg.show(text.toUpperCase().slice(0, 18), this.game.frameNow(), this.game.save.data.settings.textSpeed);
   }
 
   onAction(e: ActionEvent): void {

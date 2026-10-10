@@ -12,7 +12,10 @@ export interface Game {
   readonly input: Input;
   readonly save: SaveManager;
   readonly audio: Audio;
+  /** Wall-clock ms (Date.now): for the sim. */
   now(): number;
+  /** Frame clock: integer ms since boot, as passed to update/draw. For UI timers and animation. */
+  frameNow(): number;
   newSeed(): number;
   sfx(name: Sfx): void;
   updateSettings(patch: Partial<Settings>): void;
@@ -24,4 +27,6 @@ export interface Game {
   act(id: ActionId, param?: string | null): { ok: boolean; message: string };
   /** Replace the whole sim state (debug tools, new life); persists. */
   setSim(s: SimState): void;
+  /** The player has read the log up to this block. */
+  markSeen(block: number): void;
 }

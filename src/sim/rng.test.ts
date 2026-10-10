@@ -12,6 +12,16 @@ describe('mulberry32', () => {
       expect(v).toBeLessThan(1);
     }
   });
+  it('Rng.next follows exactly the mulberry32Next sequence', () => {
+    const r = new Rng(123);
+    let st = 123;
+    for (let i = 0; i < 100; i++) {
+      const ref = mulberry32Next(st);
+      st = ref.state;
+      expect(r.next()).toBe(ref.value);
+      expect(r.state).toBe(st);
+    }
+  });
   it('matches the reference first value for seed 1', () => {
     expect(mulberry32Next(1).value).toBeCloseTo(0.6270739405881613, 12);
   });

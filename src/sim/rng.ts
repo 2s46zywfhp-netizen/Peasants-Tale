@@ -13,10 +13,14 @@ export class Rng {
   constructor(public state: number) {
     this.state = state >>> 0;
   }
+  /** Same sequence as mulberry32Next, computed in place (no allocation: used in the render loop). */
   next(): number {
-    const r = mulberry32Next(this.state);
-    this.state = r.state;
-    return r.value;
+    const s = (this.state + 0x6d2b79f5) >>> 0;
+    this.state = s;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   }
   int(maxExclusive: number): number {
     return Math.floor(this.next() * maxExclusive);

@@ -1,4 +1,4 @@
-import { C, type Colour } from './palette';
+import { C, PALETTE, currentRemap, type Ci } from './palette';
 
 export const GLYPH = 8;
 const FIRST = 32;
@@ -6,7 +6,8 @@ const LAST = 126;
 const FONT = `${GLYPH}px "Press Start 2P"`;
 
 let masks: Uint8Array[] | null = null;
-const atlases = new Map<Colour, HTMLCanvasElement>();
+/** Glyph atlases per final palette index (after remap): array lookup, no strings in the loop. */
+const atlases: (HTMLCanvasElement | ImageBitmap | undefined)[] = [];
 
 /**
  * Rasterises the bundled Press Start 2P once and thresholds it to 1-bit
@@ -21,7 +22,7 @@ export async function loadFont(): Promise<void> {
   const ctx = c.getContext('2d', { willReadFrequently: true })!;
   ctx.font = FONT;
   ctx.textBaseline = 'top';
-  ctx.fillStyle = C.bone; // only alpha is read
+  ctx.fillStyle = '#e8e0c4'; // only alpha is read
   for (let i = 0; i < n; i++) ctx.fillText(String.fromCharCode(FIRST + i), i * GLYPH, 0);
   const img = ctx.getImageData(0, 0, c.width, c.height).data;
   masks = [];
@@ -33,9 +34,11 @@ export async function loadFont(): Promise<void> {
   }
 }
 
-function atlas(colour: Colour): HTMLCanvasElement {
-  let a = atlases.get(colour);
+/** Glyph atlas in one concrete colour (a hex string from the palette). */
+function atlas(ci: number): HTMLCanvasElement | ImageBitmap {
+  let a = atlases[ci];
   if (a) return a;
+  const colour = PALETTE[ci]!;
   if (!masks) throw new Error('font not loaded');
   a = document.createElement('canvas');
   a.width = masks.length * GLYPH;
@@ -45,12 +48,20 @@ function atlas(colour: Colour): HTMLCanvasElement {
   masks.forEach((m, i) => {
     for (let p = 0; p < m.length; p++) if (m[p]) ctx.fillRect(i * GLYPH + (p % GLYPH), Math.floor(p / GLYPH), 1, 1);
   });
-  atlases.set(colour, a);
+  atlases[ci] = a;
+  // Promote to an ImageBitmap once ready, like the sprite atlas.
+  if (typeof createImageBitmap === 'function') {
+    const canvas = a;
+    void createImageBitmap(canvas).then((bmp) => {
+      if (atlases[ci] === canvas) atlases[ci] = bmp;
+    });
+  }
   return a;
 }
 
-export function drawText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, colour: Colour = C.bone): void {
-  const a = atlas(colour);
+export function drawText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, colour: Ci = C.bone): void {
+  const ci = currentRemap()[colour]!;
+  const a = atlases[ci] ?? atlas(ci);
   for (let i = 0; i < text.length; i++) {
     let code = text.charCodeAt(i);
     if (code < FIRST || code > LAST) code = 63; // '?'
@@ -59,7 +70,7 @@ export function drawText(ctx: CanvasRenderingContext2D, text: string, x: number,
   }
 }
 
-export function drawTextCentered(ctx: CanvasRenderingContext2D, text: string, y: number, colour?: Colour, width = 160): void {
+export function drawTextCentered(ctx: CanvasRenderingContext2D, text: string, y: number, colour?: Ci, width = 160): void {
   drawText(ctx, text, Math.floor((width - text.length * GLYPH) / 2), y, colour);
 }
 

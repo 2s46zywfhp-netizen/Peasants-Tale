@@ -1,5 +1,4 @@
-import { DMG_SHADES, buildDmgMap, hexToRgb } from './palette';
-import { C } from './palette';
+import { DMG_SHADES, PALETTE } from './palette';
 
 export const W = 160;
 export const H = 144;
@@ -21,23 +20,15 @@ export function integerScale(availCssW: number, availCssH: number, dpr: number):
 export class Screen {
   readonly fb: HTMLCanvasElement;
   readonly ctx: CanvasRenderingContext2D;
-  private post: HTMLCanvasElement;
-  private postCtx: CanvasRenderingContext2D;
   private out: CanvasRenderingContext2D;
-  private dmgMap = buildDmgMap();
-  private dmgRgb = DMG_SHADES.map(hexToRgb);
   scale = 1;
 
   constructor(private display: HTMLCanvasElement) {
     this.fb = document.createElement('canvas');
     this.fb.width = W;
     this.fb.height = H;
-    this.ctx = this.fb.getContext('2d', { willReadFrequently: true })!;
+    this.ctx = this.fb.getContext('2d')!;
     this.ctx.imageSmoothingEnabled = false;
-    this.post = document.createElement('canvas');
-    this.post.width = W;
-    this.post.height = H;
-    this.postCtx = this.post.getContext('2d')!;
     this.out = display.getContext('2d', { alpha: false })!;
   }
 
@@ -58,27 +49,13 @@ export class Screen {
     if (fx || fy) d.style.transform = `translate(${-fx / dpr}px, ${-fy / dpr}px)`;
   }
 
+  /** Blits the framebuffer at integer scale. DMG mode is a palette remap applied while drawing, so no readback. */
   present(opts: DisplayOptions): void {
-    let src: HTMLCanvasElement = this.fb;
-    if (opts.dmg) {
-      const img = this.ctx.getImageData(0, 0, W, H);
-      const p = img.data;
-      for (let i = 0; i < p.length; i += 4) {
-        const key = ((p[i] ?? 0) << 16) | ((p[i + 1] ?? 0) << 8) | (p[i + 2] ?? 0);
-        const rgb = this.dmgRgb[this.dmgMap.get(key) ?? 0]!;
-        p[i] = rgb[0];
-        p[i + 1] = rgb[1];
-        p[i + 2] = rgb[2];
-        p[i + 3] = 255;
-      }
-      this.postCtx.putImageData(img, 0, 0);
-      src = this.post;
-    }
     const k = this.scale;
     this.out.imageSmoothingEnabled = false;
-    this.out.drawImage(src, 0, 0, W * k, H * k);
+    this.out.drawImage(this.fb, 0, 0, W * k, H * k);
     if (opts.scanlines && k >= 2) {
-      this.out.fillStyle = opts.dmg ? DMG_SHADES[0] : C.black;
+      this.out.fillStyle = PALETTE[opts.dmg ? DMG_SHADES[0] : 0];
       const t = Math.max(1, Math.floor(k / 3));
       for (let y = 0; y < H; y++) this.out.fillRect(0, y * k + k - t, W * k, t);
     }

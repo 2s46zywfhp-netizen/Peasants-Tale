@@ -1,41 +1,22 @@
-import { clear, ditherFill, rect, sprite } from '../../render/draw';
+import { atlasImage, drawSprite, spriteId } from '../../render/atlas';
+import { clear, ditherFill, rect } from '../../render/draw';
 import { drawTextCentered } from '../../render/font';
-import { C } from '../../render/palette';
+import { C, currentRemap, useUiRemap, type Ci } from '../../render/palette';
 import { CANDLE_FLICKER_MS, TITLE_BLINK_MS } from '../../sim/balance';
 import { Rng } from '../../sim/rng';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import type { Scene } from '../scene';
 import { SettingsScene } from './settings';
-import { VillageScene } from './village';
+import { ParchmentLogScene } from './parchmentLog';
+import { WorldScene } from './world';
 
-const FLAMES = [
-  ['..y..', '..yy.', '.yyy.', '.yoy.', '.ywy.', '.yoy.', '..o..'],
-  ['.y...', '..y..', '.yyy.', 'yyoy.', '.ywy.', '.yoy.', '..o..'],
-  ['...y.', '..y..', '.yyy.', '.yoyy', '.ywy.', '.yoy.', '..o..'],
-  ['.....', '..y..', '..y..', '.yyy.', '.ywy.', '.yoy.', '..o..'],
-] as const;
-const FLAME_KEYS = { y: C.gold, o: C.ember, w: C.bone } as const;
-
-const CANDLE = [
-  '..pbbbb.',
-  '..pbbbbb',
-  '..pbbbb.',
-  '..pbbbb.',
-  '..pbbbb.',
-  '...pbbb.',
-  '...pbbb.',
-  '...pbbb.',
-  '...pbbb.',
-  '...pbbb.',
-  '...pbbb.',
-  '...pbbb.',
-  '...pbbb.',
-  '...pbbb.',
-  '...pbbb.',
-  '...pbbb.',
+/** Candle-light glow: concentric dithered rings [radius offset, colour, density]. */
+const RINGS: readonly (readonly [number, Ci, number])[] = [
+  [10, C.night, 0.5],
+  [0, C.navy, 0.6],
+  [-8, C.teal, 0.35],
 ];
-const CANDLE_KEYS = { b: C.bone, p: C.parchment } as const;
 
 export class TitleScene implements Scene {
   readonly opaque = true;
@@ -43,13 +24,19 @@ export class TitleScene implements Scene {
   private flame = 0;
   private glow = 22;
   private nextFlicker = 0;
+  private candle = spriteId('ui.candle');
+  private flames = [0, 1, 2, 3].map((i) => spriteId(`ui.flame.${i}`));
 
   constructor(private game: Game) {}
 
   onAction(e: ActionEvent): void {
     if (e.action === 'start' || e.action === 'confirm') {
-      this.game.sfx('start');
-      this.game.scenes.replace(new VillageScene(this.game));
+      const g = this.game;
+      g.sfx('start');
+      g.scenes.replace(new WorldScene(g));
+      // Returning after time away: the Parchment Log tells what happened.
+      const seen = g.save.data.seenBlock;
+      if (g.sim().block > seen) g.scenes.push(new ParchmentLogScene(g, seen, g.sim().block), false);
     } else if (e.action === 'select') {
       this.game.sfx('confirm');
       this.game.scenes.push(new SettingsScene(this.game));
@@ -59,33 +46,31 @@ export class TitleScene implements Scene {
   update(_dt: number, now: number): void {
     if (now >= this.nextFlicker) {
       this.nextFlicker = now + CANDLE_FLICKER_MS * (1 + this.rng.int(3));
-      this.flame = this.rng.int(FLAMES.length);
+      this.flame = this.rng.int(this.flames.length);
       this.glow = 19 + this.rng.int(6);
     }
   }
 
   draw(ctx: CanvasRenderingContext2D, now: number): void {
+    useUiRemap();
     clear(ctx, C.black);
     const cx = 80;
-    const fy = 62; // flame top
-    // Candle-light glow: concentric dithered rings, flickering in radius.
-    for (const [r, c, amt] of [
-      [this.glow + 10, C.night, 0.5],
-      [this.glow, C.navy, 0.6],
-      [this.glow - 8, C.teal, 0.35],
-    ] as const) {
+    const fy = 62;
+    for (let k = 0; k < RINGS.length; k++) {
+      const [dr, c, amt] = RINGS[k]!;
+      const r = this.glow + dr;
       for (let y = -r; y <= r; y++) {
         const half = Math.floor(Math.sqrt(r * r - y * y));
         ditherFill(ctx, amt, c, cx - half, fy + 14 + y, half * 2, 1);
       }
     }
-    // Holder and candle.
+    const img = atlasImage(currentRemap());
     rect(ctx, cx - 14, 102, 28, 3, C.wood);
     rect(ctx, cx - 10, 105, 20, 2, C.mud);
     rect(ctx, cx - 2, 99, 4, 3, C.wood);
-    sprite(ctx, CANDLE, CANDLE_KEYS, cx - 5, 83);
-    rect(ctx, cx, 80, 1, 3, C.black); // wick
-    sprite(ctx, FLAMES[this.flame]!, FLAME_KEYS, cx - 2, fy + 11);
+    drawSprite(ctx, img, this.candle, cx - 5, 83);
+    rect(ctx, cx, 80, 1, 3, C.black);
+    drawSprite(ctx, img, this.flames[this.flame]!, cx - 2, fy + 11);
 
     drawTextCentered(ctx, "PEASANT'S LIFE", 16, C.gold);
     drawTextCentered(ctx, 'ANNO DOMINI 1345', 30, C.blood);

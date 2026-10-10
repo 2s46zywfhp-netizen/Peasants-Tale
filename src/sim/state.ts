@@ -114,6 +114,8 @@ export interface LogEntry {
   type: LogType;
   actors: string[];
   text: string;
+  /** For meals and actions (the player's or the autopilot's): which action. */
+  action?: ActionId;
 }
 
 export interface Plan {
