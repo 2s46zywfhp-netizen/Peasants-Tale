@@ -1,43 +1,22 @@
 import { H, W, pix } from './fb';
 import { C } from './palette';
+import { FONT_ROWS } from './fontData';
 
 export const GLYPH = 8;
 const FIRST = 32;
 const LAST = 126;
-const FONT = `${GLYPH}px "Press Start 2P"`;
 
-/** 1-bit glyphs, 8x8, one byte per row (bit 7 = left). Empty until loaded: text then draws nothing. */
-let glyphs: Uint8Array = new Uint8Array((LAST - FIRST + 1) * GLYPH);
+/** 1-bit glyphs, 8x8, one byte per row (bit 7 = left). */
+let glyphs: Uint8Array = FONT_ROWS;
 
 /** Installs glyph rows directly (tests, or a font rasterised elsewhere). */
 export function setGlyphs(rows: Uint8Array): void {
   glyphs = rows;
 }
 
-/**
- * Rasterises the bundled Press Start 2P once and thresholds it to 1-bit glyphs,
- * so text is crisp and only ever uses palette colours.
- */
+/** The glyphs are baked in (render/fontData): nothing to load, identical on every device. */
 export async function loadFont(): Promise<void> {
-  await document.fonts.load(FONT, 'A');
-  const n = LAST - FIRST + 1;
-  const c = document.createElement('canvas');
-  c.width = n * GLYPH;
-  c.height = GLYPH;
-  const ctx = c.getContext('2d', { willReadFrequently: true })!;
-  ctx.font = FONT;
-  ctx.textBaseline = 'top';
-  ctx.fillStyle = '#f7f2df'; // only alpha is read
-  for (let i = 0; i < n; i++) ctx.fillText(String.fromCharCode(FIRST + i), i * GLYPH, 0);
-  const img = ctx.getImageData(0, 0, c.width, c.height).data;
-  const rows = new Uint8Array(n * GLYPH);
-  for (let i = 0; i < n; i++)
-    for (let y = 0; y < GLYPH; y++) {
-      let b = 0;
-      for (let x = 0; x < GLYPH; x++) if ((img[(y * c.width + i * GLYPH + x) * 4 + 3] ?? 0) >= 128) b |= 0x80 >> x;
-      rows[i * GLYPH + y] = b;
-    }
-  glyphs = rows;
+  glyphs = FONT_ROWS;
 }
 
 function glyph(code: number, x: number, y: number, v: number): void {
