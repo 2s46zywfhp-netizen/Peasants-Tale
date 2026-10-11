@@ -242,9 +242,8 @@ const FOOTER = `
   village think less of it, and work done by habit alone is sloppier (UNWATCHED in balance.ts). The
   absent end with more grain only because they eat less and sell less. The neglectful player's morale
   is lifted by the alehouse visit just before the count.
-- **Hastening** keeps the careful player's land, purse and standing, but a hastened day has fewer
-  meals in it (the household eats when the player comes back), so half the lines grow thin. The
-  allowance keeps the life from outrunning the clock (asserted by the test).
+- **Hastening** keeps the careful player's land, purse, body and standing; the allowance keeps the life
+  from outrunning the clock (asserted by the test).
 - **A long absence** simulates only the 30-day catch-up cap and marks the household neglected, with a
   one-off morale and village-standing penalty at the start of the catch-up (told in the Parchment Log).
   Over the 210 simulated days those drift back. It does not kill the household.

@@ -1,5 +1,28 @@
 # Changelog
 
+## The cottage, from play-testing
+- **People to scale indoors.** In the cottage and the church everyone is drawn twice the size (room-scale
+  sprites made by the same generator, at double resolution), so they stand true against the door, the
+  bed and the table. The peasant now wears russet, which reads against the plank walls.
+- **A bigger cottage** (a quarter wider) with a high-backed chair by the fire, a chair and stools at the
+  table, the poker and tongs by the hearth, and a **woodstock** that fills up as logs come home.
+- **The family sits.** Spouse, children and a surviving parent take the chairs; at night the spouse lies
+  abed.
+- **Animations where the work is done.** The peasant now goes to the place and does the thing, under
+  the progress bar:
+  - sleeping in the bed;
+  - kneeling in prayer at the bedside;
+  - stirring the pot at the hearth to cook or brew;
+  - sitting by the fire to rest;
+  - eating at the table;
+  - chopping and splitting in the woods.
+- **Feed the fire.** The hearth now burns its own logs. FEED THE FIRE (first at the hearth, done at
+  once) lays up to three logs from the woodstock and the fire roars up: a blaze warms the house more and
+  lifts spirits, and burns down to a steady fire. On cold days whoever is home keeps a log on it from the
+  stock. Cooking and brewing put their log on the fire too.
+- **Chop wood.** In the woods, CHOP WOOD brings home ten logs for each block (about four game hours) of
+  chopping, stacked in the cottage's woodstock.
+
 ## Phase 5: the 16-bit overhaul
 - **Sharper, bigger screen.** The game is drawn at 256x224 and scaled in whole device pixels (4x on
   most phones, 2x on a 375-wide one), never stretched or blurred; spare room goes to the bezel. It is

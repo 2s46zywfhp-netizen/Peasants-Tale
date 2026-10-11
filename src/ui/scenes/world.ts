@@ -63,7 +63,7 @@ const LOCATION_TITLE: Record<Location, string> = {
 /** What can be done at each spot in a room (same order as the room's spots). */
 const SPOTS: Record<'cottage' | 'church', readonly { title: string; verb: string; actions: readonly ActionId[] | null }[]> = {
   cottage: [
-    { title: 'THE HEARTH', verb: 'A: COOK', actions: ['cook', 'brew', 'rest', 'eat'] },
+    { title: 'THE HEARTH', verb: 'A: FEED FIRE', actions: ['stokeFire', 'cook', 'brew', 'rest'] },
     { title: 'THE TABLE', verb: 'A: EAT', actions: ['eat', 'rest'] },
     { title: 'THE BED', verb: 'A: SLEEP', actions: ['sleep', 'rest', 'prayHome'] },
   ],
@@ -84,7 +84,9 @@ const promptOf = (verb: string): string => {
 type Face = 'down' | 'up' | 'left' | 'right';
 const MOVES = ['walk', 'run', 'idle'] as const;
 const FACES = ['down', 'up', 'side'] as const;
-const WORKS: readonly WorkAnim[] = ['chop', 'split', 'hoe', 'reap', 'flail', 'sow', 'carry', 'stir', 'milk', 'pray', 'eat', 'sleep'];
+const WORKS: readonly string[] = ['chop', 'split', 'hoe', 'reap', 'flail', 'sow', 'carry', 'stir', 'milk', 'pray', 'eat', 'sleep'];
+/** Feet of someone seated in a chair or pew (room y). */
+const SEAT_FEET = 146;
 
 interface NpcRt {
   def: Npc;
@@ -101,6 +103,9 @@ interface Kin {
   actor: Actor;
   idle: Anim;
   walk: Anim;
+  sit: Anim;
+  sleep: Anim | null;
+  spouse: boolean;
   home: number;
   phase: number;
 }
@@ -120,6 +125,8 @@ function kinSprite(m: Member, day: number): string | null {
 
 export class WorldScene implements Scene {
   readonly opaque = true;
+  /** Keeps moving (and its people at their work) while a menu or the working bar is open over it. */
+  readonly live = true;
   private sceneId: SceneId;
   /** Feet position and velocity, in 1/256 px and 1/256 px per second (integers). */
   private fx = 0;
@@ -166,6 +173,11 @@ export class WorldScene implements Scene {
   private infoDay = -1;
   private info: ReturnType<typeof dayInfo> | null = null;
   private anims: Record<string, Anim> = {};
+  /** Room scale: the peasant's work and moves indoors. */
+  private roomAnims: Record<string, Anim> = {};
+  private roomMoves: Anim[] = [];
+  /** The seat the peasant is in (index into the room's seats), or -1. */
+  private seatTaken = -1;
   /** [walk, run, idle] x [down, up, side], looked up by index (no strings while playing). */
   private moveAnims: Anim[] = [];
 
@@ -179,6 +191,8 @@ export class WorldScene implements Scene {
     });
     for (const m of MOVES) for (const f of FACES) this.anims[`${m}.${f}`] = anim(`peasant.${m}.${f}`);
     this.moveAnims = MOVES.flatMap((m) => FACES.map((f) => this.anims[`${m}.${f}`]!));
+    for (const w of ['stir', 'stoke', 'carry', 'pray', 'sit', 'eat', 'sleep']) this.roomAnims[w] = anim(`peasant.room.${w}`);
+    this.roomMoves = MOVES.flatMap((m) => FACES.map((f) => anim(m === 'run' ? 'peasant.room.run.side' : `peasant.room.${m}.${f}`)));
     for (const w of WORKS) this.anims[w] = anim(`peasant.${w}`);
     const s = game.sim();
     this.sceneId = SCENE_OF[s.location];
@@ -211,10 +225,13 @@ export class WorldScene implements Scene {
     this.vx = this.vy = 0;
     if (!this.room) this.unstick();
     this.npcs = sc.npcs.map((def, i) => {
-      const idle = anim(`${def.who}.idle${def.who === 'dog' ? '' : '.down'}`);
-      const walk = anim(`${def.who}.walk${def.who === 'dog' ? '' : '.side'}`);
-      const y0 = this.room ? this.roomFeetMid(id) - 6 + ((i * 13) % 20) : def.y;
+      // Indoors, people are drawn at room scale; some sit (in the pews).
+      const room = this.room ? '.room' : '';
+      const idle = anim(def.who === 'dog' ? 'dog.idle' : this.room && def.sit ? `${def.who}.room.sit` : `${def.who}${room}.idle.${this.room ? 'side' : 'down'}`);
+      const walk = anim(def.who === 'dog' ? 'dog.walk' : `${def.who}${room}.walk.side`);
+      const y0 = this.room ? (def.sit ? SEAT_FEET : this.roomFeetMid(id) - 6 + ((i * 13) % 20)) : def.y;
       const a = mkActor(idle, def.x, y0, i * 331);
+      a.flip = !!this.room && !def.sit && def.x > 250;
       a.eyes = def.who === 'dog';
       return { def, actor: a, idle, walk, phase: i * 70, vIdx: def.villager ? idx(def.villager) : -1, lastX: def.x };
     });
@@ -260,8 +277,11 @@ export class WorldScene implements Scene {
       const who = kinSprite(m, day);
       if (!who) continue;
       const homeX = 120 + ((n * 61) % 200);
-      const a = mkActor(anim(`${who}.idle.down`), homeX, mid - 8 + ((n * 11) % 22), n * 97);
-      this.kin.push({ member: m.id, actor: a, idle: a.anim, walk: anim(`${who}.walk.side`), home: homeX, phase: n * 94 });
+      const a = mkActor(anim(`${who}.room.idle.down`), homeX, mid - 8 + ((n * 11) % 22), n * 97);
+      this.kin.push({
+        member: m.id, actor: a, idle: a.anim, walk: anim(`${who}.room.walk.side`), sit: anim(`${who}.room.sit`),
+        sleep: hasAnim(`${who}.room.sleep`) ? anim(`${who}.room.sleep`) : null, spouse: m.role === 'spouse', home: homeX, phase: n * 94,
+      });
       n++;
     }
     this.rebuildActors();
@@ -297,6 +317,9 @@ export class WorldScene implements Scene {
     if (/^EAT/.test(m)) {
       this.eatUntil = this.game.frameNow() + 2400;
       this.game.sfx('eat');
+    } else if (/FIRE/.test(m) && this.sceneId === 'cottage') {
+      this.chore = 'stoke';
+      this.choreUntil = this.game.frameNow() + 2400;
     }
   };
 
@@ -636,6 +659,70 @@ export class WorldScene implements Scene {
     return bits;
   }
 
+  /** Indoors (room scale): walking, or at the place the work is done (the bed, the hearth, a chair). */
+  private placeInRoom(p: Actor, work: WorkAnim | null): void {
+    const m = this.room!;
+    const st = m.stations;
+    const seats = m.seats;
+    this.seatTaken = -1;
+    p.x = this.x;
+    p.y = this.y;
+    p.flip = this.face === 'left';
+    const at = (a: string, x: number, y: number, flip: boolean) => {
+      p.anim = this.roomAnims[a]!;
+      p.x = x;
+      p.y = y;
+      p.flip = flip;
+    };
+    if (work === 'sleep' && m.bed) return at('sleep', m.bed.x + 32, m.bed.y + 2, false);
+    if (work === 'pray') return st ? at('pray', st.bed, this.y, false) : at('pray', this.x, this.y, false);
+    if (work === 'stir' && st) return at('stir', st.hearth, this.y, true);
+    if (work === 'stoke' && st) return at('stoke', st.stoke, this.y, true);
+    if ((work === 'eat' || work === 'sit') && seats) {
+      const k = work === 'eat' ? 1 : 0;
+      this.seatTaken = k;
+      return at(work, seats[k]!.x, seats[k]!.y, seats[k]!.flip);
+    }
+    if (work === 'carry') return at('carry', this.x, this.y, p.flip);
+    const speed = (this.vx < 0 ? -this.vx : this.vx) + (this.vy < 0 ? -this.vy : this.vy);
+    const dir = this.face === 'left' || this.face === 'right' ? 2 : this.face === 'up' ? 1 : 0;
+    const move = this.moving ? (speed > (WALK + 6) * Q && dir === 2 ? 'run' : 'walk') : 'idle';
+    p.anim = this.roomMoves[(move === 'run' ? 1 : move === 'walk' ? 0 : 2) * 3 + dir]!;
+  }
+
+  /** The household sits in the chairs (not the one the peasant is in); at night the spouse lies abed. */
+  private seatKin(night: boolean, work: WorkAnim | null): void {
+    const m = this.room;
+    const seats = m?.seats;
+    let seat = 0;
+    for (let i = 0; i < this.kin.length; i++) {
+      const k = this.kin[i]!;
+      const a = k.actor;
+      a.visible = true;
+      if (night && k.spouse && k.sleep && m?.bed) {
+        a.anim = k.sleep;
+        a.x = m.bed.x + 32;
+        a.y = m.bed.y - (work === 'sleep' ? 6 : 0);
+        a.flip = false;
+        continue;
+      }
+      if (seats && seat === this.seatTaken) seat++;
+      const st = seats?.[seat];
+      if (st) {
+        a.anim = k.sit;
+        a.x = st.x;
+        a.y = st.y;
+        a.flip = st.flip;
+        seat++;
+        if (seat === this.seatTaken) seat++;
+      } else {
+        a.anim = k.idle;
+        a.x = k.home;
+        a.flip = false;
+      }
+    }
+  }
+
   /** The work going on here now (the plan in hand, if it belongs in this scene), as an animation. */
   private workHere(now: number): WorkAnim | null {
     if (this.chore && now < this.choreUntil) return this.chore;
@@ -655,16 +742,12 @@ export class WorldScene implements Scene {
     const p = this.player;
     const head = s.members[0];
     const work = this.workHere(now);
-    if (work === 'sleep' && this.room?.bed) {
-      p.anim = this.anims.sleep!;
-      p.x = this.room.bed.x + 16;
-      p.y = this.room.bed.y + 2;
-      p.flip = false;
-    } else {
+    if (this.room) this.placeInRoom(p, work);
+    else {
       const speed = (this.vx < 0 ? -this.vx : this.vx) + (this.vy < 0 ? -this.vy : this.vy);
       const move = this.moving ? (speed > (WALK + 6) * Q ? 1 : 0) : 2;
       const dir = this.face === 'left' || this.face === 'right' ? 2 : this.face === 'up' ? 1 : 0;
-      p.anim = work ? this.anims[work]! : this.moveAnims[move * 3 + dir]!;
+      p.anim = work && this.anims[work] ? this.anims[work]! : this.moveAnims[move * 3 + dir]!;
       p.flip = this.face === 'left';
       p.x = this.x;
       p.y = this.y;
@@ -706,17 +789,7 @@ export class WorldScene implements Scene {
       }
     }
     const asleep = bod === 5 || bod === 0;
-    for (let i = 0; i < this.kin.length; i++) {
-      const k = this.kin[i]!;
-      const t = ((now * 5) >> 9) + k.phase;
-      const nx = k.home + ((isin(t) * 26) >> 10);
-      const c = icos(t);
-      const walking = c > 410 || c < -410;
-      k.actor.anim = walking ? k.walk : k.idle;
-      k.actor.flip = walking && c < 0;
-      k.actor.x = nx;
-      k.actor.visible = !(asleep && i === 0 && work === 'sleep'); // the spouse sleeps too
-    }
+    this.seatKin(asleep, work);
     const wl = s.wealth;
     for (let i = 0; i < this.pens.length; i++) {
       const pe = this.pens[i]!;
@@ -758,13 +831,15 @@ export class WorldScene implements Scene {
       return;
     }
     if (this.moving && this.wipeT >= 0) return;
-    if (work === 'sleep') return;
-    const headY = this.y - 34;
+    // While a task is underway, the peasant is busy: no prompt.
+    if (work) return;
+    // Above the head: room-scale people are twice as tall.
+    const headY = this.y - (this.room ? 70 : 34);
     const npc = this.nearNpc();
     if (npc) {
       v.prompt = 'A: TALK';
       v.promptX = npc.actor.x;
-      v.promptY = npc.actor.y - 34;
+      v.promptY = npc.actor.y - (this.room ? 70 : 34);
       return;
     }
     if (this.room) {

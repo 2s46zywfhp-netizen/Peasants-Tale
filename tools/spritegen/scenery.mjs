@@ -138,11 +138,17 @@ const slot = () =>
 /* ── the side-view rooms ── */
 
 export const COTTAGE_ROOM = {
-  w: 384, h: 192, floor: 130, glass: { x: 164, y: 34, w: 58, h: 50 }, fire: { x: 47, y: 126 }, candle: { x: 262, y: 100 },
-  door: { x: 350, w: 30 }, spots: [
-    { x0: 0, x1: 96, label: 'HEARTH' }, { x0: 132, x1: 236, label: 'TABLE' }, { x0: 244, x1: 344, label: 'BED' },
+  w: 480, h: 192, floor: 130, glass: { x: 240, y: 34, w: 58, h: 50 }, fire: { x: 47, y: 126 }, candle: { x: 352, y: 100 },
+  door: { x: 446, w: 30 }, spots: [
+    { x0: 0, x1: 176, label: 'HEARTH' }, { x0: 196, x1: 334, label: 'TABLE' }, { x0: 336, x1: 444, label: 'BED' },
   ],
-  bed: { x: 296, y: 102 },
+  bed: { x: 370, y: 106 },
+  /** The woodstock against the wall by the hearth (top-left of its sprite, room.logs.N). */
+  woodstock: { x: 92, y: 110 },
+  /** Where people sit (feet), and which way they face (flip = facing left). */
+  seats: [{ x: 164, y: 146, flip: true }, { x: 226, y: 146, flip: false }, { x: 322, y: 146, flip: true }, { x: 196, y: 146, flip: false }],
+  /** Where the peasant stands for work at the hearth (feet x), facing left. */
+  stations: { hearth: 92, stoke: 82, table: 226, bed: 352 },
 };
 export const CHURCH_ROOM = {
   w: 384, h: 192, floor: 134, door: { x: 0, w: 30 }, spots: [{ x0: 40, x1: 250, label: 'PEWS' }, { x0: 250, x1: 384, label: 'ALTAR' }],
@@ -200,14 +206,13 @@ function cottageRoom() {
   for (let y = 0; y < 14; y++) for (let x = 0; x < W; x++) px[y * W + x] = y < 2 || y === 12 ? idx('night', 0) : y === 2 ? idx('earth', 3) : y > 9 ? idx('earth', 1) : hash(x, y, 7) < 0.15 ? idx('earth', 3) : idx('earth', 2);
   floor(px, W, H, R.floor, 46, true);
   // Posts and braces.
-  for (const x of [94, 236]) put(px, W, make(28, R.floor - 12, (m) => { m.rect(12, 0, 5, R.floor - 12, 'o'); m.line(17, 18, 27, 2, 'o', 3); m.line(11, 18, 1, 2, 'o', 3); }), x - 12, 12);
+  for (const x of [178, 330]) put(px, W, make(28, R.floor - 12, (m) => { m.rect(12, 0, 5, R.floor - 12, 'o'); m.line(17, 18, 27, 2, 'o', 3); m.line(11, 18, 1, 2, 'o', 3); }), x - 12, 12);
   // Chimney and hearth.
   put(px, W, make(84, R.floor + 6, (m) => {
     m.rect(4, 0, 76, R.floor + 6, '#');
     for (let y = 0; y < R.floor; y += 10) for (let x = (y / 10) % 2 ? 6 : 0; x < 84; x += 14) m.rect(4 + x, y, 1, 9, ';');
     for (let y = 9; y < R.floor; y += 10) m.rect(4, y, 76, 1, ';');
     m.rect(0, 64, 84, 6, 'o'); // mantel
-    // The arch.
     for (let y = 80; y < R.floor + 4; y++)
       for (let x = 14; x < 70; x++) {
         const dx = x - 42, r = 24;
@@ -219,18 +224,29 @@ function cottageRoom() {
     m.rect(0, R.floor, 84, 6, 'n'); // hearthstone
     m.rect(10, 56, 10, 8, 'k'); // pot on the mantel
     m.rect(64, 58, 4, 6, 'w'); // candle stub
+    m.rect(72, 30, 2, 22, 'i'); // the poker and the tongs on their hook
+    m.rect(76, 32, 2, 20, 'i');
   }), 2, 0);
   // Shelf with jars, herbs from the beam.
-  put(px, W, make(46, 20, (m) => { m.rect(0, 12, 46, 3, 'o'); m.rect(4, 2, 8, 10, 'r'); m.rect(16, 4, 7, 8, 'n'); m.rect(27, 5, 6, 7, 'o'); m.rect(37, 3, 6, 9, 'w'); }), 106, 56);
-  put(px, W, make(24, 34, (m) => { for (let k = 0; k < 4; k++) { m.line(4 + k * 5, 0, 4 + k * 5, 8, 'l', 1); m.rect(3 + k * 5, 8, 3, 16 + (k % 2) * 6, 'v'); } }), 134, 12);
+  put(px, W, make(46, 20, (m) => { m.rect(0, 12, 46, 3, 'o'); m.rect(4, 2, 8, 10, 'r'); m.rect(16, 4, 7, 8, 'n'); m.rect(27, 5, 6, 7, 'o'); m.rect(37, 3, 6, 9, 'w'); }), 186, 56);
+  put(px, W, make(24, 34, (m) => { for (let k = 0; k < 4; k++) { m.line(4 + k * 5, 0, 4 + k * 5, 8, 'l', 1); m.rect(3 + k * 5, 8, 3, 16 + (k % 2) * 6, 'v'); } }), 304, 12);
   // Window frame and sill; the glass is left open for the sky.
-  put(px, W, make(74, 66, (m) => { m.rect(0, 0, 74, 62, 'o'); m.rect(4, 4, 66, 54, ';'); m.rect(0, 58, 74, 8, 'o'); }), 156, 26);
+  put(px, W, make(74, 66, (m) => { m.rect(0, 0, 74, 62, 'o'); m.rect(4, 4, 66, 54, ';'); m.rect(0, 58, 74, 8, 'o'); }), R.glass.x - 8, 26);
   for (let y = R.glass.y; y < R.glass.y + R.glass.h; y++) for (let x = R.glass.x; x < R.glass.x + R.glass.w; x++) px[y * W + x] = T;
-  // Table, bowl, jug, loaf; stool.
-  put(px, W, make(72, 44, (m) => { m.rect(0, 10, 72, 6, 'o'); m.rect(3, 16, 66, 4, 'l'); m.rect(4, 20, 5, 24, 'o'); m.rect(63, 20, 5, 24, 'o'); m.rect(10, 4, 12, 6, 'o'); m.rect(26, 0, 7, 10, 'r'); m.ellipse(48, 6, 8, 4, 'y'); }), 136, 102);
-  put(px, W, make(24, 22, (m) => { m.rect(0, 0, 24, 4, 'o'); m.rect(3, 4, 3, 18, 'o'); m.rect(18, 4, 3, 18, 'o'); }), 212, 124);
+  // Table, bowl, jug, loaf.
+  put(px, W, make(72, 44, (m) => { m.rect(0, 10, 72, 6, 'o'); m.rect(3, 16, 66, 4, 'l'); m.rect(4, 20, 5, 24, 'o'); m.rect(63, 20, 5, 24, 'o'); m.rect(10, 4, 12, 6, 'o'); m.rect(26, 0, 7, 10, 'r'); m.ellipse(48, 6, 8, 4, 'y'); }), 238, 102);
+  // Chairs: a high-backed one by the fire (facing it), one at each end of the table, a stool.
+  const chair = (flip) => {
+    const m = make(18, 30, (c) => { c.rect(0, 0, 3, 30, 'o'); c.rect(0, 4, 3, 1, 'l'); c.rect(0, 10, 3, 1, 'l'); c.rect(0, 16, 17, 3, 'o'); c.rect(14, 19, 3, 11, 'o'); c.rect(1, 19, 3, 11, 'o'); c.rect(3, 25, 12, 1, 'l'); });
+    return flip ? m.flipX() : m;
+  };
+  const stool = () => make(14, 14, (c) => { c.rect(0, 0, 14, 3, 'o'); c.rect(1, 3, 2, 11, 'o'); c.rect(11, 3, 2, 11, 'o'); c.rect(3, 9, 8, 1, 'l'); });
+  put(px, W, chair(true), 160, 116); // by the fire, facing it
+  put(px, W, chair(false), 212, 116); // table, left end
+  put(px, W, stool(), 316, 132); // table, right end
+  put(px, W, stool(), 190, 132);
   // Bedside table and candle; bed; door.
-  put(px, W, make(22, 50, (m) => { m.rect(0, 14, 22, 4, 'o'); m.rect(2, 18, 18, 32, 'l'); m.rect(4, 22, 14, 10, 'o'); m.rect(4, 36, 14, 10, 'o'); m.rect(9, 4, 4, 10, 'w'); m.rect(7, 13, 8, 2, 'i'); }), 250, 86);
+  put(px, W, make(22, 50, (m) => { m.rect(0, 14, 22, 4, 'o'); m.rect(2, 18, 18, 32, 'l'); m.rect(4, 22, 14, 10, 'o'); m.rect(4, 36, 14, 10, 'o'); m.rect(9, 4, 4, 10, 'w'); m.rect(7, 13, 8, 2, 'i'); }), 340, 86);
   put(px, W, make(80, 62, (m) => {
     m.rect(0, 0, 8, 62, 'o');
     m.rect(72, 16, 8, 46, 'o');
@@ -241,9 +257,30 @@ function cottageRoom() {
     m.rect(8, 34, 64, 6, 'o');
     m.rect(10, 40, 4, 22, 'o');
     m.rect(66, 40, 4, 22, 'o');
-  }), 272, 80);
-  put(px, W, make(34, R.floor - 30, (m) => { m.rect(0, 0, 34, 6, 'o'); for (let x = 4; x < 32; x++) m.rect(x, 6, 1, R.floor - 36, (x - 4) % 9 === 0 ? 'l' : 'o'); m.rect(4, 22, 26, 3, 'i'); m.rect(4, R.floor - 50, 26, 3, 'i'); m.rect(8, 56, 3, 6, 'i'); }), 348, 30);
+  }), 362, 80);
+  put(px, W, make(34, R.floor - 30, (m) => { m.rect(0, 0, 34, 6, 'o'); for (let x = 4; x < 32; x++) m.rect(x, 6, 1, R.floor - 36, (x - 4) % 9 === 0 ? 'l' : 'o'); m.rect(4, 22, 26, 3, 'i'); m.rect(4, R.floor - 50, 26, 3, 'i'); m.rect(8, 56, 3, 6, 'i'); }), 444, 30);
   return { name: 'room.cottage', w: W, h: H, px };
+}
+
+/** The woodstock by the hearth, filling as logs come home: 0 (a few chips) .. 4 (stacked to the shoulder). */
+function woodstock(level) {
+  const W = 56, H = 36;
+  const m = make(W, H, (c) => {
+    c.rect(0, H - 3, W, 3, 'o'); // the plank it stands on
+    c.rect(2, H - 4, 3, 1, 't');
+    c.rect(40, H - 4, 2, 1, 't');
+    const rows = [0, 1, 2, 3, 4][level];
+    for (let r = 0; r < rows; r++) {
+      const n = 6 - r;
+      for (let k = 0; k < n; k++) {
+        const cx = 5 + r * 4 + k * 9, cy = H - 8 - r * 8;
+        c.ellipse(cx, cy, 4, 4, 'o');
+        c.ellipse(cx, cy, 2, 2, 't');
+        c.set(cx, cy, 'y');
+      }
+    }
+  });
+  return { name: `room.logs.${level}`, w: W, h: H, px: shade(m.str(), W, H) };
 }
 
 function churchRoom() {
@@ -286,5 +323,6 @@ export function scenery() {
   for (const [name, draw] of Object.entries(ICONS)) frames.push(sh(`icon.${name}`, make(16, 16, draw)));
   frames.push(parchmentWin(), darkWin(), bubble(), bubbleTail(), cursor(), slot());
   frames.push(cottageRoom(), churchRoom());
+  for (let k = 0; k < 5; k++) frames.push(woodstock(k));
   return { frames, anims: {}, meta: { rooms: { cottage: COTTAGE_ROOM, church: CHURCH_ROOM }, icons: Object.keys(ICONS) } };
 }

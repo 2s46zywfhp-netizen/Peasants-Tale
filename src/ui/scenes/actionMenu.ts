@@ -173,7 +173,8 @@ export class ActionMenuScene implements Scene {
     this.builtFor = s.block;
     const k = clock(s, this.game.now());
     const out: Item[] = [];
-    for (const id of ACTION_IDS) {
+    // A spot's own list keeps its own order (the hearth: feed the fire first).
+    for (const id of this.only ?? ACTION_IDS) {
       const def = ACTIONS[id];
       if (id === 'eat' ? !MEAL_PLACES.has(this.place) : placeFor(s, id, def.location) !== this.place) continue;
       if (this.only && !this.only.includes(id)) continue;
@@ -229,7 +230,7 @@ export class ActionMenuScene implements Scene {
     } else if (e.action === 'queue' && !e.repeat) {
       // Do this when what is in hand is done (even if it cannot be done this very moment).
       const it = items[this.cursor];
-      if (!it || it.action === 'eat' || WITH_SOMEONE.has(it.action)) return this.game.sfx('error');
+      if (!it || ACTIONS[it.action].duration === 0 || WITH_SOMEONE.has(it.action)) return this.game.sfx('error');
       const q = this.game.save.data.queue;
       if (q.length >= QUEUE_MAX) {
         this.game.sfx('error');
@@ -256,7 +257,7 @@ export class ActionMenuScene implements Scene {
       this.report(r.ok ? `${it.label.replace(/ \d+$/, '')}` : r.message);
       this.game.scenes.pop(false);
       // A task (not a meal) plays out for a moment, then its time passes.
-      if (r.ok && it.action !== 'eat') this.game.scenes.push(new WorkingScene(this.game, it.action), false);
+      if (r.ok && ACTIONS[it.action].duration > 0) this.game.scenes.push(new WorkingScene(this.game, it.action), false);
     }
     if (this.game.scenes.top === this) this.rebuild();
   }

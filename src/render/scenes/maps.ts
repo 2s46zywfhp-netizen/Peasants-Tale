@@ -76,6 +76,8 @@ export interface Npc {
   wander?: number;
   when?: 'day' | 'night' | 'sundayMorning' | 'weekWork' | 'feast';
   talk?: string;
+  /** Indoors: seated (in a pew), facing the altar. */
+  sit?: boolean;
 }
 
 export interface SceneDef {
@@ -115,7 +117,7 @@ const fence = (x: number, y: number, n: number): Obj[] => Array.from({ length: n
 export const SCENES: Record<SceneId, SceneDef> = {
   cottage: {
     id: 'cottage', name: 'YOUR COTTAGE', terrain: [], objs: [], exits: {}, ambient: 'home', room: 'cottage',
-    out: { to: 'green', x: 25, y: 62 }, spawn: [190, 0],
+    out: { to: 'green', x: 25, y: 62 }, spawn: [270, 0],
     npcs: [],
   },
   green: {
@@ -239,9 +241,9 @@ export const SCENES: Record<SceneId, SceneDef> = {
     id: 'church', name: 'THE CHURCH', terrain: [], objs: [], exits: {}, ambient: 'church', room: 'church',
     out: { to: 'churchyard', x: 101, y: 66 }, spawn: [60, 0],
     npcs: [
-      { who: 'priest', villager: 'priest', x: 300, y: 0, wander: 12, when: 'day', talk: 'villager' },
-      { who: 'lord', x: 120, y: 0, when: 'sundayMorning', talk: 'lord' },
-      { who: 'goodwife', villager: 'isabel', x: 200, y: 0, when: 'sundayMorning', talk: 'villager' },
+      { who: 'priest', villager: 'priest', x: 296, y: 0, wander: 10, when: 'day', talk: 'villager' },
+      { who: 'lord', x: 66, y: 0, when: 'sundayMorning', talk: 'lord', sit: true },
+      { who: 'goodwife', villager: 'isabel', x: 146, y: 0, when: 'sundayMorning', talk: 'villager', sit: true },
     ],
   },
   manor: {

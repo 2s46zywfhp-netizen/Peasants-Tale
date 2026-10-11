@@ -19,16 +19,16 @@ on 12 seeds (101, 108, 115, 122, 129, 136, 143, 150, 157, 164, 171, 178). Figure
 
 | playstyle | line alive | generations | living members | deaths | births | thin or worse | gaunt or worse | grain bu | pence | debt d | evicted | fines & marks | morale | lord | village |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| diligent | 100% | 1 | 3.8 | 0 (0 of hunger) | 3 | 8% | 0% | 34.8 | 52.2 | 0 | 0% | 0 | 57.9 | 51.7 | 50.5 |
-| diligent, hastening every task | 100% | 1 | 4 | 0 (0 of hunger) | 2 | 50% | 0% | 32.1 | 56.5 | 0 | 0% | 0 | 62.3 | 51.7 | 50.5 |
-| neglectful | 100% | 1 | 4 | 0 (0 of hunger) | 10 | 58% | 0% | 39 | 26 | 0 | 0% | 1.3 | 60 | 42.3 | 40.9 |
-| absent | 100% | 1 | 3.8 | 1 (0 of hunger) | 8 | 50% | 0% | 66.8 | 41.4 | 0 | 0% | 1.1 | 47.2 | 40.6 | 45.9 |
-| away two years (cap) | 100% | 1 | 3 | 0 (0 of hunger) | 0 | 0% | 0% | 126.2 | 38 | 0 | 0% | 0 | 46.1 | 49 | 50.5 |
+| diligent | 100% | 1 | 3.8 | 0 (0 of hunger) | 3 | 0% | 0% | 36.2 | 56.6 | 0 | 0% | 0 | 58.5 | 51.7 | 50.3 |
+| diligent, hastening every task | 100% | 1 | 3.8 | 0 (0 of hunger) | 1 | 0% | 0% | 37.8 | 58.5 | 0 | 0% | 0 | 59.8 | 51.7 | 49.7 |
+| neglectful | 100% | 1 | 3.8 | 0 (0 of hunger) | 8 | 92% | 0% | 57.9 | 44.9 | 0 | 8% | 1.1 | 62.7 | 42.7 | 41.5 |
+| absent | 100% | 1 | 3.7 | 0 (0 of hunger) | 6 | 83% | 0% | 76.7 | 41.4 | 0 | 0% | 0.7 | 49.7 | 40.8 | 45.5 |
+| away two years (cap) | 100% | 1 | 3 | 0 (0 of hunger) | 0 | 0% | 0% | 118 | 37 | 0 | 0% | 0 | 47.7 | 49.5 | 50.1 |
 
 Ranks at the end:
 - **diligent**: VILLEIN ×12
 - **diligent, hastening every task**: VILLEIN ×4
-- **neglectful**: VILLEIN ×12
+- **neglectful**: VILLEIN ×11, LABOURER ×1
 - **absent**: VILLEIN ×12
 - **away two years (cap)**: VILLEIN ×1
 
@@ -43,9 +43,8 @@ Ranks at the end:
   village think less of it, and work done by habit alone is sloppier (UNWATCHED in balance.ts). The
   absent end with more grain only because they eat less and sell less. The neglectful player's morale
   is lifted by the alehouse visit just before the count.
-- **Hastening** keeps the careful player's land, purse and standing, but a hastened day has fewer
-  meals in it (the household eats when the player comes back), so half the lines grow thin. The
-  allowance keeps the life from outrunning the clock (asserted by the test).
+- **Hastening** keeps the careful player's land, purse, body and standing; the allowance keeps the life
+  from outrunning the clock (asserted by the test).
 - **A long absence** simulates only the 30-day catch-up cap and marks the household neglected, with a
   one-off morale and village-standing penalty at the start of the catch-up (told in the Parchment Log).
   Over the 210 simulated days those drift back. It does not kill the household.

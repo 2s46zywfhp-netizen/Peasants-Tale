@@ -88,7 +88,7 @@ const missing = await page.evaluate(async () => {
   return out;
 });
 check('every usable object shows its prompt', missing.length === 0, missing.join(' '));
-for (const [id, xs] of [['cottage', [40, 180, 300]], ['church', [120, 320]]]) {
+for (const [id, xs] of [['cottage', [40, 150, 260, 390]], ['church', [120, 320]]]) {
   for (const x of xs) {
     await qa(([id, x]) => window.qa.world(id, x, 0), [id, x]);
     await page.waitForTimeout(600);
@@ -108,7 +108,7 @@ check('R in the menu queues the task', (await qa(() => window.qa.game.save.data.
 await qa(() => window.qa.game.setQueue([]));
 await qa(() => window.qa.patch((s) => { s.plan = null; }));
 // Do the first task that is possible now.
-await qa(() => window.qa.world('cottage', 300, 0));
+await qa(() => window.qa.world('cottage', 390, 0));
 await page.waitForTimeout(600);
 await press('KeyX', 500);
 await press('KeyX', 400);

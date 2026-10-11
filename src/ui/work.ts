@@ -26,7 +26,7 @@ export const TOOL_ACTIONS: Readonly<Record<BeltTool, readonly ActionId[]>> = {
   bucket: ['wash', 'brew'],
 };
 
-export type WorkAnim = 'chop' | 'split' | 'hoe' | 'reap' | 'flail' | 'sow' | 'carry' | 'stir' | 'milk' | 'pray' | 'eat' | 'sleep';
+export type WorkAnim = 'chop' | 'split' | 'hoe' | 'reap' | 'flail' | 'sow' | 'carry' | 'stir' | 'milk' | 'pray' | 'eat' | 'sleep' | 'sit' | 'stoke';
 
 /** The work animation for an action, from the field's state and the tool on the belt. */
 export function workAnim(action: ActionId, belt: BeltTool, field: Field | null, alt = false): WorkAnim | null {
@@ -60,6 +60,10 @@ export function workAnim(action: ActionId, belt: BeltTool, field: Field | null, 
       return 'sleep';
     case 'eat':
       return 'eat';
+    case 'rest':
+      return 'sit';
+    case 'stokeFire':
+      return 'stoke';
     default:
       return null;
   }

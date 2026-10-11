@@ -135,6 +135,42 @@ export class Mask {
   }
 }
 
+/**
+ * The same drawing kit at `s` times the resolution, in the logical coordinates of the small sprite: rects and
+ * single pixels become s x s blocks, but lines and ellipses are drawn at full resolution (smooth limbs and
+ * heads). `raw` is the physical mask, with `raw.scale` = s.
+ */
+export class ScaledMask {
+  constructor(w, h, s) {
+    this.w = w;
+    this.h = h;
+    this.s = s;
+    this.raw = new Mask(w * s, h * s);
+    this.raw.scale = s;
+  }
+  set(x, y, c) {
+    const s = this.s;
+    this.raw.rect(Math.round(x) * s, Math.round(y) * s, s, s, c);
+  }
+  get(x, y) {
+    return this.raw.get(Math.round(x) * this.s, Math.round(y) * this.s);
+  }
+  rect(x, y, w, h, c) {
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) this.set(x + i, y + j, c);
+  }
+  line(x0, y0, x1, y1, c, t = 1) {
+    const s = this.s, o = (s - 1) / 2;
+    this.raw.line(x0 * s + o, y0 * s + o, x1 * s + o, y1 * s + o, c, t * s);
+  }
+  ellipse(cx, cy, rx, ry, c) {
+    const s = this.s, o = (s - 1) / 2;
+    this.raw.ellipse(cx * s + o, cy * s + o, (rx + 0.5) * s - 0.5, (ry + 0.5) * s - 0.5, c);
+  }
+  stamp(x, y, rows, map = {}) {
+    rows.forEach((row, j) => [...row].forEach((ch, i) => ch !== '.' && this.set(x + i, y + j, map[ch] ?? ch)));
+  }
+}
+
 /** Layer = pixels of `variant` that differ from `base` (transparent elsewhere). */
 export function diff(base, variant) {
   const out = new Uint8Array(base.length).fill(T);

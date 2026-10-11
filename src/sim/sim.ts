@@ -105,7 +105,7 @@ export function clock(s: SimState, nowMs: number): Clock {
  * blazing (wood on a cold day, which is when the household burns it).
  */
 export type Hearth = 'out' | 'banked' | 'blazing';
-export function hearthOf(s: SimState, _tempC?: number): Hearth {
+export function hearthOf(s: SimState): Hearth {
   const fuel = s.hearth ?? 0;
   return fuel >= HEARTH.blaze ? 'blazing' : fuel > 0 ? 'banked' : 'out';
 }

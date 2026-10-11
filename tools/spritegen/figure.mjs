@@ -1,5 +1,5 @@
 // Humanoid figures from poses: one painter makes every character and every frame.
-import { Mask, sleeveOf } from './shade.mjs';
+import { Mask, ScaledMask, sleeveOf } from './shade.mjs';
 
 const rad = (d) => (d * Math.PI) / 180;
 
@@ -16,7 +16,8 @@ const SIZES = {
  */
 export function figure(look, pose, girth = 1, extra = {}) {
   const S = SIZES[look.size ?? 'adult'];
-  const m = new Mask(16, S.h);
+  const scale = extra.scale ?? 1;
+  const m = scale > 1 ? new ScaledMask(16, S.h, scale) : new Mask(16, S.h);
   const tunic = look.tunic ?? 'b';
   const hose = look.hose ?? 'n';
   const skin = extra.skin ?? 's';
@@ -24,9 +25,10 @@ export function figure(look, pose, girth = 1, extra = {}) {
   const bob = pose.bob ?? 0;
   const breathe = pose.breathe ?? 0;
   const stoop = look.stoop ?? 0;
-  const hipY = S.hip + crouch + (pose.kneel ? 3 : 0);
-  const shY = S.shoulder + bob + crouch + (pose.kneel ? 3 : 0) - breathe + stoop;
-  const headTop = S.head + bob + crouch + (pose.kneel ? 3 : 0) - breathe + stoop * 2;
+  const hipY = S.hip + crouch + (pose.kneel ? 3 : 0) + (pose.sit ? 4 : 0);
+  const sitDrop = pose.sit ? 4 : 0;
+  const shY = S.shoulder + bob + crouch + (pose.kneel ? 3 : 0) + sitDrop - breathe + stoop;
+  const headTop = S.head + bob + crouch + (pose.kneel ? 3 : 0) + sitDrop - breathe + stoop * 2;
   const lean = (pose.lean ?? 0) + stoop;
   const side = pose.dir === 'side';
   let hand = [8, hipY];
@@ -35,6 +37,16 @@ export function figure(look, pose, girth = 1, extra = {}) {
   const legs = () => {
     if (side) {
       const hipX = 7.5;
+      if (pose.sit) {
+        // Seated: thighs forward along the seat, shins down to the floor.
+        for (const k of [0, 1]) {
+          const kx = hipX + 5 - k;
+          m.line(hipX, hipY, kx, hipY, hose, 2);
+          m.line(kx, hipY, kx, S.h - 2, hose, 2);
+          m.rect(kx - 1, S.h - 2, 4, 2, 'l');
+        }
+        return;
+      }
       for (const [k, a] of (pose.legs ?? [0, 0]).entries()) {
         if (pose.kneel) {
           if (k === 0) {
@@ -74,6 +86,14 @@ export function figure(look, pose, girth = 1, extra = {}) {
     const w = side ? 5 + girth : 6 + girth * 2;
     m.rect(x0, shY, w, hipY - shY, tunic);
     if (girth === 2) m.rect(side ? x0 + w : x0 + 1, hipY - 6, side ? 1 : w - 2, 4, tunic); // belly
+    // Seated (side view): the skirt or robe lies over the lap, and a robe falls from the knees.
+    if (pose.sit && side) {
+      const skirt = look.skirt ?? tunic;
+      m.rect(x0, hipY - 1, 8, 3, skirt);
+      if (look.robe) m.rect(x0 + 5, hipY, 3, S.h - 2 - hipY, skirt);
+      m.rect(x0, hipY - 2, w, 1, look.belt ?? 'l');
+      return;
+    }
     // Tunic skirt, or a robe to the feet.
     const hem = look.robe ? S.h - 2 : hipY + (look.size === 'child' ? 2 : 3);
     for (let y = hipY - 1; y < hem; y++) {
@@ -199,7 +219,7 @@ export function figure(look, pose, girth = 1, extra = {}) {
   head();
   if (side) arm(1);
   if (look.prop && !extra.noProp) prop(m, look.prop, side, shY, S);
-  return { body: m, hand, handAngle };
+  return { body: m.raw ?? m, hand, handAngle };
 }
 
 /** NPC hand props, drawn with the body. */
@@ -218,9 +238,9 @@ function prop(m, p, side, shY, S) {
 /* ── tools held by the peasant: their own layer ── */
 
 /** Draw `tool` into a fresh mask of the frame's size, held at `hand` pointing `angle` (degrees, 0 = down). */
-export function tool(name, hand, angle, w = 16, h = 32, frame = 0) {
-  const m = new Mask(w, h);
-  if (!name) return m;
+export function tool(name, hand, angle, w = 16, h = 32, frame = 0, scale = 1) {
+  const m = scale > 1 ? new ScaledMask(w, h, scale) : new Mask(w, h);
+  if (!name) return m.raw ?? m;
   const [hx, hy] = hand;
   const d = [Math.sin(rad(angle)), Math.cos(rad(angle))];
   const along = (k) => [hx + d[0] * k, hy + d[1] * k];
@@ -291,15 +311,27 @@ export function tool(name, hand, angle, w = 16, h = 32, frame = 0) {
       m.rect(6, hy - 1, 4, 2, 'o');
       m.rect(6, hy - 2, 4, 1, 'w');
       break;
+    case 'spoon':
+      // A bowl held in the far hand at the lap; the spoon in the near hand.
+      m.rect(10, 21, 4, 2, 'o');
+      m.rect(10, 20, 4, 1, 'w');
+      m.line(hx, hy, hx + 1, hy + 1, 'o', 1);
+      break;
+    case 'logs':
+      // An armful of split logs held out before the body (feeding the fire).
+      for (let r = 0; r < 2; r++) m.rect(hx - 1, hy - 3 + r * 2, 6, 2, r % 2 ? 'o' : 't');
+      break;
     default:
       throw new Error(`unknown tool ${name}`);
   }
-  return m;
+  return m.raw ?? m;
 }
 
 /** Paste a mask into a larger frame at (ox, oy). */
 export function pad(src, w, h, ox, oy) {
-  const m = new Mask(w, h);
-  for (let y = 0; y < src.h; y++) for (let x = 0; x < src.w; x++) if (src.d[y * src.w + x] !== '.') m.set(x + ox, y + oy, src.d[y * src.w + x]);
+  const s = src.scale ?? 1;
+  const m = new Mask(w * s, h * s);
+  if (s > 1) m.scale = s;
+  for (let y = 0; y < src.h; y++) for (let x = 0; x < src.w; x++) if (src.d[y * src.w + x] !== '.') m.set(x + ox * s, y + oy * s, src.d[y * src.w + x]);
   return m;
 }

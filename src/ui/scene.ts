@@ -5,6 +5,8 @@ import type { ActionEvent, Input } from '../input/input';
 export interface Scene {
   /** Opaque scenes hide everything beneath them; overlays (dialogs) draw on top of the scene below. */
   readonly opaque: boolean;
+  /** Keeps updating (without input) while overlays are open over it: the world, so work plays out under the menus. */
+  readonly live?: boolean;
   enter?(): void;
   exit?(): void;
   onAction?(e: ActionEvent): void;
@@ -77,6 +79,11 @@ export class SceneManager {
         this.pending = null;
       }
       if (this.t >= FADE_MS) this.t = -1;
+    }
+    const n = this.stack.length;
+    for (let i = 0; i < n - 1; i++) {
+      const sc = this.stack[i]!;
+      if (sc.live) sc.update?.(dt, now);
     }
     this.top?.update?.(dt, now);
   }

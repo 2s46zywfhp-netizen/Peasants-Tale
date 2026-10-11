@@ -67,6 +67,9 @@ export interface RoomMeta {
   door: { x: number; w: number };
   spots: { x0: number; x1: number; label: string }[];
   bed?: { x: number; y: number };
+  woodstock?: { x: number; y: number };
+  seats?: { x: number; y: number; flip: boolean }[];
+  stations?: { hearth: number; stoke: number; table: number; bed: number };
 }
 export const roomMeta = (room: 'cottage' | 'church'): RoomMeta => meta<Record<string, RoomMeta>>('rooms')[room]!;
 
@@ -510,6 +513,7 @@ function drawOutdoor(s: SimState, view: WorldView, d: Day, now: number): void {
 /* ───────────── rooms ───────────── */
 
 let roomIds: Record<string, number> | null = null;
+let logIds: Int32Array | null = null;
 /** Daylight indoors per block: dim, and dark at night but for the fire and the candle. */
 const COTTAGE_AMBIENT = [7, 10, 11, 10, 7, 4] as const;
 const CHURCH_AMBIENT = [8, 11, 12, 11, 8, 5] as const;
@@ -571,10 +575,17 @@ function drawRoom(s: SimState, view: WorldView, d: Day, now: number): void {
   }
   if (m.windows && !night) for (let i = 0; i < m.windows.length; i++) addLight(m.windows[i]!.x - cam + 16, ROOM_Y + m.windows[i]!.y + 50, 54, 13, false, 0.8);
   blit(roomIds[sc.room!]!, -cam, ROOM_Y);
+  // The woodstock fills as logs come home.
+  if (m.woodstock) {
+    const n = s.wealth.firewood;
+    const level = n < 1 ? 0 : n < 6 ? 1 : n < 16 ? 2 : n < 31 ? 3 : 4;
+    logIds ??= Int32Array.from({ length: 5 }, (_, k) => spriteId(`room.logs.${k}`));
+    blit(logIds[level]!, m.woodstock.x - cam, ROOM_Y + m.woodstock.y);
+  }
 
   // The hearth: blazing, banked or out, as the sim says; its light fills the room.
   if (m.fire) {
-    const h = hearthOf(s, d.weather.tempC);
+    const h = hearthOf(s);
     const fx = m.fire.x - cam, fy = ROOM_Y + m.fire.y + 4;
     const a = h === 'blazing' ? anim('fire.blazing') : h === 'banked' ? anim('fire.banked') : null;
     blit(a ? frameAt(a, now) : spriteId('fire.out'), fx - 16, fy - 28);

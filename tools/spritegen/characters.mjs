@@ -3,7 +3,7 @@ import { figure, pad, tool } from './figure.mjs';
 import { diff, Mask, shade } from './shade.mjs';
 import { T } from './palette.mjs';
 
-export const PEASANT_LOOK = { tunic: 'b', hose: 'n', hair: 'h', head: 'hair' };
+export const PEASANT_LOOK = { tunic: 'r', hose: 'n', hair: 'h', head: 'hair' };
 
 /** People of Ashby (and the town): idle and walk, facing down and to the side. */
 export const PEOPLE = {
@@ -53,12 +53,12 @@ function shadeMask(m) {
 }
 
 /** The body-state variants of a figure, as masks to diff against the thin base. */
-function variants(pose, wrap) {
-  const base = wrap(figure(PEASANT_LOOK, pose, 0).body);
-  const g1 = wrap(figure(PEASANT_LOOK, pose, 1).body);
-  const g2 = wrap(figure(PEASANT_LOOK, pose, 2).body);
+function variants(pose, wrap, scale = 1) {
+  const base = wrap(figure(PEASANT_LOOK, pose, 0, { scale }).body);
+  const g1 = wrap(figure(PEASANT_LOOK, pose, 1, { scale }).body);
+  const g2 = wrap(figure(PEASANT_LOOK, pose, 2, { scale }).body);
   const face = (skin, marks) => {
-    const f = wrap(figure(PEASANT_LOOK, pose, 0, { skin }).body);
+    const f = wrap(figure(PEASANT_LOOK, pose, 0, { skin, scale }).body);
     if (marks) marks(f, pose);
     return f;
   };
@@ -95,9 +95,9 @@ function variants(pose, wrap) {
 }
 
 /** All layers of one peasant frame. */
-function peasantFrame(name, pose, toolName, toolFrame, work) {
+function peasantFrame(name, pose, toolName, toolFrame, work, scale = 1) {
   const wrap = work ? (m) => pad(m, 32, 40, 8, 8) : (m) => m;
-  const v = variants(pose, wrap);
+  const v = variants(pose, wrap, scale);
   const S = {};
   for (const k of Object.keys(v)) S[k] = shadeMask(v[k]);
   const out = [frameOf(name, v.base.w, v.base.h, S.base)];
@@ -105,20 +105,102 @@ function peasantFrame(name, pose, toolName, toolFrame, work) {
   out.push(frameOf(`${name}@girth2`, v.base.w, v.base.h, diff(S.g1, S.g2)));
   for (const k of ['gaunt', 'skeletal', 'sick', 'cold']) out.push(frameOf(`${name}@${k}`, v.base.w, v.base.h, diff(S.base, S[k])));
   if (toolName) {
-    const f = figure(PEASANT_LOOK, pose, 1);
+    const f = figure(PEASANT_LOOK, pose, 1, { scale });
     const hand = work ? [f.hand[0] + 8, f.hand[1] + 8] : f.hand;
-    const t = tool(toolName, hand, f.handAngle, v.base.w, v.base.h, toolFrame ?? 0);
+    const t = tool(toolName, hand, f.handAngle, v.base.w / scale, v.base.h / scale, toolFrame ?? 0, scale);
     out.push(frameOf(`${name}@tool`, v.base.w, v.base.h, shadeMask(t)));
   }
   return out;
 }
 
 /** A lying figure (sleep): the standing idle pose turned on its side into 32x16, eyes shut. */
-function lying(look, breath) {
-  const m = figure(look, { dir: 'down', eyes: 'closed', breathe: breath }, 1).body;
-  const out = new Mask(32, 16);
-  for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) if (m.get(x, y) !== '.') out.set(y, 15 - x, m.get(x, y));
+function lying(look, breath, scale = 1) {
+  const m = figure(look, { dir: 'down', eyes: 'closed', breathe: breath }, 1, { scale }).body;
+  const out = new Mask(m.h, m.w);
+  for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) if (m.get(x, y) !== '.') out.set(y, m.w - 1 - x, m.get(x, y));
   return out;
+}
+
+/** Room scale: the cottage and the church are drawn at twice the size of the outdoors. */
+const ROOM = 2;
+/** Room work, side view: [pose, tool, toolFrame]. Logical 32x40 frames, padded; drawn at ROOM scale. */
+const ROOM_WORK = {
+  stir: WORK.stir,
+  carry: WORK.carry,
+  stoke: [[{ arms: [60, 70], crouch: 1 }, 'logs'], [{ arms: [85, 95], crouch: 2 }, 'logs'], [{ arms: [110, 115], crouch: 3 }, 'logs']],
+  split: WORK.split,
+};
+/** People who are seen indoors, at room scale. */
+const ROOM_PEOPLE = ['wife', 'child', 'elder', 'goodwife', 'shepherd', 'maid', 'priest', 'lord'];
+
+function roomSets(frames, anim) {
+  const add = (name, list, ms) => anim(name, list, ms);
+  // The peasant: walk, run, idle (with body-state layers).
+  for (const dir of ['side', 'down', 'up']) {
+    const walk = [0, 1, 2, 3].map((k) => {
+      const n = `peasant.room.walk.${dir}.${k}`;
+      frames.push(...peasantFrame(n, dir === 'side' ? walkSide(k) : walkFront(dir, k), null, 0, false, ROOM));
+      return n;
+    });
+    add(`peasant.room.walk.${dir}`, walk, 140);
+    const idle = [0, 1].map((k) => {
+      const n = `peasant.room.idle.${dir}.${k}`;
+      frames.push(...peasantFrame(n, { dir, breathe: k }, null, 0, false, ROOM));
+      return n;
+    });
+    add(`peasant.room.idle.${dir}`, idle, 700);
+  }
+  const run = [0, 1, 2, 3].map((k) => {
+    const n = `peasant.room.run.side.${k}`;
+    frames.push(...peasantFrame(n, walkSide(k, true), null, 0, false, ROOM));
+    return n;
+  });
+  add('peasant.room.run.side', run, 90);
+  for (const [name, steps] of Object.entries(ROOM_WORK)) {
+    const list = steps.map(([pose, t, tf], k) => {
+      const n = `peasant.room.${name}.${k}`;
+      frames.push(...peasantFrame(n, { dir: 'side', ...pose }, t, tf ?? k, true, ROOM));
+      return n;
+    });
+    add(`peasant.room.${name}`, list, name === 'carry' ? 160 : name === 'stoke' ? 320 : 260);
+  }
+  // Kneeling in prayer at the bedside, hands raised before the face; seated (rest); eating at the table.
+  const still = (name, poses, ms, toolName) =>
+    add(`peasant.room.${name}`, poses.map((pose, k) => {
+      const n = `peasant.room.${name}.${k}`;
+      frames.push(...peasantFrame(n, { dir: 'side', ...pose }, toolName ?? null, k, false, ROOM));
+      return n;
+    }), ms);
+  still('pray', [{ kneel: true, arms: [118, 128] }, { kneel: true, arms: [124, 132], breathe: 1 }], 1100);
+  still('sit', [{ sit: true, arms: [20, 35] }, { sit: true, arms: [20, 35], breathe: 1 }], 900);
+  still('eat', [{ sit: true, arms: [40, 60] }, { sit: true, arms: [40, 150] }], 520, 'spoon');
+  add('peasant.room.sleep', [0, 1].map((k) => {
+    const n = `peasant.room.sleep.${k}`;
+    const m = lying(PEASANT_LOOK, k, ROOM);
+    frames.push(frameOf(n, m.w, m.h, shadeMask(m)));
+    return n;
+  }), 1400);
+  // Household and churchgoers: idle (down, side), walk (side), seated.
+  for (const who of ROOM_PEOPLE) {
+    const look = PEOPLE[who];
+    const set = (name, poses, ms) =>
+      add(`${who}.room.${name}`, poses.map((pose, k) => {
+        const n = `${who}.room.${name}.${k}`;
+        const f = figure(look, pose, 1, { scale: ROOM, noProp: !!pose.sit }).body;
+        frames.push(frameOf(n, f.w, f.h, shadeMask(f)));
+        return n;
+      }), ms);
+    set('idle.down', [{ dir: 'down' }, { dir: 'down', breathe: 1 }], 750);
+    set('idle.side', [{ dir: 'side' }, { dir: 'side', breathe: 1 }], 750);
+    set('walk.side', [0, 1, 2, 3].map((k) => walkSide(k)), 150);
+    set('sit', [{ dir: 'side', sit: true, arms: [30, 45] }, { dir: 'side', sit: true, arms: [35, 50], breathe: 1 }], 900);
+  }
+  add('wife.room.sleep', [0, 1].map((k) => {
+    const n = `wife.room.sleep.${k}`;
+    const m = lying(PEOPLE.wife, k, ROOM);
+    frames.push(frameOf(n, m.w, m.h, shadeMask(m)));
+    return n;
+  }), 1500);
 }
 
 export function characters() {
@@ -200,6 +282,7 @@ export function characters() {
     return n;
   });
   anim('wife.sleep', wifeSleep, 1500);
+  roomSets(frames, anim);
   return { frames, anims };
 }
 

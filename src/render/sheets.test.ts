@@ -55,6 +55,17 @@ describe('generated sprite sheets (acceptance 4: the 32-colour palette)', () => 
     expect([w, h]).toEqual([16, 32]);
   });
 
+  it('indoors, people are drawn at room scale (twice the size), with the work of the house', () => {
+    const [, , , w, h] = atlas.frames['peasant.room.idle.side.0']!;
+    expect([w, h]).toEqual([32, 64]);
+    for (const a of ['walk.side', 'walk.down', 'walk.up', 'idle.side', 'run.side', 'stir', 'stoke', 'carry', 'pray', 'sit', 'eat', 'sleep']) expect(atlas.anims[`peasant.room.${a}`], a).toBeDefined();
+    expect(atlas.frames['peasant.room.stoke.0@tool']).toBeDefined();
+    expect(atlas.frames['peasant.room.sit.0@girth1']).toBeDefined();
+    for (const who of ['wife', 'child', 'elder', 'goodwife', 'shepherd', 'maid', 'priest', 'lord']) for (const a of ['idle.down', 'idle.side', 'walk.side', 'sit']) expect(atlas.anims[`${who}.room.${a}`], `${who} ${a}`).toBeDefined();
+    expect(atlas.anims['wife.room.sleep']).toBeDefined();
+    for (let k = 0; k < 5; k++) expect(atlas.frames[`room.logs.${k}`]).toBeDefined();
+  });
+
   it('every other character, the livestock and the black dog have idle and a four-frame walk', () => {
     for (const who of ['wife', 'child', 'elder', 'priest', 'reeve', 'steward', 'lord', 'smith', 'shepherd', 'goodwife', 'maid', 'beggar']) {
       expect(atlas.anims[`${who}.idle.down`], who).toBeDefined();
