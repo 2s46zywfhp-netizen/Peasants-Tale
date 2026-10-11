@@ -1,7 +1,6 @@
 import {
   ADULT_AGE, BEAST_VALUE, CHILD_WORK_AGE, HOUSEHOLD_EARNER, LODGING_PER_DAY, SLEEP_ROUGH_MORALE, BEG, BEGGAR_AFTER_DAYS, DEBT, DEED, EVICTION, FLIGHT, FREEDOM, HOLDING, LORD_HIT, POACH, PRICES, RANK_ACRES, RENT_FREE_PER_ACRE,
-  OUTLAW_TAKEN_DAILY, RENT_PER_ACRE, ROB, SURRENDER_FINE, TOWN_WAGE_PER_BLOCK, WAGE_PER_BLOCK, type ActionId, type Location,
-} from './balance';
+  OUTLAW_TAKEN_DAILY, RENT_PER_ACRE, ROB, SURRENDER_FINE, TOWN_WAGE_PER_BLOCK, WAGE_PER_BLOCK, type ActionId, type Location, POACHING_FINE } from './balance';
 import type { DayInfo } from './calendar';
 import { note } from './family';
 import { log } from './log';
@@ -181,9 +180,9 @@ function outlawed(s: SimState, why: string): void {
 function caught(s: SimState, why: string): 'free' | 'fined' | 'outlawed' | 'hanged' {
   if (s.station.outlaw) return 'hanged';
   if (!s.obligations.evicted) {
-    s.obligations.debt += 12;
+    s.obligations.debt += POACHING_FINE;
     deed(s, DEED.poacher, `${peasant(s).name} ${s.familyName} was taken ${why}.`);
-    log(s, 'court', `Taken ${why} by the lord's forester. 12d amercement.`);
+    log(s, 'court', `Taken ${why} by the lord's forester. ${POACHING_FINE}d amercement.`);
     return 'fined';
   }
   outlawed(s, why);

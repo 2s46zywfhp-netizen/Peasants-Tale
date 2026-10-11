@@ -1,7 +1,6 @@
 import {
   ADULT_AGE, CHILD_FRAILTY, CHILD_LABOUR_SHARE, CHILD_WORK_AGE, CONCEPTION, COURTSHIP, DAYS_PER_YEAR, LEAVE_HOME_DAILY, MARRY_MIN_AGE,
-  MERCHET_PENCE, OLD_AGE, OLD_FRAILTY_PER_YEAR, SMALL_CHILD_AGE,
-} from './balance';
+  MERCHET_PENCE, OLD_AGE, OLD_FRAILTY_PER_YEAR, SMALL_CHILD_AGE, MARRY_MAX_AGE } from './balance';
 import type { DayInfo } from './calendar';
 import { log } from './log';
 import { present, remember, villager } from './village';
@@ -51,7 +50,7 @@ export function courtShort(s: SimState, id: string | null): string | null {
   if (!v) return 'CHOOSE WHO';
   if (!present(v) || v.married || v.sex === p.sex) return 'NOT FREE TO WED';
   const a = ageOf(v.bornDay, day);
-  if (a < MARRY_MIN_AGE || a > 45) return 'NOT FREE TO WED';
+  if (a < MARRY_MIN_AGE || a > MARRY_MAX_AGE) return 'NOT FREE TO WED';
   return null;
 }
 

@@ -1,7 +1,6 @@
 import {
   ACCUSE, DAYS_PER_YEAR, DEED, FAVOUR, GOSSIP, MEMORY_MAX, OPINION_DECAY, OPINION_START, RUMOUR_HEARD_SHARE, TAG_DAYS, TIE_START,
-  VILLAGE_FROM_OPINION, WITCH,
-} from './balance';
+  VILLAGE_FROM_OPINION, WITCH, VILLAGER_OLD_AGE, OLD_AGE_DEATH_PER_YEAR } from './balance';
 import type { DayInfo } from './calendar';
 import { workStrips, fieldTask } from './farm';
 import { log } from './log';
@@ -287,7 +286,7 @@ export function dailyVillage(s: SimState, info: DayInfo): void {
     v.opinion -= v.opinion * OPINION_DECAY;
     // The very old go quietly.
     const age = ageOf(v.bornDay, day);
-    if (age > 60 && rand(s) < (age - 60) * 0.00008) {
+    if (age > VILLAGER_OLD_AGE && rand(s) < (age - VILLAGER_OLD_AGE) * OLD_AGE_DEATH_PER_YEAR) {
       v.alive = false;
       log(s, 'village', `${v.name} is dead, full of years. The bell tolls for an hour.`, [v.name]);
     }

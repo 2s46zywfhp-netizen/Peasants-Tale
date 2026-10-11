@@ -430,7 +430,16 @@ export const SURRENDER_FINE = 40;
 /** The black dog: chance per night block spent abroad (new moon triples it). */
 export const BLACK_DOG_CHANCE = 0.02;
 export const BLACK_DOG_MORALE = -8;
-export const FAE = { offeringBread: 2, saveFloor: 0.9, takeDaily: 0.02, morale: -10 } as const;
+export const FAE = { offeringBread: 2, offeringAle: 1, saveFloor: 0.9, takeDaily: 0.02, morale: -10 } as const;
+/** Taken poaching or robbing: the forester's amercement (pence). */
+export const POACHING_FINE = 12;
+/** A neighbour's gift of loaves (the 'bread' event). */
+export const GIFT_BREAD = 3;
+/** No one past this age is courted. */
+export const MARRY_MAX_AGE = 45;
+/** The very old: past VILLAGER_OLD_AGE, a villager dies on a given day with chance (age - VILLAGER_OLD_AGE) * OLD_AGE_DEATH_PER_YEAR. */
+export const VILLAGER_OLD_AGE = 60;
+export const OLD_AGE_DEATH_PER_YEAR = 0.00008;
 /** Nightmares and visitors at night: base chance plus hunger, sickness, low piety. */
 /** Hunger counts above 40, piety below 40. */
 export const NIGHT_TERROR = { base: 0.004, hunger: 0.001, ill: 0.03, piety: 0.001, morale: -6, visitorShare: 0.35 } as const;

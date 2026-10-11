@@ -24,7 +24,7 @@ describe('the Black Death, 1348', () => {
       if (s.members[0]!.body.illness) s.members[0]!.body.illness = null;
     }
     const texts = s.log.filter((e) => e.type === 'plague').map((e) => e.text);
-    expect(texts.some((t) => t.includes('Midsummer, 1348'))).toBe(true);
+    expect(texts.some((t) => t.includes('June, 1348'))).toBe(true);
     expect(texts.some((t) => /Rats|birds|Melcombe|Bristol|star/.test(t))).toBe(true);
     expect(texts.some((t) => t.includes('pestilence is in Ashby'))).toBe(true);
     expect(texts.some((t) => t.includes('Ordinance of Labourers'))).toBe(true);

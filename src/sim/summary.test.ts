@@ -37,3 +37,11 @@ describe('acceptance 5: the Parchment Log summarizes a debug fast-forward of 1 w
     expect(sum.lines).toEqual(['A day has passed.', '26 MAR 1345 to 26 MAR 1345.', 'Nothing was eaten.', 'Nothing else of note.']);
   });
 });
+
+describe('every deed is told', () => {
+  it('has words for every action but eating', async () => {
+    const { PHRASE } = await import('./summary');
+    const { ACTION_IDS } = await import('./actions');
+    for (const id of ACTION_IDS) if (id !== 'eat') expect(PHRASE[id as Exclude<typeof id, 'eat'>], id).toBeDefined();
+  });
+});

@@ -55,12 +55,12 @@ export function nightTerrors(s: SimState): void {
 /* ───────────── the barrow ───────────── */
 
 export function offeringShort(s: SimState): string | null {
-  return s.wealth.bread >= FAE.offeringBread || s.wealth.ale >= 1 ? null : 'NOTHING TO LEAVE';
+  return s.wealth.bread >= FAE.offeringBread || s.wealth.ale >= FAE.offeringAle ? null : 'NOTHING TO LEAVE';
 }
 
 export function offering(s: SimState): string {
   if (s.wealth.bread >= FAE.offeringBread) s.wealth.bread -= FAE.offeringBread;
-  else s.wealth.ale -= 1;
+  else s.wealth.ale -= FAE.offeringAle;
   s.dark.faeFavour = Math.min(3, s.dark.faeFavour + 1);
   return s.dark.faeFavour > 1 ? 'leaves bread on the barrow again. In the morning it is gone' : 'leaves bread on the old barrow, and does not look back';
 }

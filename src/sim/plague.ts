@@ -31,7 +31,7 @@ const OMENS = [
 ] as const;
 
 const TRANSITION: Record<Exclude<PlaguePhase, 'none'>, string> = {
-  omens: 'Midsummer, 1348. The rain will not stop. Travellers speak of a sickness come from over the sea.',
+  omens: 'June, 1348. The rain will not stop. Travellers speak of a sickness come from over the sea.',
   outbreak: 'The pestilence is in Ashby. Swellings in the armpit and groin, black as plums. Three days, and the bell.',
   aftermath: 'The dying slows. Half the houses have smoke; half do not. Land lies untilled, and men ask three times the wage.',
   over: 'Lady Day, 1350. The pestilence has passed. One in three of Ashby lies in the new pit beyond the churchyard wall.',

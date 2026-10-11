@@ -14,7 +14,8 @@ export const NOTABLE: ReadonlySet<LogType> = new Set([
 ]);
 
 /** How each kind of action is told in summary: [phrase for one, phrase for many]. */
-const PHRASE: Partial<Record<ActionId, readonly [string, string]>> = {
+/** Every deed but eating (meals are counted on their own) has words: the type makes a missing one an error. */
+export const PHRASE: Readonly<Record<Exclude<ActionId, 'eat'>, readonly [string, string]>> = {
   workStrips: ['worked the strips once', 'worked the strips # times'],
   weekWork: ['laboured for the lord once', 'laboured for the lord # times'],
   attendMass: ['heard mass', 'heard mass # times'],
@@ -35,6 +36,15 @@ const PHRASE: Partial<Record<ActionId, readonly [string, string]>> = {
   poach: ['poached once', 'poached # times'],
   helpNeighbour: ['helped a neighbour', 'helped neighbours # times'],
   court: ['went courting', 'went courting # times'],
+  marry: ['was wed at the church door', 'was wed # times'],
+  askFavour: ['asked a favour', 'asked favours # times'],
+  accuse: ['accused a neighbour before the priest', 'made # accusations'],
+  takeHolding: ['took up a holding', 'took up # holdings'],
+  buyFreedom: ['bought freedom from the lord', 'tried # times to buy freedom'],
+  flee: ['fled toward the town', 'fled # times'],
+  rob: ['robbed travellers on the road', 'robbed travellers # times'],
+  offering: ['left an offering at the barrow', 'left # offerings at the barrow'],
+  surrender: ['gave up the greenwood', 'gave up the greenwood # times'],
 };
 
 export interface Summary {
@@ -72,7 +82,7 @@ export function summarize(log: readonly LogEntry[], fromBlock: number, toBlock: 
     .sort((a, b) => (counts[b] ?? 0) - (counts[a] ?? 0))
     .map((a) => {
       const n = counts[a]!;
-      const [one, many] = PHRASE[a]!;
+      const [one, many] = PHRASE[a as Exclude<ActionId, 'eat'>];
       return n === 1 ? one : many.replace('#', String(n));
     });
   if (did.length) lines.push(`${name} ${did.join(', ')}.`);

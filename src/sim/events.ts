@@ -1,4 +1,4 @@
-import { DAMP_LOSS, EVENT_DAILY_CHANCE, HEATHEN_EVENT_MULT, type IllnessKind } from './balance';
+import { DAMP_LOSS, EVENT_DAILY_CHANCE, HEATHEN_EVENT_MULT, type IllnessKind, GIFT_BREAD } from './balance';
 import { injure, sicken } from './body';
 import type { DayInfo } from './calendar';
 import { bury } from './bloodline';
@@ -68,7 +68,7 @@ export const EVENTS: readonly GameEvent[] = [
   {
     id: 'kindNeighbour', negative: false,
     weight: () => 0.6,
-    apply: (s) => { s.wealth.bread += 3; s.soul.morale = clamp(s.soul.morale + 4); log(s, 'event', 'A neighbour leaves three loaves at the door.'); },
+    apply: (s) => { s.wealth.bread += GIFT_BREAD; s.soul.morale = clamp(s.soul.morale + 4); log(s, 'event', 'A neighbour leaves three loaves at the door.'); },
   },
   { id: 'manorSummons', negative: true, weight: () => 0, apply: (s, i) => summonToManorCourt(s, i.dayIndex) },
   // Debug-only (weight 0): reach the Phase 4 systems on demand.

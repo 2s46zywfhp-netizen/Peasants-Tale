@@ -1,3 +1,4 @@
+import { FAE } from '../sim/balance';
 import { reserveTier } from '../sim/body';
 import { MOON_PHASES, formatDate } from '../sim/calendar';
 import { clock } from '../sim/sim';
@@ -221,6 +222,6 @@ export function storesLines(s: SimState): string[] {
   out.push(`Beasts: ${beasts.length ? beasts.join(', ') : 'none'}.`);
   out.push(`Tools: ${w.tools >= 60 ? 'sound' : w.tools >= 30 ? 'worn' : 'nearly useless'}.`);
   if (s.obligations.debt > 0) out.push(`Owed to the manor: ${n1(s.obligations.debt)}d.`);
-  out.push('An offering at the barrow takes two loaves or a jug of ale.');
+  out.push(`An offering at the barrow takes ${FAE.offeringBread === 2 ? 'two loaves' : `${FAE.offeringBread} loaves`} or ${FAE.offeringAle === 1 ? 'a jug' : `${FAE.offeringAle} jugs`} of ale.`);
   return out;
 }
