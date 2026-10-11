@@ -37,11 +37,11 @@ function bands(bod: number, sky: Sky, h: number): void {
   const cols = sky === 'fair' ? CLEAR[bod]! : OVERCAST[bod]!;
   const n = cols.length - 1;
   for (let y = 0; y < h; y++) {
-    const t = (y / h) * n;
-    const i = t | 0;
-    const frac = t - i;
-    // 0 in the band, rising to 16 over its last third.
-    const mix = frac < 0.62 ? 0 : ((frac - 0.62) / 0.38) * 16;
+    // Position down the bands in sixteenths; dither only over the last third of each band.
+    const t16 = ((y * n * 16) / h) | 0;
+    const i = t16 >> 4;
+    const frac = t16 & 15;
+    const mix = frac < 10 ? 0 : ((frac - 10) * 16) / 6;
     const a = cols[i]! | LOCK, b = cols[Math.min(n, i + 1)]! | LOCK;
     const row = y * W;
     for (let x = 0; x < W; x++) pix[row + x] = bayer(x, y) < mix ? b : a;
@@ -79,10 +79,10 @@ const MOON_Y = [14, 0, 0, 0, 22, 6] as const;
 export let moonScreenX = -999;
 
 /**
- * Draws the sky above `horizon`. `cam` is the camera (fractional), `wind` -1..1 pushes the clouds,
+ * Draws the sky above `horizon`. `cam` is the camera (whole pixels), `windQ` (wind -1..1 times 64) pushes the clouds,
  * `moon` is the phase 0..7 (0 new, 4 full).
  */
-export function drawSky(bod: number, sky: Sky, moon: number, cam: number, wind: number, now: number, horizon: number): void {
+export function drawSky(bod: number, sky: Sky, moon: number, cam: number, windQ: number, now: number, horizon: number): void {
   const k = getIds();
   bands(bod, sky, horizon);
   const clear = sky === 'fair' || sky === 'cloud';
@@ -90,7 +90,7 @@ export function drawSky(bod: number, sky: Sky, moon: number, cam: number, wind: 
 
   // 2. Stars and the moon (fixed in the sky: a tiny parallax so they feel far away).
   if ((bod === 5 || bod === 0 || bod === 4) && clear) {
-    const off = Math.round(cam * 0.02);
+    const off = (cam / 50) | 0;
     const tw = (now / 400) | 0;
     for (let i = 0; i < STARS.length; i += 3) {
       if (bod !== 5 && i % 9 !== 0) continue;
@@ -100,28 +100,29 @@ export function drawSky(bod: number, sky: Sky, moon: number, cam: number, wind: 
       pix[y * W + x] = (STARS[i + 2] ? C.moon : C.mist) | LOCK;
     }
     if (MOON_X[bod]! >= 0 && moon !== 0) {
-      const mx = MOON_X[bod]! - Math.round(cam * 0.04);
+      const mx = MOON_X[bod]! - ((cam / 25) | 0);
       blit(k.moon[moon]!, mx, MOON_Y[bod]!, false, LOCKED);
       moonScreenX = mx + 7;
     }
   }
 
   // 3. Clouds: two bands at different depths, drifting.
-  const drift = now * (0.002 + Math.abs(wind) * 0.01) * (wind < 0 ? -1 : 1);
+  const drift = (((((now / 16) | 0) * (128 + (windQ < 0 ? -windQ : windQ) * 10)) / 4000) | 0) * (windQ < 0 ? -1 : 1);
   const cover = sky === 'fair' ? 1 : 2;
   for (let layer = 0; layer < cover + (sky === 'storm' || sky === 'rain' ? 1 : 0); layer++) {
     const id = layer % 2 ? k.clouds1 : k.clouds0;
-    const off = Math.round(cam * (0.08 + layer * 0.05) + drift * (1 + layer * 0.6) + layer * 57);
+    const off = ((cam * (8 + layer * 5)) / 100 + (drift * (10 + layer * 6)) / 10 + layer * 57) | 0;
     const y = 4 + layer * 13;
-    let x = -(((off % 128) + 128) % 128);
+    // 0 - n, never -n: -0 is not a small integer and would be boxed.
+    let x = 0 - (((off % 128) + 128) % 128);
     for (; x < W; x += 128) blit(id, x, y, false);
   }
 
   // 4. The far silhouette, barely moving.
-  const so = Math.round(cam * 0.15);
+  const so = ((cam * 15) / 100) | 0;
   blitPart(k.sil, 0, 0, 256, 48, 20 - so, horizon - 46);
 
   // 5. The treeline, nearer.
-  const to = Math.round(cam * 0.4);
-  for (let x = -(to % 128); x < W; x += 128) blit(k.tree, x, horizon - 26, false);
+  const to = ((cam * 2) / 5) | 0;
+  for (let x = 0 - (((to % 128) + 128) % 128); x < W; x += 128) blit(k.tree, x, horizon - 26, false);
 }

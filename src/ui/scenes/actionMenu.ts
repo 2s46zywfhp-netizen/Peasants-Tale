@@ -161,7 +161,8 @@ export class ActionMenuScene implements Scene {
     this.rebuild();
     // The tool on the belt picks the work it is for.
     const want = TOOL_ACTIONS[this.game.save.data.belt];
-    const i = this.items.findIndex((it) => want.includes(it.action) && !it.why);
+    let i = this.items.findIndex((it) => want.includes(it.action) && !it.why);
+    if (i < 0) i = this.items.findIndex((it) => want.includes(it.action));
     if (i >= 0) this.moveTo(i);
     probe('menu', this.items.map((i) => `${i.label}${i.why ? `(${i.why})` : ''}`).join('|'));
   }
@@ -226,7 +227,7 @@ export class ActionMenuScene implements Scene {
       this.moveTo((this.cursor + (e.action === 'up' ? -1 : 1) + items.length) % items.length);
       this.game.sfx('move');
     } else if (e.action === 'queue' && !e.repeat) {
-      // Do this when what is in hand is done.
+      // Do this when what is in hand is done (even if it cannot be done this very moment).
       const it = items[this.cursor];
       if (!it || it.action === 'eat' || WITH_SOMEONE.has(it.action)) return this.game.sfx('error');
       const q = this.game.save.data.queue;

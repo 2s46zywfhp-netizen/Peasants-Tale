@@ -1,6 +1,12 @@
-// Uses the container's global Playwright (not a project dependency).
-import { chromium, devices } from '/opt/node22/lib/node_modules/playwright/index.mjs';
-const URL = process.argv[2] ?? 'http://localhost:5173/';
+// Frame-loop allocations and frame times. SCREEN=world|menu|settings|status|cottage picks what is on screen.
+let pw;
+try {
+  pw = await import('playwright');
+} catch {
+  pw = await import('/opt/node22/lib/node_modules/playwright/index.mjs');
+}
+const { chromium, devices } = pw;
+const URL = (process.argv[2] ?? 'http://localhost:4173/') + '?qa';
 const mode = process.argv[3] ?? 'alloc';
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ ...devices['iPhone 13'] });
@@ -18,9 +24,13 @@ if ((await page.evaluate(() => document.body.dataset.scene)) === 'naming') {
   await page.keyboard.press('KeyZ'); await page.waitForTimeout(600);
 }
 await page.waitForTimeout(800);
-// Walk out to the green: weather, NPCs, livestock, sky all active.
-// STAY=1 measures the side-view cottage instead.
-if (!process.env.STAY) { await page.keyboard.down('ArrowRight'); await page.waitForTimeout(3500); await page.keyboard.up('ArrowRight'); }
+// The green by default: weather, NPCs, livestock, sky, smoke and lights all active.
+const screen = process.env.SCREEN ?? 'world';
+await page.evaluate((screen) => {
+  window.qa.tutorialDone();
+  window.qa.world(screen === 'cottage' ? 'cottage' : 'green', 200, 90);
+  if (screen === 'menu' || screen === 'settings' || screen === 'status') window.qa.push(screen);
+}, screen);
 await page.waitForTimeout(Number(process.env.WARM ?? 10000)); // let the JIT optimise the hot paths
 const cdp = await ctx.newCDPSession(page);
 if (mode === 'alloc') {
@@ -29,7 +39,7 @@ if (mode === 'alloc') {
   await cdp.send('HeapProfiler.startSampling', { samplingInterval: 128, includeObjectsCollectedByMajorGC: true, includeObjectsCollectedByMinorGC: true });
   const walk = process.argv[4] === 'walk';
   if (walk) { await page.keyboard.down('ArrowRight'); await page.waitForTimeout(1500); await page.keyboard.up('ArrowRight'); await page.keyboard.down('ArrowLeft'); await page.waitForTimeout(1500); await page.keyboard.up('ArrowLeft'); }
-  else await page.waitForTimeout(3000);
+  else await page.waitForTimeout(Number(process.env.DUR ?? 3000));
   const { profile } = await cdp.send('HeapProfiler.stopSampling');
   // Sum allocations whose stack passes through the rAF frame callback.
   const totals = new Map();

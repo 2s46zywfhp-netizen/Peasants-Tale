@@ -16,7 +16,7 @@ import { WorldScene } from './ui/scenes/world';
 import type { Game } from './ui/game';
 import { onActivation } from './ui/gesture';
 import { SceneManager, type Scene } from './ui/scene';
-import type { SceneId } from './render/scenes/maps';
+import { SCENES, type SceneId } from './render/scenes/maps';
 import { StatusScene } from './ui/scenes/status';
 import { SettingsScene } from './ui/scenes/settings';
 import { GalleryScene } from './ui/scenes/gallery';
@@ -161,6 +161,7 @@ async function boot(): Promise<void> {
   if (/[?&]qa\b/.test(location.search)) {
     (window as unknown as { qa: unknown }).qa = {
       game,
+      scenes: SCENES,
       world(id: SceneId, x: number, y: number, face?: 'down' | 'up' | 'left' | 'right') {
         while (scenes.depth > 1) scenes.pop(false);
         if (!(scenes.top instanceof WorldScene)) scenes.replace(new WorldScene(game), false);
@@ -175,6 +176,8 @@ async function boot(): Promise<void> {
         fn(s);
         save.data = { ...save.data, sim: s };
       },
+      /** The peasant's feet in the current scene. */
+      player: () => (scenes.top instanceof WorldScene ? scenes.top.where() : null),
       /** The 256x224 frame as a PNG data URL (after the next present). */
       frame: () => display.fb.toDataURL('image/png'),
       tutorialDone() {
@@ -197,6 +200,8 @@ async function boot(): Promise<void> {
     };
   }
 
+  // The season's music follows the calendar (worked out once a day, not every frame).
+  let seasonDay = -1;
   // Hold SELECT + START to open the debug panel.
   let comboSince: number | null = null;
   const frame = (t: number) => {
@@ -239,7 +244,11 @@ async function boot(): Promise<void> {
         scenes.push(new ParchmentLogScene(game, save.data.seenBlock, save.data.sim.block), false);
       }
     }
-    audio.setSeason(dayInfo((save.data.sim.block / 6) | 0).season);
+    const today = (save.data.sim.block / 6) | 0;
+    if (today !== seasonDay) {
+      seasonDay = today;
+      audio.setSeason(dayInfo(today).season);
+    }
     input.update(frameNow);
     scenes.update(dt, frameNow);
     scenes.draw(frameNow);

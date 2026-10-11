@@ -51,7 +51,7 @@ export class TitleScene implements Scene {
   draw(now: number): void {
     const k = this.ids;
     resetLight();
-    drawSky(5, 'fair', 4, now / 400, 0.2, now, HORIZON);
+    drawSky(5, 'fair', 4, (now / 400) | 0, 13, now, HORIZON);
     for (let y = HORIZON; y < H; y += 16) for (let x = 0; x < W; x += 16) blit(k.grass[((x * 7 + y * 13) >> 4) & 3]!, x, y);
     for (let x = 112; x < 144; x += 16) for (let y = 160; y < H; y += 16) blit(k.path, x, y);
     blit(k.pine, 6, HORIZON - 40);

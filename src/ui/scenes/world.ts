@@ -8,6 +8,7 @@ import {
 } from '../../render/scenes/maps';
 import { drawWorld, roomMeta, setDayListener, type Actor, type RoomMeta, type WorldView } from '../../render/world';
 import { updateWeather } from '../../render/weather';
+import { icos, isin } from '../../render/trig';
 import { BELT_TOOLS } from '../../save/schema';
 import { reserveTier } from '../../sim/body';
 import { dayInfo } from '../../sim/calendar';
@@ -38,6 +39,8 @@ const STOP = 1600; // px/s²: a short stop
 /** Camera easing time constant (ms). */
 const CAM_TAU = 140;
 const WIPE_MS = 520;
+/** Fixed-point scale for positions and speeds. */
+const Q = 256;
 const POSE_AFTER_MS = 700;
 /** Feet box half-width and depth. */
 const FOOT_W = 5;
@@ -118,17 +121,30 @@ function kinSprite(m: Member, day: number): string | null {
 export class WorldScene implements Scene {
   readonly opaque = true;
   private sceneId: SceneId;
-  /** Feet position (fractional), and velocity in px/s. */
-  private x = 0;
-  private y = 0;
+  /** Feet position and velocity, in 1/256 px and 1/256 px per second (integers). */
+  private fx = 0;
+  private fy = 0;
   private vx = 0;
   private vy = 0;
+  private get x(): number {
+    return this.fx >> 8;
+  }
+  private set x(v: number) {
+    this.fx = (v * Q) | 0;
+  }
+  private get y(): number {
+    return this.fy >> 8;
+  }
+  private set y(v: number) {
+    this.fy = (v * Q) | 0;
+  }
   private face: Face = 'down';
   private heldSince = 0;
   private moving = false;
   private stillSince = 0;
   private stepAcc = 0;
-  private cam = 0;
+  /** Camera x in 1/256 px. */
+  private camQ = 0;
   /** Wipe progress (ms), -1 when idle; the scene changes at the half. */
   private wipeT = -1;
   private pending: { to: SceneId; x: number; y: number } | null = null;
@@ -146,7 +162,12 @@ export class WorldScene implements Scene {
   private chore: WorkAnim | null = null;
   private eatUntil = 0;
   private needsAt = 0;
+  /** The calendar for the day shown (worked out when the day changes). */
+  private infoDay = -1;
+  private info: ReturnType<typeof dayInfo> | null = null;
   private anims: Record<string, Anim> = {};
+  /** [walk, run, idle] x [down, up, side], looked up by index (no strings while playing). */
+  private moveAnims: Anim[] = [];
 
   constructor(private game: Game) {
     setDayListener((d) => {
@@ -157,6 +178,7 @@ export class WorldScene implements Scene {
       probe('snow', String(d.snow));
     });
     for (const m of MOVES) for (const f of FACES) this.anims[`${m}.${f}`] = anim(`peasant.${m}.${f}`);
+    this.moveAnims = MOVES.flatMap((m) => FACES.map((f) => this.anims[`${m}.${f}`]!));
     for (const w of WORKS) this.anims[w] = anim(`peasant.${w}`);
     const s = game.sim();
     this.sceneId = SCENE_OF[s.location];
@@ -165,7 +187,7 @@ export class WorldScene implements Scene {
     this.view = { scene: SCENES[this.sceneId], cam: 0, actors: [], prompt: '', promptX: 0, promptY: 0, needs: [], belt: 'axe', queued: 0, message: '' };
     const sp = this.scene.spawn;
     this.load(this.sceneId, sp[0], this.scene.room ? this.roomFeetMid(this.sceneId) : sp[1]);
-    this.cam = this.camTarget();
+    this.camQ = this.camTarget() * Q;
     this.logSeen = s.log.length;
   }
 
@@ -194,7 +216,7 @@ export class WorldScene implements Scene {
       const y0 = this.room ? this.roomFeetMid(id) - 6 + ((i * 13) % 20) : def.y;
       const a = mkActor(idle, def.x, y0, i * 331);
       a.eyes = def.who === 'dog';
-      return { def, actor: a, idle, walk, phase: i * 1.7, vIdx: def.villager ? idx(def.villager) : -1, lastX: def.x };
+      return { def, actor: a, idle, walk, phase: i * 70, vIdx: def.villager ? idx(def.villager) : -1, lastX: def.x };
     });
     this.pens = [];
     for (const p of sc.pens ?? []) {
@@ -239,7 +261,7 @@ export class WorldScene implements Scene {
       if (!who) continue;
       const homeX = 120 + ((n * 61) % 200);
       const a = mkActor(anim(`${who}.idle.down`), homeX, mid - 8 + ((n * 11) % 22), n * 97);
-      this.kin.push({ member: m.id, actor: a, idle: a.anim, walk: anim(`${who}.walk.side`), home: homeX, phase: n * 2.3 });
+      this.kin.push({ member: m.id, actor: a, idle: a.anim, walk: anim(`${who}.walk.side`), home: homeX, phase: n * 94 });
       n++;
     }
     this.rebuildActors();
@@ -403,13 +425,18 @@ export class WorldScene implements Scene {
     }
   }
 
+  /** QA: where the peasant stands. */
+  where(): { scene: SceneId; x: number; y: number } {
+    return { scene: this.sceneId, x: this.x, y: this.y };
+  }
+
   /** QA and debug: stand in a scene at once (no wipe). */
   teleport(id: SceneId, x: number, y: number, face: Face = 'down'): void {
     const sc = SCENES[id];
     this.load(id, x, sc.room ? this.roomFeetMid(id) : y);
     this.face = face;
-    this.cam = this.camTarget();
-    this.view.cam = this.cam;
+    this.camQ = this.camTarget() * Q;
+    this.view.cam = this.camQ >> 8;
   }
 
   private enterDoor(o: Obj): void {
@@ -429,13 +456,14 @@ export class WorldScene implements Scene {
       this.wipeT += dt;
       if (before < WIPE_MS / 2 && this.wipeT >= WIPE_MS / 2 && this.pending) {
         this.load(this.pending.to, this.pending.x, this.pending.y);
-        this.cam = this.camTarget();
+        this.camQ = this.camTarget() * Q;
         this.pending = null;
       }
       if (this.wipeT >= WIPE_MS) this.wipeT = -1;
     }
 
     // Held directions: accelerate toward walking (or running) speed; let go and stop short.
+    // Positions, speeds and the camera are kept in 1/256 px (integers): nothing is boxed in the frame loop.
     const inp = g.input;
     let ix = 0;
     let iy = 0;
@@ -448,31 +476,38 @@ export class WorldScene implements Scene {
     }
     const want = ix !== 0 || iy !== 0;
     if (!want) this.heldSince = now;
-    const top = now - this.heldSince > RUN_AFTER_MS ? RUN : WALK;
-    const norm = ix !== 0 && iy !== 0 ? 0.7071 : 1;
-    const s = dt / 1000;
-    this.vx = approach(this.vx, ix * top * norm, (ix !== 0 && Math.sign(ix) === Math.sign(this.vx)) || this.vx === 0 ? ACCEL * s : STOP * s);
-    this.vy = approach(this.vy, iy * top * norm * (this.room ? 0.55 : 1), (iy !== 0 && Math.sign(iy) === Math.sign(this.vy)) || this.vy === 0 ? ACCEL * s : STOP * s);
+    const top = (now - this.heldSince > RUN_AFTER_MS ? RUN : WALK) * Q;
+    const diag = ix !== 0 && iy !== 0;
+    const tx = diag ? ((ix * top * 181) >> 8) : ix * top;
+    let ty = diag ? ((iy * top * 181) >> 8) : iy * top;
+    if (this.room) ty = (ty * 140) >> 8;
+    const acc = ((ACCEL * Q * dt) / 1000) | 0;
+    const stop = ((STOP * Q * dt) / 1000) | 0;
+    this.vx = approach(this.vx, tx, ix !== 0 && (ix > 0) === (this.vx > 0) ? acc : this.vx === 0 ? acc : stop);
+    this.vy = approach(this.vy, ty, iy !== 0 && (iy > 0) === (this.vy > 0) ? acc : this.vy === 0 ? acc : stop);
     if (want) {
-      this.face = Math.abs(ix) > 0 && (iy === 0 || this.face === 'left' || this.face === 'right') ? (ix < 0 ? 'left' : 'right') : iy < 0 ? 'up' : 'down';
+      this.face = ix !== 0 && (iy === 0 || this.face === 'left' || this.face === 'right') ? (ix < 0 ? 'left' : 'right') : iy < 0 ? 'up' : 'down';
       this.stillSince = now;
       if (this.chore && now >= this.choreUntil) this.chore = null;
     }
-    this.moving = Math.abs(this.vx) + Math.abs(this.vy) > 4;
+    const speed = (this.vx < 0 ? -this.vx : this.vx) + (this.vy < 0 ? -this.vy : this.vy);
+    this.moving = speed > 4 * Q;
     if (this.moving) {
-      if (this.room) this.walkRoom(s);
-      else this.walkGround(s, ix, iy);
-      this.stepAcc += (Math.abs(this.vx) + Math.abs(this.vy)) * s;
-      if (this.stepAcc >= 13) {
+      const dx = ((this.vx * dt) / 1000) | 0;
+      const dy = ((this.vy * dt) / 1000) | 0;
+      if (this.room) this.walkRoom(dx, dy);
+      else this.walkGround(dx, dy, ix, iy);
+      this.stepAcc += ((speed * dt) / 1000) | 0;
+      if (this.stepAcc >= 13 * Q) {
         this.stepAcc = 0;
         g.sfx('step');
       }
     }
 
     // The camera eases after the peasant, a little ahead of where they are going.
-    const k = 1 - Math.exp(-dt / CAM_TAU);
-    this.cam += (this.camTarget() - this.cam) * k;
-    this.view.cam = this.cam;
+    const k = dt >= CAM_TAU * 3 ? 256 : ((dt * 256) / (CAM_TAU + dt)) | 0;
+    this.camQ += (((this.camTarget() * Q - this.camQ) * k) / 256) | 0;
+    this.view.cam = this.camQ >> 8;
 
     this.followFortune();
     this.runQueue();
@@ -482,52 +517,57 @@ export class WorldScene implements Scene {
   }
 
   private camTarget(): number {
-    const lead = this.vx * 0.35;
-    return camFor(this.scene, this.x + lead, this.room?.w ?? 384);
+    const lead = ((this.vx * 90) >> 16) | 0;
+    return camFor(this.scene, this.x + lead, this.room?.w ?? 384) | 0;
   }
 
-  private walkGround(s: number, ix: number, iy: number): void {
+  private walkGround(dx: number, dy: number, ix: number, iy: number): void {
     const sc = this.scene;
-    const nx = this.x + this.vx * s;
-    if (!this.footBlocked(nx, this.y)) this.x = nx;
+    const nx = this.fx + dx;
+    if (!this.footBlocked(nx >> 8, this.y)) this.fx = nx;
     else {
       this.vx = 0;
       // Corner assist: blocked sideways but an opening is a few pixels up or down? Ease toward it.
       if (iy === 0 && ix !== 0) for (let d = 1; d <= 7; d++) {
-        if (!this.footBlocked(nx, this.y - d)) { this.y -= 0.8; break; }
-        if (!this.footBlocked(nx, this.y + d)) { this.y += 0.8; break; }
+        if (!this.footBlocked(nx >> 8, this.y - d)) { this.fy -= 200; break; }
+        if (!this.footBlocked(nx >> 8, this.y + d)) { this.fy += 200; break; }
       }
     }
-    const ny = this.y + this.vy * s;
-    // Our door: walking up into it goes home; so does any door.
+    const ny = this.fy + dy;
+    // Walking up into a door goes in.
     if (this.vy < 0) {
-      for (const o of sc.objs) if (o.door && this.x >= o.x + o.door.x0 && this.x <= o.x + o.door.x1 && ny <= o.y + 3 && this.y > o.y - 2) {
-        this.game.sfx('door');
-        return this.enterDoor(o);
+      const x = this.x, y = this.y, nyp = ny >> 8;
+      for (let i = 0; i < sc.objs.length; i++) {
+        const o = sc.objs[i]!;
+        if (o.door && x >= o.x + o.door.x0 && x <= o.x + o.door.x1 && nyp <= o.y + 3 && y > o.y - 2) {
+          this.game.sfx('door');
+          return this.enterDoor(o);
+        }
       }
     }
-    if (!this.footBlocked(this.x, ny)) this.y = ny;
+    if (!this.footBlocked(this.x, ny >> 8)) this.fy = ny;
     else {
       this.vy = 0;
       if (ix === 0 && iy !== 0) for (let d = 1; d <= 7; d++) {
-        if (!this.footBlocked(this.x - d, ny)) { this.x -= 0.8; break; }
-        if (!this.footBlocked(this.x + d, ny)) { this.x += 0.8; break; }
+        if (!this.footBlocked(this.x - d, ny >> 8)) { this.fx -= 200; break; }
+        if (!this.footBlocked(this.x + d, ny >> 8)) { this.fx += 200; break; }
       }
     }
     // Edges: walk off into the next scene, or stop.
-    if (this.x < 2 || this.x > SCENE_W - 2) {
-      const d: Dir = this.x < 2 ? 'west' : 'east';
+    const x = this.x;
+    if (x < 2 || x > SCENE_W - 2) {
+      const d: Dir = x < 2 ? 'west' : 'east';
       const to = sc.exits[d];
       if (to) this.go(to, OPPOSITE[d] === 'west' ? 10 : SCENE_W - 10, this.y);
-      this.x = Math.max(2, Math.min(SCENE_W - 2, this.x));
+      this.x = x < 2 ? 2 : SCENE_W - 2;
       this.vx = 0;
     }
   }
 
-  private walkRoom(s: number): void {
+  private walkRoom(dx: number, dy: number): void {
     const m = this.room!;
-    this.x += this.vx * s;
-    this.y += this.vy * s;
+    this.fx += dx;
+    this.fy += dy;
     const minY = m.floor + 18, maxY = m.h - 6;
     if (this.y < minY) this.y = minY;
     if (this.y > maxY) this.y = maxY;
@@ -621,9 +661,10 @@ export class WorldScene implements Scene {
       p.y = this.room.bed.y + 2;
       p.flip = false;
     } else {
-      const side = this.face === 'left' || this.face === 'right';
-      const move = this.moving ? (Math.abs(this.vx) + Math.abs(this.vy) > WALK + 6 ? 'run' : 'walk') : 'idle';
-      p.anim = work ? this.anims[work]! : this.anims[`${move}.${side ? 'side' : this.face}`]!;
+      const speed = (this.vx < 0 ? -this.vx : this.vx) + (this.vy < 0 ? -this.vy : this.vy);
+      const move = this.moving ? (speed > (WALK + 6) * Q ? 1 : 0) : 2;
+      const dir = this.face === 'left' || this.face === 'right' ? 2 : this.face === 'up' ? 1 : 0;
+      p.anim = work ? this.anims[work]! : this.moveAnims[move * 3 + dir]!;
       p.flip = this.face === 'left';
       p.x = this.x;
       p.y = this.y;
@@ -633,7 +674,11 @@ export class WorldScene implements Scene {
 
     const day = (s.block / 6) | 0;
     const bod = s.block % 6;
-    const info = dayInfo(day);
+    if (day !== this.infoDay) {
+      this.infoDay = day;
+      this.info = dayInfo(day);
+    }
+    const info = this.info!;
     const daytime = bod >= 1 && bod <= 3;
     for (let i = 0; i < this.npcs.length; i++) {
       const n = this.npcs[i]!;
@@ -649,24 +694,26 @@ export class WorldScene implements Scene {
       if (n.vIdx >= 0 && !present(s.village[n.vIdx]!)) n.actor.visible = false;
       const range = n.def.wander ?? 0;
       if (range > 0) {
-        const t = now / 2600 + n.phase;
-        const nx = n.def.x + Math.sin(t) * range;
-        const walking = Math.abs(Math.cos(t)) > 0.35;
+        // A slow sway along the path: one step of 256 every 64 ms (a 16 s round).
+        const t = (now >> 6) + n.phase;
+        const nx = n.def.x + ((isin(t) * range) >> 10);
+        const c = icos(t);
+        const walking = c > 358 || c < -358;
         n.actor.anim = walking ? n.walk : n.idle;
         n.actor.flip = walking && nx < n.lastX;
         n.lastX = nx;
         n.actor.x = nx;
       }
     }
-    this.syncKin(s);
     const asleep = bod === 5 || bod === 0;
     for (let i = 0; i < this.kin.length; i++) {
       const k = this.kin[i]!;
-      const t = now / 3100 + k.phase;
-      const nx = k.home + Math.sin(t) * 26;
-      const walking = Math.abs(Math.cos(t)) > 0.4;
+      const t = ((now * 5) >> 9) + k.phase;
+      const nx = k.home + ((isin(t) * 26) >> 10);
+      const c = icos(t);
+      const walking = c > 410 || c < -410;
       k.actor.anim = walking ? k.walk : k.idle;
-      k.actor.flip = walking && Math.cos(t) < 0;
+      k.actor.flip = walking && c < 0;
       k.actor.x = nx;
       k.actor.visible = !(asleep && i === 0 && work === 'sleep'); // the spouse sleeps too
     }
@@ -680,6 +727,7 @@ export class WorldScene implements Scene {
     // Needs that want seeing to, pulsing in the HUD (checked twice a second).
     if (now >= this.needsAt) {
       this.needsAt = now + 500;
+      this.syncKin(s);
       const n = this.view.needs;
       n.length = 0;
       if (head) {
@@ -692,7 +740,6 @@ export class WorldScene implements Scene {
       if (s.wealth.firewood <= 0) n.push('firewood');
       this.view.belt = this.game.save.data.belt;
       this.view.queued = this.game.save.data.queue.length;
-      probe('player', `${Math.round(this.x)},${Math.round(this.y)},${this.face},${p.visible ? 1 : 0}`);
       probe('prompt', this.view.prompt);
     }
 
@@ -825,5 +872,6 @@ export class WorldScene implements Scene {
 }
 
 function approach(v: number, target: number, step: number): number {
-  return v < target ? Math.min(target, v + step) : Math.max(target, v - step);
+  if (v < target) return v + step > target ? target : v + step;
+  return v - step < target ? target : v - step;
 }

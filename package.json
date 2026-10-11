@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "sprites": "node tools/spritegen/index.mjs"
+    "sprites": "node tools/spritegen/index.mjs",
+    "e2e": "node e2e/run.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
@@ -19,6 +20,7 @@
     "eslint": "^9.39.5",
     "fake-indexeddb": "^6.2.5",
     "globals": "^17.13.0",
+    "playwright": "^1.56.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.71.1",
     "vite": "^8.3.4",

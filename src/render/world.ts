@@ -81,8 +81,10 @@ export interface Day {
   moon: number;
   snow: number;
   wind: number;
+  /** Wind x 64, as an integer (for the frame loop). */
+  windQ: number;
 }
-const today: Day = { day: -1, bod: 0, season: 'spring', weather: { tempC: 10, sky: 'fair', cropQuality: 0, morale: 0 }, plague: false, moon: 0, snow: 0, wind: 0 };
+const today: Day = { day: -1, bod: 0, season: 'spring', weather: { tempC: 10, sky: 'fair', cropQuality: 0, morale: 0 }, plague: false, moon: 0, snow: 0, wind: 0, windQ: 0 };
 let todaySeed = -1;
 let onDayChange: ((d: Day) => void) | null = null;
 /** Called once per new game day drawn (the UI uses it for test probes). */
@@ -104,6 +106,7 @@ export function dayOf(s: SimState): Day {
     today.moon = info.moon;
     today.snow = info.season === 'winter' || info.season === 'autumn' || info.season === 'spring' ? snowCover(s.seed, day) : 0;
     today.wind = windFor(s.seed, day, today.weather.sky);
+    today.windQ = Math.round(today.wind * 64);
     onDayChange?.(today);
   }
   return today;
@@ -130,7 +133,11 @@ interface Compiled {
   objAnim: (Anim | null)[];
   objLit: Int32Array;
 }
-const compiled = new Map<string, Compiled>();
+/** Per scene: [plain, snowy]. */
+const compiled = new Map<SceneDef, [Compiled | null, Compiled | null]>();
+let lastSc: SceneDef | null = null;
+let lastSnowy = false;
+let lastC: Compiled | null = null;
 
 const hash = (x: number, y: number, s: number): number => {
   let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul(s | 0, 982451653);
@@ -150,9 +157,15 @@ const prio = (t: Terrain | 'snow'): number => (t === 'snow' ? 5 : PRIORITY[t as 
 
 /** Compiles a scene's terrain to sprite numbers, with autotiled fringes (once per scene and snow state). */
 export function compile(sc: SceneDef, snowy: boolean): Compiled {
-  const key = `${sc.id}${snowy ? '*' : ''}`;
-  let c = compiled.get(key);
-  if (c) return c;
+  let pair = compiled.get(sc);
+  if (!pair) compiled.set(sc, (pair = [null, null]));
+  let c = pair[snowy ? 1 : 0];
+  if (c) {
+    lastSc = sc;
+    lastSnowy = snowy;
+    lastC = c;
+    return c;
+  }
   const n = COLS * GROUND_ROWS;
   c = {
     base: new Int32Array(n).fill(-1), fringe: new Int32Array(n * MAXF).fill(-1), field: new Int8Array(n).fill(-1), water: new Uint8Array(n),
@@ -193,7 +206,10 @@ export function compile(sc: SceneDef, snowy: boolean): Compiled {
     }
     if (o.lit) c!.objLit[i] = spriteId(o.lit);
   });
-  compiled.set(key, c);
+  pair[snowy ? 1 : 0] = c;
+  lastSc = sc;
+  lastSnowy = snowy;
+  lastC = c;
   return c;
 }
 
@@ -219,16 +235,17 @@ function fieldTile(s: SimState, n: number, season: SeasonName): number {
 
 /* ───────────── small life: smoke, sparks, fireflies, tufts ───────────── */
 
-const SIN = Float32Array.from({ length: 64 }, (_, i) => Math.sin((i / 64) * Math.PI * 2));
+/** sin in 64 steps, scaled to ±64: integer maths in the frame loop (no boxed doubles). */
+const SIN = Int8Array.from({ length: 64 }, (_, i) => Math.round(Math.sin((i / 64) * Math.PI * 2) * 64));
 
-/** Woodsmoke from a chimney at screen (x, y), leaning with the wind, puffs growing as they rise. */
-function smoke(x: number, y: number, wind: number, now: number, seed: number): void {
+/** Woodsmoke from a chimney at screen (x, y), leaning with the wind (windQ: wind x 64), puffs growing as they rise. */
+function smoke(x: number, y: number, windQ: number, now: number, seed: number): void {
   for (let p = 0; p < 7; p++) {
-    const t = ((now / 70 + p * 9 + seed * 5) % 60) | 0;
+    const t = (((now / 70) | 0) + p * 9 + seed * 5) % 60;
     if (t > 52) continue;
-    const lean = t * (0.25 + wind * 0.9);
-    const wob = SIN[(t * 2 + seed) & 63]! * 2;
-    const px = (x + lean + wob) | 0;
+    const lean = (t * (16 + ((windQ * 58) >> 6))) >> 6;
+    const wob = SIN[(t * 2 + seed) & 63]! >> 5;
+    const px = x + lean + wob;
     const py = y - (t >> 1) - 1;
     const size = t < 10 ? 2 : t < 30 ? 3 : 4;
     const v = t < 18 ? C.mist : t < 36 ? C.stone : C.slate;
@@ -243,10 +260,10 @@ function sparks(x: number, y: number, now: number, n: number): void {
   for (let p = 0; p < n; p++) {
     const life = 900 + p * 137;
     const t = (now + p * 401) % life;
-    const k = t / life;
-    const sx = x + SIN[((p * 11 + (t >> 6)) & 63)]! * (3 + k * 6) + ((p * 7) % 9) - 4;
-    const sy = y - k * 46;
-    plot(sx, sy, (k < 0.5 ? C.spark : k < 0.8 ? C.flame : C.ember) | LOCK);
+    const k = ((t * 64) / life) | 0; // 0..63
+    const sx = x + ((SIN[(p * 11 + (t >> 6)) & 63]! * (3 + ((k * 6) >> 6))) >> 6) + ((p * 7) % 9) - 4;
+    const sy = y - ((k * 46) >> 6);
+    plot(sx, sy, (k < 32 ? C.spark : k < 51 ? C.flame : C.ember) | LOCK);
   }
 }
 
@@ -263,9 +280,9 @@ const FLIES = (() => {
 function fireflies(cam: number, now: number): void {
   for (let i = 0; i < FLIES.length; i += 3) {
     const ph = FLIES[i + 2]!;
-    const x = FLIES[i]! + SIN[((now >> 6) + ph) & 63]! * 14 - cam;
+    const x = FLIES[i]! + ((SIN[((now >> 6) + ph) & 63]! * 14) >> 6) - cam;
     if (x < 0 || x >= W) continue;
-    const y = GROUND_Y + FLIES[i + 1]! + SIN[((now >> 5) + ph * 3) & 63]! * 4;
+    const y = GROUND_Y + FLIES[i + 1]! + (SIN[((now >> 5) + ph * 3) & 63]! >> 4);
     const blink = ((now >> 8) + ph) % 7;
     if (blink === 0) continue;
     plot(x, y, (blink < 3 ? C.spark : C.gold) | LOCK);
@@ -273,18 +290,20 @@ function fireflies(cam: number, now: number): void {
   }
 }
 
-/** Grass blades that bend with the wind. */
-function drawTufts(t: Int16Array, cam: number, wind: number, now: number): void {
+/** Grass blades that bend with the wind (windQ: wind x 64). */
+function drawTufts(t: Int16Array, cam: number, windQ: number, now: number): void {
+  const gust = 26 + (windQ < 0 ? -windQ : windQ);
   for (let i = 0; i < t.length; i += 3) {
     const x = t[i]! - cam;
     if (x < -2 || x > W + 2) continue;
     const y = GROUND_Y + t[i + 1]!;
-    const sway = wind * 1.6 + SIN[(((now / 90) | 0) + t[i + 2]!) & 63]! * (0.4 + Math.abs(wind));
+    // Sway in 1/64 px.
+    const sway = ((windQ * 102) >> 6) + ((SIN[(((now / 90) | 0) + t[i + 2]!) & 63]! * gust) >> 6);
     plot(x, y, C.moss);
-    plot(x + sway * 0.5, y - 1, C.grass);
-    plot(x + sway, y - 2, C.leaf);
+    plot(x + (sway >> 7), y - 1, C.grass);
+    plot(x + (sway >> 6), y - 2, C.leaf);
     plot(x + 2, y, C.moss);
-    plot(x + 2 + sway * 0.7, y - 1, C.grass);
+    plot(x + 2 + ((sway * 45) >> 12), y - 1, C.grass);
   }
 }
 
@@ -357,11 +376,12 @@ function drawOutdoor(s: SimState, view: WorldView, d: Day, now: number): void {
   if (lightning()) amb = 15;
   playerRemap = ambientRemap(d.season, d.plague, bod, ambientSteps(amb) - 1);
 
-  drawSky(bod, sky, d.moon, cam, d.wind, now, GROUND_Y);
+  drawSky(bod, sky, d.moon, icam, d.windQ, now, GROUND_Y);
 
   // Ground: base tiles, fringes, crops and water; snow over it as it lies.
   const snowy = d.snow >= 2;
-  const c = compile(sc, snowy);
+  if (sc !== lastSc || snowy !== lastSnowy) compile(sc, snowy);
+  const c = lastC!;
   const c0 = icam >> 4;
   const c1 = Math.min(COLS, c0 + 17);
   const waterAnim = anim('t.water');
@@ -384,7 +404,7 @@ function drawOutdoor(s: SimState, view: WorldView, d: Day, now: number): void {
       if (d.snow === 1 && !c.water[i]) dither(x, y, TILE, TILE, C.bone, 5);
     }
   }
-  if (!snowy) drawTufts(c.tufts, icam, d.wind, now);
+  if (!snowy) drawTufts(c.tufts, icam, d.windQ, now);
 
   // Objects and actors, back to front.
   const objs = sc.objs;
@@ -416,7 +436,7 @@ function drawOutdoor(s: SimState, view: WorldView, d: Day, now: number): void {
     const x = o.x - icam, y = GROUND_Y + o.y - h;
     blit(id, x, y);
     if (o.snow && d.snow > 0) snowCap(id, x, y, d.snow + 1);
-    if (o.smoke && (bod <= 1 || night || d.weather.tempC < 8)) smoke(x + o.smoke[0], y + o.smoke[1], d.wind, now, i);
+    if (o.smoke && (bod <= 1 || night || d.weather.tempC < 8)) smoke(x + o.smoke[0], y + o.smoke[1], d.windQ, now, i);
     if (o.light && (!o.light.night || night)) {
       const flick = (now >> 7) % 4 === 0 ? 2 : 0;
       addLight(x + o.light.dx, y + o.light.dy, o.light.radius + flick, o.light.level, true, 0.7);
@@ -443,11 +463,11 @@ function drawOutdoor(s: SimState, view: WorldView, d: Day, now: number): void {
     const fogDay = sky === 'fog';
     const top = fogDay ? GROUND_Y - 30 : GROUND_Y + 50;
     for (let x = 0; x < W; x += 8) {
-      const roll = SIN[(((x + cam * 0.7) / 6 + now / 140) | 0) & 63]!;
-      const roll2 = SIN[(((x - cam * 0.3) / 9 + now / 230) | 0) & 63]!;
-      const amt = (fogDay ? 5 : 3) + Math.round(roll * 2);
-      haze(x, top + Math.round(roll2 * 6), 8, HUD_Y - top, FOG_LUT, amt);
-      if (fogDay) haze(x, top + 30 + Math.round(roll * 8), 8, 26, FOG_LUT, amt + 3);
+      const roll = SIN[((((x + ((icam * 7) / 10) | 0) / 6) | 0) + ((now / 140) | 0)) & 63]!;
+      const roll2 = SIN[((((x - ((icam * 3) / 10) | 0) / 9) | 0) + ((now / 230) | 0)) & 63]!;
+      const amt = (fogDay ? 5 : 3) + (roll >> 5);
+      haze(x, top + ((roll2 * 6) >> 6), 8, HUD_Y - top, FOG_LUT, amt);
+      if (fogDay) haze(x, top + 30 + (roll >> 3), 8, 26, FOG_LUT, amt + 3);
     }
   }
   drawWeather();
@@ -484,7 +504,7 @@ function drawRoom(s: SimState, view: WorldView, d: Day, now: number): void {
     const g = m.glass;
     const gx = g.x - cam, gy = ROOM_Y + g.y;
     const sky = d.weather.sky;
-    drawSky(bod, sky, d.moon, cam * 0.2, d.wind, now, gy + g.h);
+    drawSky(bod, sky, d.moon, (cam / 5) | 0, d.windQ, now, gy + g.h);
     // Only the glass shows it: clear everything above and beside, keep the rows of the glass.
     rect(0, 0, W, gy, C.black);
     rect(0, gy, Math.max(0, gx), g.h, C.black);
