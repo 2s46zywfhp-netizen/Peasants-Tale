@@ -3,12 +3,12 @@ import { INK, parchment, rect } from '../../render/draw';
 import { W } from '../../render/fb';
 import { drawText, drawTextRight } from '../../render/font';
 import { C } from '../../render/palette';
-import { ACTIONS, QUEUE_MAX } from '../../sim/balance';
+import { ACTIONS, QUEUE_MAX, type TradeKind } from '../../sim/balance';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import type { Scene } from '../scene';
 import { probe } from '../probe';
-import { ACTION_ICON, PARAM_ICON } from '../work';
+import { ACTION_ICON, PARAM_ICON, TRADE_LABEL } from '../work';
 
 const COUNTS = Array.from({ length: QUEUE_MAX + 1 }, (_, i) => `${i}/${QUEUE_MAX}`);
 
@@ -27,7 +27,7 @@ export class QueueScene implements Scene {
 
   private build(): void {
     const q = this.game.save.data.queue;
-    this.labels = q.map((t, i) => `${i + 1}. ${ACTIONS[t.action].label}${t.param && PARAM_ICON[t.param] ? ` ${t.param.replace(/^(sell|buy)/, '$1 ').toUpperCase()}` : ''}`.slice(0, 24));
+    this.labels = q.map((t, i) => `${i + 1}. ${t.action === 'trade' && t.param ? TRADE_LABEL[t.param as TradeKind] : t.param && PARAM_ICON[t.param] ? `EAT ${t.param.toUpperCase()}` : ACTIONS[t.action].label}`.slice(0, 24));
     this.icons = q.map((t) => spriteId(`icon.${(t.param && PARAM_ICON[t.param]) || ACTION_ICON[t.action]}`));
     if (this.cursor >= q.length) this.cursor = Math.max(0, q.length - 1);
     probe('queue', this.labels.join('|'));

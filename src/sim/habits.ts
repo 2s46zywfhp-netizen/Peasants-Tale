@@ -1,7 +1,7 @@
 import {
   ACTIONS, AUTOPILOT_NOISE, AUTO_EAT_HABIT_HUNGER, AUTO_EAT_HUNGER, DEFAULT_MEAL_BLOCKS, DEFAULT_ROUTINE, DEFAULT_SUNDAY,
   DEFAULT_WEEK_WORK_DAY, ENOUGH_COOKED, LOW_COOKED, FIRE_BELOW_C, HABIT_DEFAULT_WEIGHT, HABIT_SLOT_DECAY, HABIT_WEEKLY_DECAY, HABIT_WEIGHT, PRICES,
-  LOW_GRAIN, RENT_PENCE, SURPLUS_GRAIN, URGENT_HUNGER, VICE_LATENESS_HUNGER, VICE_MORALE, WARMTH_COLD, WEEK_WORK_DAYS, type ActionId, type TradeKind,
+  LOW_GRAIN, RENT_PENCE, SURPLUS_GRAIN, URGENT_HUNGER, VICE_LATENESS_HUNGER, VICE_MORALE, WARMTH_COLD, WEEK_WORK_DAYS, type ActionId, type TradeKind, TOOL_MEND, TOOLS_MEND_BELOW,
 } from './balance';
 import { ACTION_IDS, availability, bestFood, foodServings, readyServings } from './actions';
 import type { DayInfo } from './calendar';
@@ -87,6 +87,7 @@ function tradeNeed(s: SimState): TradeKind | null {
   if (s.station.residence === 'town' && w.firewood < 2 && w.pence >= PRICES.firewoodBuy) return 'buyFirewood';
   if (w.grain > SURPLUS_GRAIN && w.pence < RENT_PENCE) return 'sellGrain';
   if (w.eggs >= PRICES.eggsPerPenny * 2) return 'sellEggs';
+  if (w.tools < TOOLS_MEND_BELOW && w.pence >= TOOL_MEND.pence + RENT_PENCE) return 'mendTools';
   return null;
 }
 

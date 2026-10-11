@@ -1,4 +1,4 @@
-import type { ActionId } from '../sim/balance';
+import type { ActionId, TradeKind } from '../sim/balance';
 import type { Field } from '../sim/state';
 import type { BeltTool } from '../save/schema';
 
@@ -12,6 +12,7 @@ export const ACTION_ICON: Readonly<Record<ActionId, string>> = {
 export const PARAM_ICON: Readonly<Record<string, string>> = {
   pottage: 'pottage', bread: 'bread', eggs: 'eggs', meat: 'meat', grain: 'grain',
   sellGrain: 'grain', buyGrain: 'grain', sellEggs: 'eggs', buyFirewood: 'firewood', sellAle: 'ale',
+  buyHen: 'hen', sellHen: 'hen', buyPig: 'pig', sellPig: 'pig', buyCow: 'cow', sellCow: 'cow', buyOx: 'ox', sellOx: 'ox', mendTools: 'hoe',
 };
 
 /** What each tool on the belt is for: A on a place picks the first of these it offers. */
@@ -63,3 +64,10 @@ export function workAnim(action: ActionId, belt: BeltTool, field: Field | null, 
       return null;
   }
 }
+
+/** Market lines in menus and the queue. */
+export const TRADE_LABEL: Readonly<Record<TradeKind, string>> = {
+  sellGrain: 'SELL GRAIN', buyGrain: 'BUY GRAIN', sellEggs: 'SELL EGGS', buyFirewood: 'BUY FIREWOOD', sellAle: 'SELL ALE',
+  buyHen: 'BUY A HEN', sellHen: 'SELL A HEN', buyPig: 'BUY A PIG', sellPig: 'SELL THE PIG', buyCow: 'BUY A COW', sellCow: 'SELL THE COW',
+  buyOx: 'BUY AN OX', sellOx: 'SELL THE OX', mendTools: 'MEND THE TOOLS',
+};

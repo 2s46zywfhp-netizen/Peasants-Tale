@@ -13,7 +13,7 @@ import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import type { Scene } from '../scene';
 import { probe } from '../probe';
-import { ACTION_ICON, PARAM_ICON, TOOL_ACTIONS } from '../work';
+import { ACTION_ICON, PARAM_ICON, TOOL_ACTIONS, TRADE_LABEL } from '../work';
 import { WorkingScene } from './working';
 
 interface Item {
@@ -24,7 +24,8 @@ interface Item {
   icon: number;
 }
 
-const TRADE_LABEL = { sellGrain: 'SELL GRAIN', buyGrain: 'BUY GRAIN', sellEggs: 'SELL EGGS', buyFirewood: 'BUY FIREWOOD', sellAle: 'SELL ALE' } as const;
+/** Market lines that make no sense for this household right now are left off the list. */
+const HIDE_TRADE = new Set(['NO ROOM', 'NONE TO SELL', 'TOOLS ARE SOUND']);
 const ROWS = 7;
 const ROW_H = 18;
 const BOX_W = 232;
@@ -184,7 +185,11 @@ export class ActionMenuScene implements Scene {
           if (n > 0) out.push({ label: `EAT ${f.toUpperCase()} ${n}`, action: id, param: f, why: availability(s, id, k.info, k.bod, f), icon: iconOf(PARAM_ICON[f]!) });
         }
       } else if (id === 'trade') {
-        for (const t of TRADE_KINDS) out.push({ label: TRADE_LABEL[t], action: id, param: t, why: availability(s, id, k.info, k.bod, t), icon: iconOf(PARAM_ICON[t]!) });
+        for (const t of TRADE_KINDS) {
+          const why = availability(s, id, k.info, k.bod, t);
+          if (why && HIDE_TRADE.has(why)) continue;
+          out.push({ label: TRADE_LABEL[t], action: id, param: t, why, icon: iconOf(PARAM_ICON[t]!) });
+        }
       } else if (WITH_SOMEONE.has(id)) {
         // Time, place and station first; whether the person will is asked in the list of people.
         const why = availability(s, id, k.info, k.bod, s.village.find(present)?.id ?? null);

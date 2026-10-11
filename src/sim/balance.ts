@@ -155,10 +155,26 @@ export const COOK_GRAIN = 1;
 export const COOK_YIELD = { bread: 18, pottage: 18 } as const;
 /** The croft garden (peas, beans, leeks, worts) adds pottage each day from May to October while there is land. */
 export const GARDEN_POTTAGE_PER_DAY = 1.5;
-export const GARDEN_MONTHS: readonly number[] = [5, 6, 7, 8, 9, 10];
+export const GARDEN_MONTHS: readonly number[] = [7, 8, 9, 10];
+/**
+ * The Hungry Gap, April to June: last year's grain runs low, the garden has not come in, and what grain there
+ * is costs dearer at market.
+ */
+export const HUNGRY_GAP = { months: [4, 5, 6] as readonly number[], grainPriceMult: 1.6 } as const;
 export const BREW_GRAIN = 1;
 export const BREW_YIELD = 8;
 export const PRICES = { grainSell: 5, grainBuy: 7, eggsPerPenny: 6, firewoodBuy: 1, alePerPenny: 2 } as const;
+/** Beasts at market (pence): bought dear, sold cheap. Most a household can keep of each. */
+export const BEAST_PRICES = {
+  hen: { buy: 3, sell: 1, max: 12 },
+  pig: { buy: 30, sell: 16, max: 2 },
+  cow: { buy: 120, sell: 70, max: 1 },
+  ox: { buy: 160, sell: 95, max: 1 },
+} as const;
+/** Having the smith mend the tools: cost (pence) and how much it restores (tools run 0..100). */
+export const TOOL_MEND = { pence: 6, restore: 35 } as const;
+/** The peasant left to habit has the tools mended when they wear below this (and the rent is safe). */
+export const TOOLS_MEND_BELOW = 30;
 
 /* ───────────────────────── Obligations ───────────────────────── */
 
@@ -316,7 +332,7 @@ export const ACTIONS: Readonly<Record<ActionId, ActionDef>> = {
   surrender: { label: 'GIVE UP THE WOODS', duration: 1, location: 'manor', blocks: [1, 2], days: 'any', activity: 'rest', effects: {} },
 };
 
-export type TradeKind = 'sellGrain' | 'buyGrain' | 'sellEggs' | 'buyFirewood' | 'sellAle';
+export type TradeKind = 'sellGrain' | 'buyGrain' | 'sellEggs' | 'buyFirewood' | 'sellAle' | 'buyHen' | 'sellHen' | 'buyPig' | 'sellPig' | 'buyCow' | 'sellCow' | 'buyOx' | 'sellOx' | 'mendTools';
 
 /** The routine a fresh peasant starts with, per block of day (weekday overrides below). */
 export const DEFAULT_ROUTINE: readonly ActionId[] = ['rest', 'workStrips', 'workStrips', 'workStrips', 'rest', 'sleep'];

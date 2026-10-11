@@ -1,6 +1,6 @@
 import {
   ACTIONS, BREW_GRAIN, BREW_YIELD, CONFESS_HEATHEN_DAYS, COOK_GRAIN, COOK_YIELD, DRUNKARD_HIT, DRUNKARD_TAVERN_PER_WEEK,
-  BRAWL_CHANCE, DEED, GOOD_NEIGHBOUR_GAIN, GOOD_NEIGHBOUR_SOCIAL_PER_WEEK, LORD_HIT, MEAL_VALUE, MEAT_SEEN, MEAT_SEEN_CHANCE, PRICES, SERVING_COST,
+  BRAWL_CHANCE, DEED, GOOD_NEIGHBOUR_GAIN, GOOD_NEIGHBOUR_SOCIAL_PER_WEEK, LORD_HIT, MEAL_VALUE, MEAT_SEEN, MEAT_SEEN_CHANCE, PRICES, SERVING_COST, BEAST_PRICES, HUNGRY_GAP, TOOL_MEND,
   TAG_DAYS, VICE_MORALE, type ActionId, type Effects, type Food, type TradeKind,
 } from './balance';
 import type { DayInfo } from './calendar';
@@ -17,7 +17,20 @@ import { accuse, askFavour, deed, favourShort, hearGossip, helpNeighbour, presen
 
 export const ACTION_IDS = Object.keys(ACTIONS) as ActionId[];
 export const FOODS: readonly Food[] = ['pottage', 'bread', 'eggs', 'meat', 'grain'];
-export const TRADE_KINDS: readonly TradeKind[] = ['sellGrain', 'buyGrain', 'sellEggs', 'buyFirewood', 'sellAle'];
+export const TRADE_KINDS: readonly TradeKind[] = [
+  'sellGrain', 'buyGrain', 'sellEggs', 'buyFirewood', 'sellAle', 'buyHen', 'sellHen', 'buyPig', 'sellPig', 'buyCow', 'sellCow', 'buyOx', 'sellOx', 'mendTools',
+];
+type Beast = keyof typeof BEAST_PRICES;
+const BEAST_FIELD = { hen: 'hens', pig: 'pig', cow: 'cow', ox: 'ox' } as const;
+const beastOf = (kind: TradeKind): Beast | null => {
+  const m = /^(buy|sell)(Hen|Pig|Cow|Ox)$/.exec(kind);
+  return m ? (m[2]!.toLowerCase() as Beast) : null;
+};
+
+/** Grain's market price this month: dearer in the Hungry Gap. */
+export function grainBuyPrice(month: number): number {
+  return HUNGRY_GAP.months.includes(month) ? Math.round(PRICES.grainBuy * HUNGRY_GAP.grainPriceMult) : PRICES.grainBuy;
+}
 
 function servings(s: SimState, food: Food): number {
   return Math.floor((s.wealth[food] + 1e-9) / SERVING_COST[food]);
@@ -44,14 +57,23 @@ export function bestFood(s: SimState, info: DayInfo): Food | null {
   return order.find((f) => servings(s, f) >= mouths) ?? order.find((f) => servings(s, f) >= 1) ?? (servings(s, 'meat') >= 1 ? 'meat' : null);
 }
 
-export function tradeAvailable(s: SimState, kind: TradeKind): string | null {
+export function tradeAvailable(s: SimState, kind: TradeKind, month = 1): string | null {
   const w = s.wealth;
+  const beast = beastOf(kind);
+  if (beast) {
+    const p = BEAST_PRICES[beast];
+    const have = w[BEAST_FIELD[beast]];
+    if (kind.startsWith('buy')) return have >= p.max ? 'NO ROOM' : w.pence >= p.buy ? null : 'TOO POOR';
+    return have >= 1 ? null : 'NONE TO SELL';
+  }
   switch (kind) {
+    case 'mendTools': return w.tools >= 100 - TOOL_MEND.restore / 2 ? 'TOOLS ARE SOUND' : w.pence >= TOOL_MEND.pence ? null : 'TOO POOR';
     case 'sellGrain': return w.grain >= 1 ? null : 'NO GRAIN';
-    case 'buyGrain': return w.pence >= PRICES.grainBuy ? null : 'TOO POOR';
+    case 'buyGrain': return w.pence >= grainBuyPrice(month) ? null : 'TOO POOR';
     case 'sellEggs': return w.eggs >= PRICES.eggsPerPenny ? null : 'TOO FEW EGGS';
     case 'buyFirewood': return w.pence >= PRICES.firewoodBuy ? null : 'TOO POOR';
     case 'sellAle': return w.ale >= PRICES.alePerPenny ? null : 'NO ALE';
+    default: return 'NOT SOLD HERE';
   }
 }
 
@@ -80,7 +102,7 @@ export function resourceShort(s: SimState, id: ActionId, info: DayInfo, param: s
     case 'workStrips': return s.obligations.evicted ? 'NO LAND' : null;
     case 'weekWork': return s.obligations.evicted ? 'NO LAND' : null;
     case 'tavern': return w.pence < 1 ? 'NO PENNY' : null;
-    case 'trade': return param ? tradeAvailable(s, param as TradeKind) : null;
+    case 'trade': return param ? tradeAvailable(s, param as TradeKind, info.month) : null;
     case 'court': return courtShort(s, param);
     case 'marry': return marryShort(s, param);
     case 'helpNeighbour':
@@ -117,9 +139,29 @@ export function eat(s: SimState, info: DayInfo, food: Food | null = null): Food 
   return f;
 }
 
-function trade(s: SimState, kind: TradeKind): string {
+function trade(s: SimState, kind: TradeKind, month: number): string {
   const w = s.wealth;
+  const beast = beastOf(kind);
+  if (beast) {
+    const p = BEAST_PRICES[beast];
+    const f = BEAST_FIELD[beast];
+    if (kind.startsWith('buy')) {
+      if (w[f] >= p.max || w.pence < p.buy) return 'haggles but buys nothing';
+      w.pence -= p.buy;
+      w[f] += 1;
+      return `buys ${beast === 'ox' ? 'an ox' : `a ${beast}`} for ${p.buy}d`;
+    }
+    if (w[f] < 1) return 'has nothing to sell';
+    w[f] -= 1;
+    w.pence += p.sell;
+    return `sells ${beast === 'ox' ? 'an ox' : `a ${beast}`} for ${p.sell}d`;
+  }
   switch (kind) {
+    case 'mendTools':
+      if (w.pence < TOOL_MEND.pence) return 'cannot pay the smith';
+      w.pence -= TOOL_MEND.pence;
+      w.tools = Math.min(100, w.tools + TOOL_MEND.restore);
+      return `has the smith mend the tools for ${TOOL_MEND.pence}d`;
     case 'sellGrain': {
       const n = Math.min(2, Math.floor(w.grain));
       w.grain -= n;
@@ -127,10 +169,11 @@ function trade(s: SimState, kind: TradeKind): string {
       return `sells ${n} bu of grain for ${n * PRICES.grainSell}d`;
     }
     case 'buyGrain': {
-      const n = Math.min(2, Math.floor(w.pence / PRICES.grainBuy));
-      w.pence -= n * PRICES.grainBuy;
+      const price = grainBuyPrice(month);
+      const n = Math.min(2, Math.floor(w.pence / price));
+      w.pence -= n * price;
       w.grain += n;
-      return `buys ${n} bu of grain for ${n * PRICES.grainBuy}d`;
+      return `buys ${n} bu of grain for ${n * price}d`;
     }
     case 'sellEggs': {
       const d = Math.floor(w.eggs / PRICES.eggsPerPenny);
@@ -149,6 +192,8 @@ function trade(s: SimState, kind: TradeKind): string {
       s.counters.aleSold += d;
       return `sells ale for ${d}d`;
     }
+    default:
+      return 'haggles but buys nothing';
   }
 }
 
@@ -240,7 +285,7 @@ export function runActionBlock(s: SimState, id: ActionId, param: string | null, 
       }
       hearGossip(s);
       return 'passes the time on the green';
-    case 'trade': return param ? trade(s, param as TradeKind) : 'haggles but buys nothing';
+    case 'trade': return param ? trade(s, param as TradeKind, info.month) : 'haggles but buys nothing';
     case 'eat':
       return '';
     case 'court': return param ? court(s, param, info) : 'idles on the green';
