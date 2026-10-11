@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createLife } from '../sim/sim';
 import { addTag } from '../sim/state';
 import { bury } from '../sim/bloodline';
-import { almanacLines, chronicleLines, dutyLines, householdLines, selfLines, soulLines, standingLines, villageLines } from './symptoms';
+import { almanacLines, chronicleLines, storesLines, dutyLines, householdLines, selfLines, soulLines, standingLines, villageLines } from './symptoms';
 
 describe('stat screen symptoms', () => {
   it('describes the body in symptoms, never numbers', () => {
@@ -51,6 +51,14 @@ describe('stat screen symptoms', () => {
     expect(l.some((x) => /^I\. .*13[01]\d-1345/.test(x))).toBe(true);
     expect(l).toContain('Died of the fever.');
     expect(l.some((x) => x.startsWith('II. ') && x.includes('living'))).toBe(true);
+  });
+  it('the stores page counts what the household has', () => {
+    const s = createLife(5, 0);
+    const l = storesLines(s);
+    expect(l).toContain('Bread: 6 loaves.');
+    expect(l).toContain('Grain: 50 bushels.');
+    expect(l).toContain('Purse: 24d.');
+    expect(l.some((x) => x.includes('offering'))).toBe(true);
   });
   it('the almanac names date, moon and weather', () => {
     const l = almanacLines(createLife(1, 0), 0);

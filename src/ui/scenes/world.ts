@@ -8,8 +8,9 @@ import { BED_SLEEP, DOOR_X, FEET_MAX, FEET_MIN, ROOM_TOP, ROOM_W, SPOTS } from '
 import { updateWeather } from '../../render/weather';
 import { reserveTier } from '../../sim/body';
 import { dayInfo } from '../../sim/calendar';
+import type { SimState } from '../../sim/state';
 import { idx, present } from '../../sim/village';
-import { frame } from '../../render/draw';
+import { frame, rect } from '../../render/draw';
 import { drawText, wrap } from '../../render/font';
 import { isBoonDay, isWeekWorkDay } from '../../sim/obligations';
 import type { ActionId, Location } from '../../sim/balance';
@@ -37,6 +38,9 @@ const PEASANT: Anim[][] = BODY_VARIANTS.map((v) => POSES.map((p) => anim(`peasan
 const SPAWN: Record<SceneId, [number, number]> = {
   cottage: [7, 0], green: [1, 2], fields: [4, 2], woods: [8, 2], churchyard: [4, 2], church: [4, 6], manor: [5, 2], town: [1, 2], camp: [1, 2],
 };
+
+const STAGES = ['gone', 'fallow', 'unsown', 'growing', 'ripe', 'harvested'] as const;
+const CROPS = [null, 'wheat', 'rye', 'barley', 'oats', 'peas'] as const;
 
 /** What can be done at each spot in the cottage (same order as SPOTS: hearth, table, bed). */
 const SPOT_MENUS: readonly { title: string; actions: readonly ActionId[] }[] = [
@@ -177,6 +181,38 @@ export class WorldScene implements Scene {
     const cy = this.y + 12 + (this.dir === 'up' ? -12 : this.dir === 'down' ? 10 : 0);
     this.facingCol = cx >> 4; // TILE = 16: shifts floor without doubles
     this.facingRow = (cy - oy) >> 4;
+  }
+
+  /** The family field underfoot (index into sim fields) or -1, with its label and what A does there. */
+  private fieldIdx = -1;
+  private fieldKey = -1;
+  private fieldLabel = '';
+  private fieldPrompt = '';
+
+  private updateFieldLabel(s: SimState): void {
+    const sc = this.scene;
+    if (sc.side || !sc.outdoor) {
+      this.fieldIdx = -1;
+      return;
+    }
+    const t = tileAt(sc, (this.x + 8) >> 4, (this.y + 12 - originY(sc)) >> 4);
+    const n = t?.field ?? -1;
+    this.fieldIdx = n;
+    if (n < 0) return;
+    const f = s.fields[n];
+    if (!f) return;
+    // Rebuilt only when the field or its state changes (not every frame).
+    const stage = f.acres === 0 ? 'gone' : f.stage;
+    const key = n * 100 + STAGES.indexOf(stage) * 10 + CROPS.indexOf(f.crop);
+    if (key === this.fieldKey) return;
+    this.fieldKey = key;
+    const name = f.id.toUpperCase();
+    const crop = f.crop ? f.crop.toUpperCase() : '';
+    this.fieldLabel =
+      stage === 'gone' ? `${name}: NOT YOURS` : stage === 'fallow' ? `${name}: FALLOW` : stage === 'unsown' ? `${name}: SOW ${crop}`
+      : stage === 'growing' ? `${name}: ${crop} GROWS` : stage === 'ripe' ? `${name}: ${crop} RIPE` : `${name}: STUBBLE`;
+    if (this.fieldLabel.length > 20) this.fieldLabel = this.fieldLabel.slice(0, 20);
+    this.fieldPrompt = stage === 'unsown' ? 'A:SOW' : stage === 'growing' ? 'A:WEED' : stage === 'ripe' ? 'A:REAP' : stage === 'gone' ? '' : 'A:STRIPS';
   }
 
   /** Standing just below our own cottage door on the green? */
@@ -511,6 +547,11 @@ export class WorldScene implements Scene {
     if (now > this.messageUntil) this.message = '';
     const near = this.nearNpc();
     const loc = near ? null : this.hotspot();
+    this.updateFieldLabel(s);
+    if (!near && !this.message && this.fieldIdx >= 0) {
+      this.view.prompt = this.fieldPrompt;
+      return;
+    }
     const spot = this.scene.side ? this.sideSpot() : -1;
     if (!this.scene.side && !near && !this.message && this.atHomeDoor()) {
       this.view.prompt = 'UP:HOME';
@@ -555,6 +596,10 @@ export class WorldScene implements Scene {
 
   draw(ctx: CanvasRenderingContext2D, now: number): void {
     drawWorld(ctx, this.game.sim(), this.view, now);
+    if (this.fieldIdx >= 0 && this.fieldLabel && this.game.tutorial() >= HINTS.length) {
+      rect(ctx, 0, 0, this.fieldLabel.length * 8 + 4, 10, C.night);
+      drawText(ctx, this.fieldLabel, 2, 1, C.gold);
+    }
     this.drawHint(ctx);
     if (this.fadeT >= 0) {
       const half = FADE_MS / 2;

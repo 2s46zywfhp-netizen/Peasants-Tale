@@ -200,3 +200,27 @@ export function almanacLines(s: SimState, now: number): string[] {
     ...(i.isFastDay ? ['A fast day: no meat.'] : []),
   ];
 }
+
+const n1 = (v: number) => Math.floor(v + 1e-9);
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+/** The household's stores, counted: what there is to eat, burn, sell and give. */
+export function storesLines(s: SimState): string[] {
+  const w = s.wealth;
+  const out = [
+    `Bread: ${plural(n1(w.bread), 'loaf', 'loaves')}.`,
+    `Pottage: ${plural(n1(w.pottage), 'bowl', 'bowls')}.`,
+    `Meat: ${plural(n1(w.meat), 'portion', 'portions')}.`,
+    `Eggs: ${n1(w.eggs)}.`,
+    `Grain: ${plural(n1(w.grain), 'bushel', 'bushels')}.`,
+    `Ale: ${plural(n1(w.ale), 'jug', 'jugs')}.`,
+    `Firewood: ${plural(n1(w.firewood), 'bundle', 'bundles')}.`,
+    `Purse: ${n1(w.pence)}d.`,
+  ];
+  const beasts = [w.hens ? plural(w.hens, 'hen', 'hens') : '', w.pig ? 'a pig' : '', w.cow ? 'a cow' : '', w.ox ? 'an ox' : ''].filter(Boolean);
+  out.push(`Beasts: ${beasts.length ? beasts.join(', ') : 'none'}.`);
+  out.push(`Tools: ${w.tools >= 60 ? 'sound' : w.tools >= 30 ? 'worn' : 'nearly useless'}.`);
+  if (s.obligations.debt > 0) out.push(`Owed to the manor: ${n1(s.obligations.debt)}d.`);
+  out.push('An offering at the barrow takes two loaves or a jug of ale.');
+  return out;
+}

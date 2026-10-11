@@ -195,11 +195,11 @@ export const SCENES: Record<SceneId, SceneDef> = {
       'DT..,(O)DDD..T...D.T',
       'D..r..,..===========',
       '...I...,...,..T..,..',
-      '~~~~~~~~....~~~~....',
+      '~~~~~~~~~~~~~~~~~~..',
       'D,..D..TDDDD..T..DDD',
     ],
     npcs: [
-      { who: 'blackDog', x: 96, y: 52, wander: 10, when: 'night', talk: 'dog' },
+      { who: 'blackDog', x: 96, y: 34, wander: 10, when: 'night', talk: 'dog' },
       { who: 'goodwife', villager: 'matilda', x: 24, y: 40, wander: 6, when: 'day', talk: 'villager' },
     ],
   },

@@ -143,6 +143,9 @@ function fieldSprite(s: SimState, n: number): number {
   }
 }
 
+let litWindow = -1;
+let plainWindow = -1;
+
 /* ── our door ── */
 
 let lanternGlow = -1;
@@ -402,7 +405,10 @@ export function drawWorld(ctx: CanvasRenderingContext2D, s: SimState, view: Worl
       const a = c.anims[ti];
       const tx = (ti % COLS) * TILE - cam;
       if (tx < -40 || tx > 200) continue;
-      drawSprite(ctx, litImg, a ? frameAt(a, now, ti * 97) : c.ids[ti]!, tx, oy + ((ti / COLS) | 0) * TILE);
+      litWindow = litWindow < 0 ? spriteId('tile.window.lit') : litWindow;
+      plainWindow = plainWindow < 0 ? spriteId('tile.window') : plainWindow;
+      const id = a ? frameAt(a, now, ti * 97) : c.ids[ti] === plainWindow ? litWindow : c.ids[ti]!;
+      drawSprite(ctx, litImg, id, tx, oy + ((ti / COLS) | 0) * TILE);
       const flick = (now >> 7) % 3 === 0 ? 1 : 0;
       drawSprite(ctx, litImg, L.glow, L.x - cam + flick, L.y);
     }

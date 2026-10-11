@@ -4,12 +4,13 @@ import { useUiRemap } from '../../render/palette';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import type { Scene } from '../scene';
-import { almanacLines, chronicleLines, dutyLines, householdLines, selfLines, soulLines, standingLines, villageLines } from '../symptoms';
+import { almanacLines, chronicleLines, storesLines, dutyLines, householdLines, selfLines, soulLines, standingLines, villageLines } from '../symptoms';
 import { probe } from '../probe';
 import { TitleScene } from './title';
 
 const PAGES = [
   ['YOURSELF', (g: Game) => selfLines(g.sim())],
+  ['STORES', (g: Game) => storesLines(g.sim())],
   ['FAMILY', (g: Game) => householdLines(g.sim())],
   ['SOUL', (g: Game) => soulLines(g.sim())],
   ['STANDING', (g: Game) => standingLines(g.sim())],

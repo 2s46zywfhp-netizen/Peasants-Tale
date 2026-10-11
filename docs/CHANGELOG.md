@@ -1,5 +1,22 @@
 # Changelog
 
+## From play-testing on iPhone
+- Updates now reach installed copies: the page comes from the network first (the saved copy is only
+  for offline play), and the app reloads itself once when a new version arrives.
+- A chosen task plays out on screen with a progress bar for a moment, then its time passes at once and
+  what came of it is shown (B leaves it running in real time instead).
+- Each spot in the cottage has its own actions: the bed (sleep, rest, pray), the hearth (cook, brew,
+  rest by the fire), the table (meals).
+- STORES page: the household's food, grain, ale, firewood, purse and beasts, counted, and what an
+  offering at the barrow needs.
+- Fields: clearer ploughed furrows, shoots, standing corn, ripe grain and stubble; standing on a strip
+  names the field and its state, and the prompt says what A does there (SOW, WEED, REAP).
+- Villagers each have their own voice, talk about the season, weather, hour, feasts, harvest and
+  plague, pass on gossip they have heard, and greet you by what they think of you.
+- Lit windows at night: warm panes behind dark mullions and a soft halo round the frame, in place of
+  dithered speckle.
+- Woods: calmer water in one continuous stream; the black dog no longer paces on the water.
+
 ## Core loop: home, heat, prayer
 - Our own cottage is marked on the green: a lantern hangs beside the door (lit from dusk to dawn) and
   standing at it shows UP:HOME. The neighbours' doors stay shut.

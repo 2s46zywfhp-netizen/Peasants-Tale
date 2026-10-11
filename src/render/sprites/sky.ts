@@ -65,9 +65,13 @@ export const CLOUDS = [
 const BAYER4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 const bayer = (x: number, y: number) => BAYER4[(y & 3) * 4 + (x & 3)]! / 16;
 
-/** A pool of firelight, dithered so it stays inside the palette: gold at the heart, ember at the edge. */
-function glow(w: number, h: number, strength: number): string[] {
+/**
+ * A pool of firelight, dithered so it stays inside the palette: gold at the heart, ember at the edge.
+ * `hole` leaves the middle clear (w, h of a window the halo surrounds rather than covers).
+ */
+function glow(w: number, h: number, strength: number, hole: readonly [number, number] | null = null): string[] {
   return paint(w, h, (x, y) => {
+    if (hole && Math.abs(x - w / 2 + 0.5) < hole[0] / 2 + 1 && Math.abs(y - h / 2 + 0.5) < hole[1] / 2 + 1) return '.';
     const dx = (x - w / 2 + 0.5) / (w / 2);
     const dy = (y - h / 2 + 0.5) / (h / 2);
     const d = Math.sqrt(dx * dx + dy * dy);
@@ -84,7 +88,7 @@ function glow(w: number, h: number, strength: number): string[] {
 export const GLOWS = {
   hearth: glow(48, 40, 0.5),
   candle: glow(24, 24, 0.45),
-  window: glow(28, 20, 0.35),
+  window: glow(30, 22, 0.28, [10, 9]),
 };
 
 /** Fog bank, tileable horizontally (64x32): sparse mist thickening toward the ground. */

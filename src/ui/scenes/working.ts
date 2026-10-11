@@ -15,6 +15,8 @@ const DOING: Partial<Record<ActionId, string>> = {
   wash: 'WASHING', socialise: 'ON THE GREEN', tavern: 'AT THE ALEHOUSE', trade: 'AT MARKET', hire: 'WORKING FOR HIRE',
 };
 
+const NOW_IS = ['dawn', 'morning', 'midday', 'afternoon', 'dusk', 'night'] as const;
+
 /** Log entries worth telling when the work is done. */
 const TOLD: ReadonlySet<LogType> = new Set(['farm', 'manor', 'church', 'family', 'village', 'court', 'trade', 'event', 'body', 'illness', 'dark', 'rank']);
 
@@ -47,7 +49,7 @@ export class WorkingScene implements Scene {
     const before = g.sim().log.length;
     g.hasten();
     const fresh = g.sim().log.slice(before).filter((e) => TOLD.has(e.type));
-    const text = fresh.length ? fresh.slice(-2).map((e) => e.text) : ['DONE.'];
+    const text = fresh.length ? fresh.slice(-2).map((e) => e.text) : [`Done. It is ${NOW_IS[g.sim().block % 6]} now.`];
     this.result = text.flatMap((t) => wrap(t.toUpperCase(), 18)).slice(0, 5);
     this.shownAt = g.frameNow();
     probe('working', 'done');

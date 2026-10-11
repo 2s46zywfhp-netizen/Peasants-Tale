@@ -19,22 +19,33 @@ const path = paint(16, 16, (x, y) => {
   return (x === 2 || x === 13) && noise(x, y, 4) > 0.5 ? 'c' : 'b';
 });
 const cobble = paint(16, 16, (x, y) => ((x % 8 === 0 || y % 6 === (x < 8 ? 0 : 3)) ? '1' : noise(x, y, 5) > 0.85 ? '6' : '7'));
+/** Still water: deep navy, a few long soft ripples drifting across, a rare glint. */
 const water = (phase: number) =>
   paint(16, 16, (x, y) => {
-    const ripple = (x + phase * 3 + Math.floor(y / 4) * 5) % 8;
-    if (y % 4 === 1 && ripple < 3) return '3';
-    if (y % 4 === 3 && ripple === 5) return '4';
-    return '2';
+    const band = (y + 2) % 6;
+    const run = (x + phase * 2 + (y >> 1) * 5) % 16;
+    if (band === 0 && run < 5) return '3';
+    if (band === 3 && run === 9) return '4';
+    return y < 2 ? '1' : '2';
   });
-const soil = paint(16, 16, (x, y) => (y % 4 === 0 ? 'c' : y % 4 === 3 ? 'b' : noise(x, y, 6) > 0.92 ? 'c' : 'b'));
+/** Ploughed strips: ridge, side, furrow, deep shadow, repeating; the odd clod. */
+const soil = paint(16, 16, (x, y) => {
+  const f = y % 4;
+  if (f === 0) return noise(x, y, 6) > 0.85 ? 'e' : 'c';
+  if (f === 3) return '1';
+  return noise(x, y, 7) > 0.9 ? 'c' : 'b';
+});
 const crop = (stage: 'sprout' | 'growing' | 'ripe' | 'stubble') =>
   paint(16, 16, (x, y) => {
-    const furrow = y % 4;
-    if (stage === 'stubble') return furrow === 0 && x % 2 === 0 ? 'e' : furrow === 0 ? 'c' : 'b';
-    if (stage === 'sprout') return furrow === 0 ? (x % 3 === 0 ? 'd' : 'c') : 'b';
-    if (stage === 'growing') return furrow === 3 ? 'b' : (x + furrow) % 2 === 0 ? 'd' : furrow === 0 ? '3' : 'd';
-    // ripe: heads of grain
-    return furrow === 3 ? 'c' : furrow === 0 ? (x % 2 ? 'f' : 'e') : x % 3 === 0 ? 'c' : 'e';
+    const f = y % 4;
+    const ground = f === 3 ? '1' : f === 0 ? 'c' : 'b';
+    if (stage === 'stubble') return f === 0 ? (x % 2 === 0 ? 'e' : 'f') : f === 1 && x % 2 === 0 ? 'e' : ground;
+    // Young shoots: a green tip on every other ridge point.
+    if (stage === 'sprout') return f === 0 && x % 3 === 0 ? 'd' : f === 3 && x % 3 === 0 ? '3' : ground;
+    // Standing green corn: stalks over the ridges, lighter at the tips.
+    if (stage === 'growing') return f === 3 ? (x % 2 ? 'd' : '1') : f === 0 ? (x % 2 ? '3' : 'd') : x % 2 ? 'd' : '3';
+    // Ripe: heavy gold heads, pale stalks.
+    return f === 0 ? (x % 2 ? 'f' : 'e') : f === 1 ? (x % 3 === 0 ? 'e' : 'f') : f === 2 ? (x % 2 ? 'e' : 'c') : 'c';
   });
 
 const TREE = px(`
@@ -78,6 +89,9 @@ const THATCH_EDGE = paint(16, 16, (x, y) => (x < 16 - y ? ((x + y) % 4 === 0 ? '
 const DAUB = paint(16, 16, (x, y) => (x === 0 || x === 15 || y === 0 || y === 8 || (x === y && y < 8) ? 'b' : noise(x, y, 10) > 0.8 ? 'e' : '5'));
 const DOOR = paint(16, 16, (x, y) => (x < 3 || x > 12 ? (x === 0 || x === 15 ? 'b' : '5') : y < 2 ? 'b' : x === 7 ? 'b' : y === 8 && x === 11 ? '6' : 'c'));
 const WINDOW = paint(16, 16, (x, y) => (x === 0 || x === 15 ? 'b' : x > 3 && x < 12 && y > 3 && y < 11 ? (x === 7 || x === 8 || y === 7 ? 'b' : '0') : '5'));
+/** The same window at night with a fire inside: warm panes, brighter low down where the hearth is. */
+const WINDOW_LIT = paint(16, 16, (x, y) =>
+  x === 0 || x === 15 ? 'b' : x > 3 && x < 12 && y > 3 && y < 11 ? (x === 7 || x === 8 || y === 7 ? 'b' : y > 7 ? 'f' : y === 4 ? '9' : 'f') : '5');
 const WELL = overlay(cobble, px(`
 ....c......c....
 ....cccccccc....
@@ -438,6 +452,7 @@ export const TILES: Readonly<Record<string, Rows>> = {
   daub: DAUB,
   door: DOOR,
   window: WINDOW,
+  'window.lit': WINDOW_LIT,
   well: WELL,
   sign: SIGN,
   stone: STONE,
