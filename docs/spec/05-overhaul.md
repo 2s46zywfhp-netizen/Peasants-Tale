@@ -1,10 +1,15 @@
-=== PHASE 6 SPEC — 16-bit overhaul, scaling, full audit ===
+=== PHASE 5 SPEC — 16-bit overhaul, scaling, full audit ===
+(Sent as "Phase 6"; the owner confirmed it is Phase 5. "Phase 5" items below are specified here.)
 
 ## Problems I've noticed
-[FILL IN: e.g. "screen is small/blurry", "buttons too close together", "walking feels stiff", "can't tell what I can interact with"]
+(The owner chose the template's examples.)
+- Screen is small/blurry.
+- Buttons too close together.
+- Walking feels stiff.
+- Can't tell what I can interact with.
 
 ## Step 1 — Audit first
-- Compare the current build against docs/spec/01 through 05. List every missing, broken or half-finished item in docs/AUDIT.md.
+- Compare the current build against docs/spec/01 through 04 (and this spec). List every missing, broken or half-finished item in docs/AUDIT.md.
 - Fix every item in AUDIT.md as part of this phase.
 - The sim (/src/sim) is not rewritten. Only fix bugs found in the audit. Saves must keep working: add a migration if save shape changes.
 

@@ -1,5 +1,5 @@
 # Progress
-Current phase: 6
+Current phase: 5
 Resume point: none
 ## Checklist
 - [ ] 1. AUDIT.md lists all gaps found and every one is fixed or explained under Blocked.
