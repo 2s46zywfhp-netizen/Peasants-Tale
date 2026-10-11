@@ -1,6 +1,6 @@
 # Progress
 Current phase: 5
-Resume point: step 5 sprite pipeline done (tools/spritegen -> public/sprites, palette test in src/render/sheets.test.ts); docs/AUDIT.md written (13 gaps). Next: new indexed framebuffer renderer at 256x224 (src/render/fb.ts, palette LUTs + lighting), then scaling/shell, scenes, feel, QA.
+Resume point: renderer, shell, scenes, UI, belt/queue, save schema 5 and perf done and committed; audit gaps 1-11 and 13 fixed (12 = record URL at ship). Next: final visual QA pass (e2e/screenshots.mjs -> docs/screenshots/), update AUDIT.md statuses, CHANGELOG, tick boxes, full suite, push, confirm Netlify.
 ## Checklist
 - [ ] 1. AUDIT.md lists all gaps found and every one is fixed or explained under Blocked.
 - [ ] 2. Crisp, even pixels at integer scale on all five viewports (verified by screenshot).
