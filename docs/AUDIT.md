@@ -202,3 +202,66 @@ them as gaps. It does list functional gaps.
 - Spec 01: that vibration fails silently on iOS, that the clipboard export and import work in iOS Safari, and that audio unlocks on the first tap in iOS Safari.
 - Spec 03 #6 and Spec 04 #5: 60 fps on a real mid-range phone. `e2e/perf.mjs` gives only a throttled-Chromium proxy.
 - Spec 01: that a push to `main` triggers the Netlify deploy automatically. The site and its ready deploy exist, but the GitHub link is set in Netlify's settings, not in the repo.
+
+## Resolution (Phase 5)
+
+Every gap above is fixed. Where the fix needed a judgement, it is noted.
+
+1. **Hastening.** The owner asked for tasks to pass quickly while watched, so hastening stays, but it is
+   capped. A refilling allowance (`HASTE_BUDGET_MS` = half a real day at once, `HASTE_REFILL` = 1) means a
+   life can run at most about twice as fast as the clock over any long stretch. If the allowance runs out,
+   the task carries on in real time ("The day will not be hurried"). Tested in `sim.test.ts`. A
+   "diligent, hastening every task" playstyle is now in the balance runs and `docs/BALANCE.md`.
+2. **Beasts and tools.** Hens, a pig, a cow and an ox can be bought (dear) and sold (cheap) at market, up
+   to a household limit. The smith mends worn tools. Prices are in `balance.ts` (`BEAST_PRICES`,
+   `TOOL_MEND`). The autopilot has the tools mended when they wear below `TOOLS_MEND_BELOW`. The exploit
+   tests now count beasts in the household's value; the buy/sell round trip and the household limit are
+   tested.
+3. **The Hungry Gap.** From April to June (`HUNGRY_GAP`), grain costs `grainPriceMult` times as much at
+   market, and the croft garden only comes in from July. `hungryGap.test.ts` checks the price, and checks
+   that an ordinary life left to habit has a leaner larder in the gap than over the rest of the year.
+4. **Debug combo.** START and SELECT now act when released, and not at all if the other one was held at
+   any point. Tested in `input.test.ts`, and in the browser by `e2e/verify.mjs`.
+5. **Plague look.** The world LUT follows `plagueTint(s)` (omens and outbreak) rather than calendar years.
+   The rooms go through the same season, plague and hour tables as the outdoors.
+6. **Per-frame allocation.**
+   - Menus build their lists when they open, after input and when the block changes; nothing is built
+     in `draw()`.
+   - The world's movement and camera use fixed-point integers, and the calendar and compiled terrain are
+     cached.
+   - `e2e/perf.mjs` profiles the world, the cottage, an open action menu, settings and the status pages
+     (`SCREEN=`).
+7. **Household on screen.** The household is drawn from `s.members`, with the sprite chosen by role, sex
+   and age:
+   - a wife, or a husband after a daughter inherits;
+   - each child over two;
+   - grown children;
+   - a surviving parent (elder or goodwife).
+
+   The peasant's body state (thin, gaunt, skeletal, stout, sick, cold) is drawn with sprite layers. The
+   generated sprites have no body-state layers for other characters, so kin show no body state.
+8. **Neglect.** A household nobody has tended for a week drifts each day (`UNWATCHED` in `balance.ts`):
+   - morale falls;
+   - standing with the village and the manor falls, never below a floor;
+   - work done by habit alone on the strips is sloppier.
+
+   The balance runs now assert that the neglectful and absent households end thinner, poorer and lower in
+   the lord's and village's eyes than the diligent one, with more fines, and still alive. The absent also
+   end with lower morale. `docs/BALANCE.md` is regenerated.
+9. **Parchment Log.** Every action but eating has a phrase (`PHRASE` is typed to need all of them), with a
+   test.
+10. **Omens.** The text now says "June, 1348", matching `omenFrom` (1 June).
+11. **Literals.** These are now in `balance.ts`:
+    - the ale offering (`FAE.offeringAle`);
+    - the poaching fine (`POACHING_FINE`);
+    - the neighbour's gift of loaves (`GIFT_BREAD`);
+    - the courtship age limit (`MARRY_MAX_AGE`);
+    - the villagers' old-age deaths (`VILLAGER_OLD_AGE`, `OLD_AGE_DEATH_PER_YEAR`).
+
+    The STORES page reads the offering cost from `FAE`.
+12. **Live URL.** Recorded in `docs/PROGRESS.md` with the deploy status at the end of the phase.
+13. **Browser checks.** Playwright is a dev dependency.
+    - `npm run e2e` builds the app, serves the production build, and runs `e2e/verify.mjs` (28 checks:
+      flows, prompts, queue, belt, debug combo, saves) and `e2e/screenshots.mjs`.
+    - The old phase 3 and 4 scripts walked maps that no longer exist, so they are retired.
+    - The UI flows they covered are in `verify.mjs`, using `?qa` hooks.

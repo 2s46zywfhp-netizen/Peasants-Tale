@@ -1,5 +1,47 @@
 # Changelog
 
+## Phase 5: the 16-bit overhaul
+- **Sharper, bigger screen.** The game is drawn at 256x224 and scaled in whole device pixels (4x on
+  most phones, 2x on a 375-wide one), never stretched or blurred; spare room goes to the bezel. It is
+  re-fitted on resize, rotation and when the browser's toolbars move.
+- **A new handheld.** Dark plastic with a fine grain, a deep bezel, a bigger D-pad, A and B in the right
+  thumb's reach, START and SELECT with large touch areas, and two shoulder buttons: **L** changes the tool
+  on your belt, **R** shows the tasks waiting. Every button is at least 48 px; presses show and buzz.
+  Pinch and double-tap zoom are blocked.
+- **32 colours and real light.** Eight colour ramps; seasons, the hours, the pestilence and fog are
+  colour tables, never tints. Light is worked out per pixel: the hearth, candles, a rushlight at dusk,
+  lanterns, lit windows, the camp fire and the moon. Firelight is warm, moonlit nights teal and navy with
+  cream highlights, and light fades out with ordered dithering. DMG mode is now earned by keeping a life
+  going for four weeks.
+- **All-new art**, generated from material masks: a 16x32 peasant who walks, runs, breathes, chops,
+  splits, hoes, sows, reaps, threshes, stirs, carries, milks, prays, eats and sleeps, and shows hunger,
+  sickness and cold on the body; the family, villagers, beasts and the black dog; autotiled ground;
+  thatched cottages, the church, the manor gate, the barrow, trees, carts and stalls; icons for every
+  food, beast and tool; parchment windows.
+- **The world rebuilt.** Every place is two screens wide under a five-layer sky (bands, moon in its
+  phase, clouds, the castle and church on the hill, the treeline). Rain splashes where it lands, snow
+  settles on roofs and ground and melts again, fog rolls, wind bends the grass and the smoke, the moon
+  shines in the stream. The cottage and church are lit side-view rooms; the hearth burns, sparks and
+  smokes as the sim says.
+- **Walking feels better**: the peasant speeds up and stops short, breaks into a run, slides round
+  corners, and the camera eases after them. Scene changes wipe.
+- **You can see what to do.** A bubble over anything you face says what A does ("A: CHOP",
+  "UP: HOME"); a dying fire and hungry beasts glow gently; needs pulse in the HUD.
+- **The task queue.** In any menu, R queues the chosen task; they are done in turn as each ends.
+- **Market**: hens, a pig, a cow and an ox can be bought and sold, and the smith mends worn tools.
+- **The Hungry Gap**: from April to June grain is dear and the garden has not yet come in.
+- **Neglect shows**: a household nobody tends for a week loses heart, the manor and the village think
+  less of it, and work done by habit alone is sloppier.
+- **Hastening is capped**: a chosen task's time can be passed at once only as far as an allowance that
+  refills with real time (the life can't run more than about twice as fast as the clock).
+- Fixes from the audit: START or SELECT no longer also act when held together for the debug panel; the
+  plague look follows the sim's pestilence; the household on screen matches the family (spouse, children,
+  a surviving parent); the Parchment Log tells every kind of deed; the omens are dated June 1348; menus
+  no longer allocate memory every frame; numbers moved into balance.ts.
+- Saves from Phase 4 load unchanged (schema 5 adds the belt, the queue and the DMG unlock).
+- Tooling: `npm run sprites` regenerates the art; `npm run e2e` builds, serves and runs the browser checks
+  and the screenshot pass; screenshots at five phone sizes are in `docs/screenshots/`.
+
 ## From play-testing on iPhone
 - Updates now reach installed copies: the page comes from the network first (the saved copy is only
   for offline play), and the app reloads itself once when a new version arrives.
