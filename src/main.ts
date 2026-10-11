@@ -7,7 +7,7 @@ import { IDENTITY, setDmgMode, useUiRemap } from './render/palette';
 import { Screen } from './render/screen';
 import { SaveManager } from './save/saveManager';
 import { newSave, type Settings } from './save/schema';
-import { act, advance, type SimState } from './sim/sim';
+import { act, advance, hasten, type SimState } from './sim/sim';
 import { dayInfo } from './sim/calendar';
 import { BLOCKS_PER_REAL_DAY, DEBUG_HOLD_MS, REAL_DAY_MS } from './sim/balance';
 import { DebugScene } from './ui/scenes/debug';
@@ -80,6 +80,12 @@ async function boot(): Promise<void> {
     newLife(names) {
       const now = Date.now();
       void save.replace({ ...newSave(newSeed(), now, save.data.settings, names), onboarded: true }, now);
+      clockCheckAt = 0;
+    },
+    hasten() {
+      const s = hasten(save.data.sim, Date.now());
+      save.data = { ...save.data, sim: s, seenBlock: Math.max(save.data.seenBlock, s.block) };
+      void save.save(Date.now());
       clockCheckAt = 0;
     },
     tutorial: () => save.data.tutorial,

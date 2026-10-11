@@ -234,6 +234,8 @@ export const TITLE_BLINK_MS = 530;
 export const CANDLE_FLICKER_MS = 70;
 /** Placeholder village: peasant walk step in screen pixels. */
 export const WALK_STEP_PX = 2;
+/** A chosen task plays out on screen for this long, then its time passes at once. */
+export const WORK_SHOW_MS = 2400;
 /** Hold SELECT + START this long to open the debug panel. */
 export const DEBUG_HOLD_MS = 2000;
 

@@ -335,6 +335,24 @@ export function act(state: SimState, id: ActionId, nowMs: number, param: string 
   return { state: s, ok: true, message: def.label };
 }
 
+/**
+ * The player watches their peasant work: the rest of the chosen task passes at once. The life's clock is
+ * moved on to the end of the task (the life runs that much ahead of the wall clock from now on) and the
+ * blocks are simulated. Only a task the player chose; returns the state unchanged otherwise.
+ */
+export function hasten(state: SimState, nowMs: number): SimState {
+  const caught = advance(state, nowMs).state;
+  const plan = caught.plan;
+  if (!plan || !plan.byPlayer || caught.dead || caught.block >= plan.until) return caught;
+  const s = caught === state ? cloneState(state) : caught;
+  const elapsed = nowMs - s.anchorMs;
+  const target = (plan.until * REAL_DAY_MS) / BLOCKS_PER_REAL_DAY;
+  s.anchorMs -= target - elapsed + 1; // a millisecond into the next block, clear of rounding
+  runTo(s, plan.until);
+  s.lastSimMs = Math.max(s.lastSimMs, nowMs);
+  return s;
+}
+
 /* ───────────── debug ───────────── */
 
 /** Jumps the life forward by `blocks`, simulating every block (no catch-up cap, no neglect). */

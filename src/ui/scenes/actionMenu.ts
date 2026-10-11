@@ -10,6 +10,7 @@ import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import type { Scene } from '../scene';
 import { probe } from '../probe';
+import { WorkingScene } from './working';
 
 interface Item {
   label: string;
@@ -92,6 +93,7 @@ class PickScene implements Scene {
       this.report(r.ok ? ACTIONS[it.action].label : r.message);
       this.game.scenes.pop(false);
       this.done();
+      if (r.ok) this.game.scenes.push(new WorkingScene(this.game, it.action), false);
     }
   }
 
@@ -115,6 +117,8 @@ export class ActionMenuScene implements Scene {
     private place: Location,
     private title: string,
     private report: (msg: string) => void,
+    /** Only these actions (a spot in a room: the bed, the hearth, the table). */
+    private only: readonly ActionId[] | null = null,
   ) {}
 
   enter(): void {
@@ -128,6 +132,7 @@ export class ActionMenuScene implements Scene {
     for (const id of ACTION_IDS) {
       const def = ACTIONS[id];
       if (id === 'eat' ? !MEAL_PLACES.has(this.place) : placeFor(s, id, def.location) !== this.place) continue;
+      if (this.only && !this.only.includes(id)) continue;
       // What the town or the greenwood rules out altogether is not offered there at all.
       const barred = stationShort(s, id);
       if (barred === 'IN THE TOWN' || barred === 'OUTLAWED') continue;
@@ -174,6 +179,8 @@ export class ActionMenuScene implements Scene {
       this.game.sfx(r.ok ? 'confirm' : 'error');
       this.report(r.ok ? `${it.label.replace(/ \d+$/, '')}` : r.message);
       this.game.scenes.pop(false);
+      // A task (not a meal) plays out for a moment, then its time passes.
+      if (r.ok && it.action !== 'eat') this.game.scenes.push(new WorkingScene(this.game, it.action), false);
     }
   }
 

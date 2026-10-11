@@ -12,7 +12,7 @@ import { idx, present } from '../../sim/village';
 import { frame } from '../../render/draw';
 import { drawText, wrap } from '../../render/font';
 import { isBoonDay, isWeekWorkDay } from '../../sim/obligations';
-import type { Location } from '../../sim/balance';
+import type { ActionId, Location } from '../../sim/balance';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import type { Scene } from '../scene';
@@ -37,6 +37,13 @@ const PEASANT: Anim[][] = BODY_VARIANTS.map((v) => POSES.map((p) => anim(`peasan
 const SPAWN: Record<SceneId, [number, number]> = {
   cottage: [7, 0], green: [1, 2], fields: [4, 2], woods: [8, 2], churchyard: [4, 2], church: [4, 6], manor: [5, 2], town: [1, 2], camp: [1, 2],
 };
+
+/** What can be done at each spot in the cottage (same order as SPOTS: hearth, table, bed). */
+const SPOT_MENUS: readonly { title: string; actions: readonly ActionId[] }[] = [
+  { title: 'THE HEARTH', actions: ['cook', 'brew', 'rest'] },
+  { title: 'THE TABLE', actions: ['eat', 'rest'] },
+  { title: 'THE BED', actions: ['sleep', 'rest', 'prayHome'] },
+];
 
 /** First-day hints, in order; each is passed by doing what it says. */
 export const HINTS = [
@@ -222,7 +229,11 @@ export class WorldScene implements Scene {
       if (!loc) return g.sfx('error');
       g.sfx('confirm');
       g.advanceTutorial(0);
-      g.scenes.push(new ActionMenuScene(g, loc, LOCATION_TITLE[loc], this.onMenuReport), false);
+      const spot = this.scene.side ? this.sideSpot() : -1;
+      if (spot >= 0) {
+        const s = SPOT_MENUS[spot]!;
+        g.scenes.push(new ActionMenuScene(g, loc, s.title, this.onMenuReport, s.actions), false);
+      } else g.scenes.push(new ActionMenuScene(g, loc, LOCATION_TITLE[loc], this.onMenuReport), false);
     } else if (e.action === 'start' && !e.repeat) {
       g.sfx('confirm');
       g.advanceTutorial(2);

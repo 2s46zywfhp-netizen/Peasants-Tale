@@ -81,8 +81,14 @@ const menu = await data('menu');
 check('A at the hearth opens home actions', /EAT|COOK|SLEEP/.test(menu), menu);
 check('the hint moves on', (await data('hint')) === '1', await data('hint'));
 await shot('menu-home');
-await press('KeyX', 500); // eat: the first action of the life
+await press('KeyX', 500); // the first action of the life, at the hearth (cook)
 check('acting moves the hint on again', (await data('hint')) === '2', await data('hint'));
+// The task plays out with a bar, its time passes, and the result is shown; A closes it.
+if ((await data('working')) === 'busy') {
+  await page.waitForTimeout(2800);
+  check('a chosen task finishes in a moment, then tells what came of it', (await data('working')) === 'done', await data('working'));
+  await press('KeyX', 400);
+}
 
 // ── Status pages ──
 const fam = await statusPage('FAMILY');
@@ -119,9 +125,10 @@ check('the woods offer flight', /FLEE TO TOWN/.test(wm), wm);
 const fleeAt = wm.split('|').findIndex((l) => l.startsWith('FLEE TO TOWN'));
 for (let i = 0; i < fleeAt; i++) await press('ArrowDown', 60);
 await press('KeyX', 500);
-// The choice is made now; it is carried out as the block passes.
-await page.clock.setFixedTime(T0 + 3 * BLOCK + 1000);
-await page.waitForTimeout(2500);
+// The flight plays out for a moment, then its time passes; closing the result shows where it led.
+await page.waitForTimeout(2800);
+if ((await data('working')) === 'done') await press('KeyX', 300);
+await page.waitForTimeout(1500);
 check('fleeing takes the family to the town', (await data('scene')) === 'town', await data('scene'));
 await shot('town');
 await press('KeyX', 400);

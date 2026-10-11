@@ -34,6 +34,8 @@ export interface Game {
   newLife(names: LifeOptions): void;
   /** Index of the next first-day hint (past the end = done). */
   tutorial(): number;
+  /** The chosen task's remaining time passes at once (the player watched it begin). */
+  hasten(): void;
   /** Passes hint `step` if it is the current one. */
   advanceTutorial(step: number): void;
 }

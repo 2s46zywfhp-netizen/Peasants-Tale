@@ -211,3 +211,20 @@ describe('the hearth', () => {
     expect(hearthOf(s, 2)).toBe('blazing');
   });
 });
+
+describe('hastening a chosen task', () => {
+  it('the rest of the task passes at once, and the clock stays consistent afterwards', async () => {
+    const { hasten } = await import('./sim');
+    let s = createLife(5, 0);
+    s = advance(s, at(7)).state; // monday morning
+    s = act(s, 'workStrips', at(7)).state;
+    const until = s.plan!.until;
+    const done = hasten(s, at(7) + 1000);
+    expect(done.block).toBe(until);
+    expect(blockAt(done, at(7) + 1000)).toBe(until);
+    // Nothing to hasten without a chosen task.
+    expect(hasten(done, at(7) + 2000).block).toBe(until);
+    // Time then carries on normally from there.
+    expect(advance(done, at(7) + 1000 + BLOCK_MS).state.block).toBe(until + 1);
+  });
+});
