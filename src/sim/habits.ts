@@ -64,7 +64,7 @@ export interface Choice {
 }
 
 /** Choices the autopilot never makes on its own: they are the player's to make. */
-const DELIBERATE: ReadonlySet<ActionId> = new Set(['eat', 'court', 'marry', 'accuse', 'takeHolding', 'buyFreedom', 'flee', 'rob', 'offering', 'surrender', 'askFavour']);
+const DELIBERATE: ReadonlySet<ActionId> = new Set(['eat', 'stokeFire', 'court', 'marry', 'accuse', 'takeHolding', 'buyFreedom', 'flee', 'rob', 'offering', 'surrender', 'askFavour']);
 
 /** The neighbour the autopilot would help: whoever likes the family best and is owed nothing yet. */
 function neighbourToHelp(s: SimState): string | null {

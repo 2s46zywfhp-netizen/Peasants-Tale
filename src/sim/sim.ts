@@ -1,8 +1,9 @@
 import {
   HASTE_BUDGET_MS,
+  HEARTH,
   UNWATCHED,
   HASTE_REFILL,
-  ACTIONS, BLOCKS_PER_DAY, BLOCKS_PER_REAL_DAY, CATCHUP_CAP_BLOCKS, EGGS_PER_HEN_PER_DAY, FEAST_MORALE, FOOD_SPOIL_PER_DAY, FIREWOOD_PER_HOME_BLOCK,
+  ACTIONS, BLOCKS_PER_DAY, BLOCKS_PER_REAL_DAY, CATCHUP_CAP_BLOCKS, EGGS_PER_HEN_PER_DAY, FEAST_MORALE, FOOD_SPOIL_PER_DAY,
   FIRE_BELOW_C, GARDEN_MONTHS, GARDEN_POTTAGE_PER_DAY, MARTINMAS_PORK, MORALE_COLD_BLOCK, MORALE_DRIFT, MORALE_HUNGRY_BLOCK, MORALE_ILL_BLOCK, NEGLECT, PIETY_DAILY_DECAY,
   REAL_DAY_MS, STANDING_DRIFT, URGENT_HUNGER, WARMTH_COLD, type ActionId, type Food,
 } from './balance';
@@ -104,9 +105,17 @@ export function clock(s: SimState, nowMs: number): Clock {
  * blazing (wood on a cold day, which is when the household burns it).
  */
 export type Hearth = 'out' | 'banked' | 'blazing';
-export function hearthOf(s: SimState, tempC: number): Hearth {
-  if (s.wealth.firewood <= 0) return 'out';
-  return tempC < FIRE_BELOW_C ? 'blazing' : 'banked';
+export function hearthOf(s: SimState, _tempC?: number): Hearth {
+  const fuel = s.hearth ?? 0;
+  return fuel >= HEARTH.blaze ? 'blazing' : fuel > 0 ? 'banked' : 'out';
+}
+
+/** Feeds the fire from the woodstock: up to HEARTH.stoke logs, as many as are in the stock. Returns how many. */
+export function stokeFire(s: SimState): number {
+  const n = Math.min(HEARTH.stoke, Math.floor(s.wealth.firewood));
+  s.wealth.firewood -= n;
+  s.hearth = (s.hearth ?? 0) + n;
+  return n;
 }
 
 /* ───────────── daily processing ───────────── */
@@ -239,14 +248,26 @@ function resolveBlock(s: SimState): void {
   if (bod >= 4) roadAtNight(s, info);
   if (bod === 5 && s.location !== 'camp') nightTerrors(s);
 
-  // Hearth: burns whenever it is cold and there is wood; the spouse keeps it.
-  const fireLit = w.tempC < FIRE_BELOW_C && s.wealth.firewood > 0;
-  if (fireLit) s.wealth.firewood = Math.max(0, s.wealth.firewood - FIREWOOD_PER_HOME_BLOCK);
+  // Hearth: its logs burn down (fast in a blaze, slowly as embers on a mild day). On a cold day whoever is at
+  // home lays a log from the woodstock when the fire is down to its last; feeding it more makes it blaze.
+  const cold = w.tempC < FIRE_BELOW_C;
+  const someoneHome = s.location === 'home' || s.members.some((m) => m.alive && m !== p);
+  if (cold && someoneHome && (s.hearth ?? 0) < HEARTH.keep && s.wealth.firewood >= 1) {
+    s.wealth.firewood -= 1;
+    s.hearth = (s.hearth ?? 0) + 1;
+  }
+  const fuel = s.hearth ?? 0;
+  const blazing = fuel >= HEARTH.blaze;
+  const fireLit = cold && fuel > 0;
+  s.hearth = Math.max(0, fuel - (blazing ? HEARTH.blazeBurn : cold ? HEARTH.burn : HEARTH.embers));
+  if (blazing && s.location === 'home') s.soul.morale = clamp(s.soul.morale + HEARTH.blazeMorale);
   const activity = ACTIONS[plan.action].activity;
-  tickBody(p.body, { activity, tempC: w.tempC, atHome: s.location === 'home' || s.location === 'town', fireLit, night: bod === 5 });
+  const warmer = blazing ? HEARTH.blazeWarmth : 0;
+  const atHome = s.location === 'home';
+  tickBody(p.body, { activity, tempC: w.tempC + (atHome ? warmer : 0), atHome: atHome || s.location === 'town', fireLit, night: bod === 5 });
   for (const m of s.members) {
     if (m === p || !m.alive) continue;
-    tickBody(m.body, { activity: bod === 5 ? 'sleep' : 'light', tempC: w.tempC, atHome: true, fireLit, night: bod === 5 });
+    tickBody(m.body, { activity: bod === 5 ? 'sleep' : 'light', tempC: w.tempC + warmer, atHome: true, fireLit, night: bod === 5 });
   }
   if (rand(s) < injuryChance(p.body, activity)) {
     injure(p.body);
@@ -328,6 +349,11 @@ export function act(state: SimState, id: ActionId, nowMs: number, param: string 
   s.counters.lastPlayerBlock = s.block;
   const p = peasant(s);
   const slot = slotOf(info.weekday, bod);
+  if (id === 'stokeFire') {
+    const n = stokeFire(s);
+    log(s, 'action', `${p.name} lays ${n === 1 ? 'a log' : `${n} logs`} on the fire.`, undefined, 'stokeFire');
+    return { state: s, ok: true, message: n >= 2 ? 'THE FIRE ROARS UP' : 'A LOG ON THE FIRE' };
+  }
   if (id === 'eat') {
     const food = eat(s, info, (param as Food | null) ?? null);
     recordMeal(s, slot);

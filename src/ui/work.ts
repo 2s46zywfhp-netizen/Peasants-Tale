@@ -7,7 +7,7 @@ export const ACTION_ICON: Readonly<Record<ActionId, string>> = {
   eat: 'bowl', cook: 'ladle', brew: 'ale', sleep: 'bed', workStrips: 'hoe', weekWork: 'sickle', attendMass: 'prayer', pray: 'prayer',
   confess: 'prayer', tavern: 'ale', gatherFirewood: 'axe', wash: 'bucket', socialise: 'ale', trade: 'coin', rest: 'bed', court: 'prayer',
   marry: 'prayer', helpNeighbour: 'hoe', askFavour: 'coin', accuse: 'prayer', takeHolding: 'coin', buyFreedom: 'pence', hire: 'flail',
-  beg: 'bowl', flee: 'seedbag', poach: 'axe', rob: 'coin', offering: 'bread', surrender: 'prayer', prayHome: 'prayer',
+  beg: 'bowl', flee: 'seedbag', poach: 'axe', rob: 'coin', offering: 'bread', surrender: 'prayer', prayHome: 'prayer', stokeFire: 'firewood',
 };
 export const PARAM_ICON: Readonly<Record<string, string>> = {
   pottage: 'pottage', bread: 'bread', eggs: 'eggs', meat: 'meat', grain: 'grain',

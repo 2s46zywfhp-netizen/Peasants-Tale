@@ -201,14 +201,51 @@ describe('time', () => {
 });
 
 describe('the hearth', () => {
-  it('is out with no wood, banked on a mild day, blazing when it is cold', async () => {
+  it('burns its own logs: out with none, banked with a few, blazing when fed', async () => {
     const { hearthOf } = await import('./sim');
     const s = createLife(1, 0);
-    s.wealth.firewood = 0;
-    expect(hearthOf(s, 0)).toBe('out');
-    s.wealth.firewood = 3;
-    expect(hearthOf(s, 20)).toBe('banked');
-    expect(hearthOf(s, 2)).toBe('blazing');
+    s.hearth = 0;
+    expect(hearthOf(s)).toBe('out');
+    s.hearth = 1;
+    expect(hearthOf(s)).toBe('banked');
+    s.hearth = 3;
+    expect(hearthOf(s)).toBe('blazing');
+  });
+
+  it('feeding the fire moves logs from the woodstock into the hearth at once, and it blazes', async () => {
+    const { HEARTH } = await import('./balance');
+    let s = createLife(2, 0);
+    s = advance(s, at(7)).state;
+    s.wealth.firewood = 10;
+    s.hearth = 0;
+    const r = act(s, 'stokeFire', at(7));
+    expect(r.ok).toBe(true);
+    expect(r.state.wealth.firewood).toBe(10 - HEARTH.stoke);
+    expect(r.state.hearth).toBe(HEARTH.stoke);
+    expect(r.state.plan?.action).not.toBe('stokeFire'); // instant, like eating
+    const empty = { ...r.state, wealth: { ...r.state.wealth, firewood: 0 } };
+    expect(act(empty, 'stokeFire', at(7)).ok).toBe(false);
+  });
+
+  it('on a cold day the household keeps a fire from the stock; a blaze burns down to embers', async () => {
+    const { HEARTH } = await import('./balance');
+    let s = createLife(3, 0);
+    s.hearth = HEARTH.blaze + 1;
+    s.wealth.firewood = 20;
+    for (let b = 1; b <= 60; b++) s = advance(s, at(b)).state;
+    expect(s.hearth!).toBeLessThan(HEARTH.blaze + 1);
+    expect(s.wealth.firewood).toBeLessThanOrEqual(20);
+  });
+
+  it('a block of chopping in the woods brings ten logs home', async () => {
+    const { WOOD_PER_CHOP } = await import('./balance');
+    const { runActionBlock } = await import('./actions');
+    const { dayInfo } = await import('./calendar');
+    const s = createLife(4, 0);
+    const before = s.wealth.firewood;
+    runActionBlock(s, 'gatherFirewood', null, dayInfo(4), 1, true);
+    expect(WOOD_PER_CHOP).toBe(10);
+    expect(s.wealth.firewood).toBe(before + 10);
   });
 });
 

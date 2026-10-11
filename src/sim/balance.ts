@@ -74,7 +74,15 @@ export const WARMTH_WORKING = 5;
 export const WARMTH_RATE = 0.5;
 export const WARMTH_COLD = 30;
 export const FIRE_BELOW_C = 12;
-export const FIREWOOD_PER_HOME_BLOCK = 0.25;
+/**
+ * The hearth holds its own logs (`s.hearth`), apart from the woodstock (`wealth.firewood`).
+ * - burn: logs a block on a cold day; embers on a mild one; a blaze (at least `blaze` logs) eats `blazeBurn`.
+ * - Someone at home lays a log from the stock on a cold day when the fire is down to its last (`keep`).
+ * - Feeding the fire (STOKE) lays up to `stoke` logs at once; a blaze warms the house more and cheers it.
+ */
+export const HEARTH = { burn: 0.25, embers: 0.04, blaze: 3, blazeBurn: 0.5, keep: 1, stoke: 3, blazeWarmth: 12, blazeMorale: 0.6, start: 1 } as const;
+/** Logs a block of chopping in the woods brings home to the woodstock. */
+export const WOOD_PER_CHOP = 10;
 
 export const FILTH_PER_BLOCK = 1.5;
 export const FILTH_WORK_EXTRA = 1;
@@ -278,7 +286,7 @@ export type ActionId =
   | 'eat' | 'cook' | 'brew' | 'sleep' | 'workStrips' | 'weekWork' | 'attendMass' | 'pray' | 'confess'
   | 'tavern' | 'gatherFirewood' | 'wash' | 'socialise' | 'trade' | 'rest'
   | 'court' | 'marry' | 'helpNeighbour' | 'askFavour' | 'accuse' | 'takeHolding' | 'buyFreedom' | 'hire' | 'beg'
-  | 'flee' | 'poach' | 'rob' | 'offering' | 'surrender' | 'prayHome';
+  | 'flee' | 'poach' | 'rob' | 'offering' | 'surrender' | 'prayHome' | 'stokeFire';
 
 /** Plain numeric effects applied once per block the action runs (household stores, soul, standing, actor body). */
 export interface Effects {
@@ -314,7 +322,8 @@ export const ACTIONS: Readonly<Record<ActionId, ActionDef>> = {
   pray: { label: 'PRAY', duration: 1, location: 'church', blocks: ALL, days: 'any', activity: 'rest', effects: { privatePiety: 2.5, morale: 1 } },
   confess: { label: 'CONFESS', duration: 1, location: 'church', blocks: [1, 2, 3], days: 'any', activity: 'rest', effects: { privatePiety: 12, priest: 2, morale: 2 } },
   tavern: { label: 'TAVERN', duration: 1, location: 'tavern', blocks: [3, 4, 5], days: 'any', activity: 'rest', effects: { pence: -1, morale: 8, village: 1, fatigue: 3, hunger: -5 } },
-  gatherFirewood: { label: 'GATHER WOOD', duration: 1, location: 'woods', blocks: DAYTIME, days: 'any', activity: 'work', effects: { firewood: 3, filth: 1 } },
+  gatherFirewood: { label: 'CHOP WOOD', duration: 1, location: 'woods', blocks: DAYTIME, days: 'any', activity: 'work', effects: { firewood: WOOD_PER_CHOP, filth: 1 } },
+  stokeFire: { label: 'FEED THE FIRE', duration: 0, location: 'home', blocks: ALL, days: 'any', activity: 'light', effects: {} },
   wash: { label: 'WASH', duration: 1, location: 'stream', blocks: DAYTIME, days: 'any', activity: 'light', effects: { filth: -60, warmth: -10, morale: 1 } },
   socialise: { label: 'SOCIALISE', duration: 1, location: 'green', blocks: [1, 2, 3, 4, 5], days: 'any', activity: 'rest', effects: { village: 1, morale: 3 } },
   trade: { label: 'TRADE', duration: 1, location: 'green', blocks: [1, 2, 3, 4], days: 'any', activity: 'light', effects: {} },

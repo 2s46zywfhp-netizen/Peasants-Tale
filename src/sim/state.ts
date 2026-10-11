@@ -1,6 +1,6 @@
 import {
   BODY_START, DAYS_PER_YEAR, SOUL_START, STANDING_START, START_AGES, WEALTH_START, type ActionId, type Crop, type IllnessKind, type Location,
-  type TagId,
+  type TagId, HEARTH
 } from './balance';
 import type { BlockName } from './calendar';
 import { mulberry32Next } from './rng';
@@ -228,6 +228,8 @@ export interface SimState {
    * over any long stretch. Missing in older saves: full.
    */
   haste?: { budgetMs: number; atMs: number };
+  /** Logs burning in the hearth (apart from the woodstock, wealth.firewood). Missing in older saves: none. */
+  hearth?: number;
   location: Location;
   members: Member[];
   soul: Soul;
@@ -317,6 +319,7 @@ export function createState(seed: number, nowMs: number, opts: LifeOptions = {})
     soul: { ...SOUL_START },
     standing: { ...STANDING_START },
     tags: [],
+    hearth: HEARTH.start,
     wealth: { ...WEALTH_START },
     fields: [
       // The winter field was sown last autumn; the spring field awaits its seed; the third lies fallow.

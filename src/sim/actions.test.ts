@@ -14,7 +14,7 @@ describe('actions', () => {
     expect(ACTION_IDS.sort()).toEqual(
       [
         'attendMass', 'brew', 'confess', 'cook', 'eat', 'gatherFirewood', 'pray', 'rest', 'sleep', 'socialise', 'tavern', 'trade', 'wash', 'weekWork', 'workStrips',
-        'court', 'marry', 'helpNeighbour', 'askFavour', 'accuse', 'takeHolding', 'buyFreedom', 'hire', 'beg', 'flee', 'poach', 'rob', 'offering', 'surrender', 'prayHome',
+        'court', 'marry', 'helpNeighbour', 'askFavour', 'accuse', 'takeHolding', 'buyFreedom', 'hire', 'beg', 'flee', 'poach', 'rob', 'offering', 'surrender', 'prayHome', 'stokeFire',
       ].sort(),
     );
     for (const id of ACTION_IDS) {

@@ -97,6 +97,7 @@ export function resourceShort(s: SimState, id: ActionId, info: DayInfo, param: s
       if (param) return servings(s, param as Food) >= 1 ? null : 'NONE LEFT';
       return bestFood(s, info) ? null : 'NO FOOD';
     }
+    case 'stokeFire': return w.firewood < 1 ? 'NO WOOD IN THE STOCK' : null;
     case 'cook': return w.grain < COOK_GRAIN ? 'NO GRAIN' : w.firewood < 1 ? 'NO FIREWOOD' : null;
     case 'brew': return w.grain < BREW_GRAIN ? 'NO GRAIN' : w.firewood < 1 ? 'NO FIREWOOD' : null;
     case 'workStrips': return s.obligations.evicted ? 'NO LAND' : null;
@@ -230,10 +231,12 @@ export function runActionBlock(s: SimState, id: ActionId, param: string | null, 
       w.grain -= COOK_GRAIN;
       w.bread += COOK_YIELD.bread;
       w.pottage += COOK_YIELD.pottage;
+      s.hearth = (s.hearth ?? 0) + 1; // the log goes on the fire under the pot
       return 'bakes bread and boils pottage';
     case 'brew':
       w.grain -= BREW_GRAIN;
       w.ale += BREW_YIELD;
+      s.hearth = (s.hearth ?? 0) + 1;
       return 'brews ale';
     case 'sleep': return 'sleeps';
     case 'rest': return 'rests by the hearth';
@@ -273,7 +276,7 @@ export function runActionBlock(s: SimState, id: ActionId, param: string | null, 
       } else if (s.station.residence === 'village') hearGossip(s);
       return 'drinks at the alehouse';
     }
-    case 'gatherFirewood': return 'gathers deadwood';
+    case 'gatherFirewood': return 'chops wood, and carries it home to the stack';
     case 'wash': return 'washes in the stream';
     case 'socialise':
       s.counters.socialThisWeek += 1;
@@ -287,6 +290,7 @@ export function runActionBlock(s: SimState, id: ActionId, param: string | null, 
       return 'passes the time on the green';
     case 'trade': return param ? trade(s, param as TradeKind, info.month) : 'haggles but buys nothing';
     case 'eat':
+    case 'stokeFire':
       return '';
     case 'court': return param ? court(s, param, info) : 'idles on the green';
     case 'marry': return param ? marry(s, param, info) : 'waits at the church door';

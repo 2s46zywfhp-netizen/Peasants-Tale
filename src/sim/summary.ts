@@ -45,6 +45,7 @@ export const PHRASE: Readonly<Record<Exclude<ActionId, 'eat'>, readonly [string,
   rob: ['robbed travellers on the road', 'robbed travellers # times'],
   offering: ['left an offering at the barrow', 'left # offerings at the barrow'],
   surrender: ['gave up the greenwood', 'gave up the greenwood # times'],
+  stokeFire: ['fed the fire', 'fed the fire # times'],
 };
 
 export interface Summary {
