@@ -176,7 +176,24 @@ async function boot(): Promise<void> {
   requestAnimationFrame(frame);
 
   if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+    // A new version takes over as soon as it is installed: reload once onto it (the save is in IndexedDB).
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || reloading) return;
+      reloading = true;
+      flush();
+      window.location.reload();
+    });
+    navigator.serviceWorker
+      .register('/sw.js', { updateViaCache: 'none' })
+      .then((reg) => {
+        // Look for a new version whenever the app comes back to the foreground.
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') void reg.update().catch(() => {});
+        });
+      })
+      .catch(() => {});
   }
 }
 
