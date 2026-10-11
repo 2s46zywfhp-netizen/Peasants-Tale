@@ -1,6 +1,6 @@
 # Progress
 Current phase: 5
-Resume point: none
+Resume point: step 5 sprite pipeline done (tools/spritegen -> public/sprites, palette test in src/render/sheets.test.ts); docs/AUDIT.md written (13 gaps). Next: new indexed framebuffer renderer at 256x224 (src/render/fb.ts, palette LUTs + lighting), then scaling/shell, scenes, feel, QA.
 ## Checklist
 - [ ] 1. AUDIT.md lists all gaps found and every one is fixed or explained under Blocked.
 - [ ] 2. Crisp, even pixels at integer scale on all five viewports (verified by screenshot).
