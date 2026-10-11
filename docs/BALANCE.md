@@ -9,6 +9,9 @@ on 12 seeds (101, 108, 115, 122, 129, 136, 143, 150, 157, 164, 171, 178). Figure
   sold to meet the Michaelmas rent and bought when the chest runs low.
 - **neglectful**: the player opens the game once every four real days (four game weeks), spends a block at
   the alehouse, and leaves. Everything else is the autopilot, steered by habit.
+- **diligent, hastening every task**: the diligent player on four seeds, hastening every task and coming
+  back ten real minutes later, so the life runs ahead of the clock as far as the haste allowance allows
+  (half a real day at once, refilling with real time: at most twice the plain rate over a long stretch).
 - **absent**: nobody ever opens the game, and the autopilot runs every block for the two years: the
   peasant lives by the default routine and habit alone.
 - **away two years (cap)**: one seed, opened once after 104 real days (two game years). Only the 30-day
@@ -16,13 +19,15 @@ on 12 seeds (101, 108, 115, 122, 129, 136, 143, 150, 157, 164, 171, 178). Figure
 
 | playstyle | line alive | generations | living members | deaths | births | thin or worse | gaunt or worse | grain bu | pence | debt d | evicted | fines & marks | morale | lord | village |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| diligent | 100% | 1 | 3.8 | 0 (0 of hunger) | 3 | 0% | 0% | 41.4 | 59.3 | 0 | 0% | 0 | 56.6 | 51.7 | 49.9 |
-| neglectful | 100% | 1 | 3.8 | 0 (0 of hunger) | 7 | 58% | 0% | 52.5 | 24.8 | 0 | 0% | 0.6 | 66.4 | 50.6 | 43.4 |
-| absent | 100% | 1 | 3.8 | 0 (0 of hunger) | 8 | 42% | 0% | 75 | 40 | 0 | 0% | 0.6 | 60.8 | 50.7 | 49.7 |
-| away two years (cap) | 100% | 1 | 3 | 0 (0 of hunger) | 0 | 0% | 0% | 116.7 | 35 | 0 | 0% | 0 | 59.8 | 57.7 | 53.2 |
+| diligent | 100% | 1 | 3.8 | 0 (0 of hunger) | 3 | 8% | 0% | 34.8 | 52.2 | 0 | 0% | 0 | 57.9 | 51.7 | 50.5 |
+| diligent, hastening every task | 100% | 1 | 4 | 0 (0 of hunger) | 2 | 50% | 0% | 32.1 | 56.5 | 0 | 0% | 0 | 62.3 | 51.7 | 50.5 |
+| neglectful | 100% | 1 | 4 | 0 (0 of hunger) | 10 | 58% | 0% | 39 | 26 | 0 | 0% | 1.3 | 60 | 42.3 | 40.9 |
+| absent | 100% | 1 | 3.8 | 1 (0 of hunger) | 8 | 50% | 0% | 66.8 | 41.4 | 0 | 0% | 1.1 | 47.2 | 40.6 | 45.9 |
+| away two years (cap) | 100% | 1 | 3 | 0 (0 of hunger) | 0 | 0% | 0% | 126.2 | 38 | 0 | 0% | 0 | 46.1 | 49 | 50.5 |
 
 Ranks at the end:
 - **diligent**: VILLEIN ×12
+- **diligent, hastening every task**: VILLEIN ×4
 - **neglectful**: VILLEIN ×12
 - **absent**: VILLEIN ×12
 - **away two years (cap)**: VILLEIN ×1
@@ -32,10 +37,15 @@ Ranks at the end:
 - **No starvation spiral for the diligent player**: every diligent line survives with no deaths of hunger
   and nobody gaunt or worse (asserted by the test).
 - **Neglect is a decline, not a death sentence**: neglected and absent households all live, but they
-  grow thin where the diligent stay healthy (the autopilot eats two meals a day, not three), and they
-  pick up fines and marks for missed work that the diligent never get (both asserted by the test).
-  They end with more grain and less money than the diligent: they eat less and sell less. Morale is
-  not lower, because the autopilot rests more and the neglectful player drinks.
+  grow thin where the diligent stay healthy (the autopilot eats two meals a day, not three), pick up
+  fines and marks for missed work, end poorer, and stand lower with the lord and the village (all
+  asserted by the test). A household nobody has tended for a week drifts: spirits sag, the manor and the
+  village think less of it, and work done by habit alone is sloppier (UNWATCHED in balance.ts). The
+  absent end with more grain only because they eat less and sell less. The neglectful player's morale
+  is lifted by the alehouse visit just before the count.
+- **Hastening** keeps the careful player's land, purse and standing, but a hastened day has fewer
+  meals in it (the household eats when the player comes back), so half the lines grow thin. The
+  allowance keeps the life from outrunning the clock (asserted by the test).
 - **A long absence** simulates only the 30-day catch-up cap and marks the household neglected, with a
   one-off morale and village-standing penalty at the start of the catch-up (told in the Parchment Log).
   Over the 210 simulated days those drift back. It does not kill the household.

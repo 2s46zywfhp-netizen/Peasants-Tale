@@ -1,7 +1,7 @@
 import {
   CARE_LABOUR_PER_ACRE, HARVEST_END, HARVEST_LABOUR_PER_ACRE, MANURE_PER_ANIMAL, OX_LABOUR_BONUS, SEED_PER_ACRE, SOW_LABOUR_PER_ACRE,
   SPRING_RIPE, SPRING_SOW, TITHE_PUBLIC_PIETY, TITHE_RATE, TOOL_WEAR_PER_BLOCK, UNHARVESTED_LOSS, WINTER_RIPE, WINTER_SOW,
-  YIELD_NOISE, YIELD_PER_ACRE, type Crop,
+  YIELD_NOISE, YIELD_PER_ACRE, type Crop, UNWATCHED, BLOCKS_PER_DAY
 } from './balance';
 import { inWindow, type DayInfo } from './calendar';
 import { faeSpare } from './dark';
@@ -117,7 +117,9 @@ export function workStrips(s: SimState, info: DayInfo): string {
   const t = fieldTask(s, info);
   if (!t) return 'mends hedges and ditches';
   const f = t.field;
-  const amount = labourPerBlock(s);
+  // Work done by habit alone, in a household nobody tends, is sloppier.
+  const sloppy = !s.plan?.byPlayer && s.block - (s.counters.lastPlayerBlock ?? 0) > UNWATCHED.afterDays * BLOCKS_PER_DAY;
+  const amount = labourPerBlock(s) * (sloppy ? UNWATCHED.labour : 1);
   if (t.task === 'harvest') {
     const need = f.acres * HARVEST_LABOUR_PER_ACRE;
     const share = Math.min(amount, need - f.harvestLabour) / need;

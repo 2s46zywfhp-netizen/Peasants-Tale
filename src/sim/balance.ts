@@ -211,6 +211,11 @@ export const EVENT_DAILY_CHANCE = 0.04;
 export const DAMP_LOSS = 0.05;
 export const HEATHEN_EVENT_MULT = 2;
 export const NEGLECT = { morale: -20, village: -5 } as const;
+/**
+ * A household nobody has tended for `afterDays` drifts each day: spirits sag, the village and the manor think
+ * less of it (never below the floors), and work done by habit alone is sloppier on the strips.
+ */
+export const UNWATCHED = { afterDays: 7, morale: -1.5, moraleFloor: 30, village: -0.2, villageFloor: 30, lord: -0.1, lordFloor: 35, labour: 0.75 } as const;
 
 /** Mean daily temperature (°C) = MEAN + AMPLITUDE*sin(2π(doy - PHASE)/365) + noise. */
 export const WEATHER = { meanC: 9, amplitudeC: 8, phaseDays: 105, noiseC: 4 } as const;

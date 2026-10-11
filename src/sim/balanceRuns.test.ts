@@ -4,13 +4,13 @@
  */
 import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { BLOCK_MS, CATCHUP_CAP_BLOCKS, PRICES, REAL_DAY_MS, type ActionId } from './balance';
+import { BLOCK_MS, CATCHUP_CAP_BLOCKS, HASTE_BUDGET_MS, HASTE_REFILL, PRICES, REAL_DAY_MS, type ActionId } from './balance';
 import { availability, readyServings } from './actions';
 import { reserveTier } from './body';
 import { dayInfo } from './calendar';
 import { fieldTask } from './farm';
 import { isBoonDay, isWeekWorkDay } from './obligations';
-import { act, advance, createLife, debugFastForward, type SimState } from './sim';
+import { act, advance, createLife, debugFastForward, hasten, type SimState } from './sim';
 import { rankOf, rentDue } from './station';
 
 const YEARS2 = 730 * 6;
@@ -52,6 +52,26 @@ function diligent(seed: number): SimState {
     s = advance(s, at(b + 1)).state;
   }
   return s;
+}
+
+/**
+ * The same careful player, but one who hastens every task (watches it begin, then lets its time pass at once)
+ * and opens the game again ten real minutes later: the life runs as far ahead of the clock as the haste
+ * allowance lets it.
+ */
+function hastening(seed: number): { s: SimState; realDays: number } {
+  let s = createLife(seed, 0);
+  let now = 1;
+  while (s.block < YEARS2 && !s.dead) {
+    s = advance(s, now).state;
+    const b = s.block;
+    if (b % 6 === 0 || b % 6 === 2 || b % 6 === 4) s = act(s, 'eat', now).state;
+    const c = diligentChoice(s, b);
+    s = act(s, c.action, now, c.param ?? null).state;
+    s = hasten(s, now);
+    now += 10 * 60 * 1000;
+  }
+  return { s, realDays: now / REAL_DAY_MS };
 }
 
 /** Opens the game once every four real days (four game weeks), drinks at the alehouse, and leaves. */
@@ -132,6 +152,16 @@ describe('acceptance 2: balance runs over two game years', () => {
     expect(mean(runs.diligent.map((o) => o.grain))).toBeGreaterThan(20);
   }, 240_000);
 
+  it('the hastening player: lives like the diligent one, and no faster than the haste allowance lets it', () => {
+    const lives = SEEDS.slice(0, 4).map((seed) => hastening(seed));
+    runs['diligent, hastening every task'] = lives.map((l) => outcome(l.s));
+    for (const l of lives) {
+      expect(l.s.dead).toBe(false);
+      // Two game years are 104 real days at the plain rate; hastened, at most (1 + HASTE_REFILL) times faster.
+      expect(l.realDays).toBeGreaterThanOrEqual(YEARS2 / 42 / (1 + HASTE_REFILL) - HASTE_BUDGET_MS / REAL_DAY_MS - 1);
+    }
+  }, 240_000);
+
   it('the neglectful player: visible decline, not instant death', () => {
     runs.neglectful = SEEDS.map((seed) => outcome(neglectful(seed)));
     const alive = runs.neglectful.filter((o) => o.alive).length;
@@ -140,6 +170,10 @@ describe('acceptance 2: balance runs over two game years', () => {
     const thin = (os: Outcome[]) => os.filter((o) => TIERS.indexOf(o.worstTier) <= TIERS.indexOf('thin')).length;
     expect(thin(runs.neglectful)).toBeGreaterThan(thin(runs.diligent!));
     expect(mean(runs.neglectful.map((o) => o.strikes))).toBeGreaterThan(mean(runs.diligent!.map((o) => o.strikes)));
+    // ...and in the purse and the eyes of the manor and the village.
+    expect(mean(runs.neglectful.map((o) => o.pence))).toBeLessThan(mean(runs.diligent!.map((o) => o.pence)));
+    expect(mean(runs.neglectful.map((o) => o.lord))).toBeLessThan(mean(runs.diligent!.map((o) => o.lord)));
+    expect(mean(runs.neglectful.map((o) => o.village))).toBeLessThan(mean(runs.diligent!.map((o) => o.village)));
   }, 240_000);
 
   it('the absent player: the peasant muddles on by habit; a long absence is capped and marked', () => {
@@ -147,6 +181,8 @@ describe('acceptance 2: balance runs over two game years', () => {
     expect(runs.absent.filter((o) => o.alive).length).toBeGreaterThanOrEqual(SEEDS.length - 1);
     const thin = (os: Outcome[]) => os.filter((o) => TIERS.indexOf(o.worstTier) <= TIERS.indexOf('thin')).length;
     expect(thin(runs.absent)).toBeGreaterThan(thin(runs.diligent!));
+    expect(mean(runs.absent.map((o) => o.morale))).toBeLessThan(mean(runs.diligent!.map((o) => o.morale)));
+    expect(mean(runs.absent.map((o) => o.lord))).toBeLessThan(mean(runs.diligent!.map((o) => o.lord)));
     // Away for the whole two years (104 real days): only the cap is simulated, and the village notices.
     const back = advance(createLife(SEEDS[0]!, 0), (YEARS2 / 42) * REAL_DAY_MS);
     expect(back.neglected).toBe(true);
@@ -185,6 +221,9 @@ on ${SEEDS.length} seeds (${SEEDS.join(', ')}). Figures are means across seeds a
   sold to meet the Michaelmas rent and bought when the chest runs low.
 - **neglectful**: the player opens the game once every four real days (four game weeks), spends a block at
   the alehouse, and leaves. Everything else is the autopilot, steered by habit.
+- **diligent, hastening every task**: the diligent player on four seeds, hastening every task and coming
+  back ten real minutes later, so the life runs ahead of the clock as far as the haste allowance allows
+  (half a real day at once, refilling with real time: at most twice the plain rate over a long stretch).
 - **absent**: nobody ever opens the game, and the autopilot runs every block for the two years: the
   peasant lives by the default routine and habit alone.
 - **away two years (cap)**: one seed, opened once after 104 real days (two game years). Only the 30-day
@@ -197,10 +236,15 @@ const FOOTER = `
 - **No starvation spiral for the diligent player**: every diligent line survives with no deaths of hunger
   and nobody gaunt or worse (asserted by the test).
 - **Neglect is a decline, not a death sentence**: neglected and absent households all live, but they
-  grow thin where the diligent stay healthy (the autopilot eats two meals a day, not three), and they
-  pick up fines and marks for missed work that the diligent never get (both asserted by the test).
-  They end with more grain and less money than the diligent: they eat less and sell less. Morale is
-  not lower, because the autopilot rests more and the neglectful player drinks.
+  grow thin where the diligent stay healthy (the autopilot eats two meals a day, not three), pick up
+  fines and marks for missed work, end poorer, and stand lower with the lord and the village (all
+  asserted by the test). A household nobody has tended for a week drifts: spirits sag, the manor and the
+  village think less of it, and work done by habit alone is sloppier (UNWATCHED in balance.ts). The
+  absent end with more grain only because they eat less and sell less. The neglectful player's morale
+  is lifted by the alehouse visit just before the count.
+- **Hastening** keeps the careful player's land, purse and standing, but a hastened day has fewer
+  meals in it (the household eats when the player comes back), so half the lines grow thin. The
+  allowance keeps the life from outrunning the clock (asserted by the test).
 - **A long absence** simulates only the 30-day catch-up cap and marks the household neglected, with a
   one-off morale and village-standing penalty at the start of the catch-up (told in the Parchment Log).
   Over the 210 simulated days those drift back. It does not kill the household.

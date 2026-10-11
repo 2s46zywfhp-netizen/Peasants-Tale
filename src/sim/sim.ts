@@ -1,5 +1,6 @@
 import {
   HASTE_BUDGET_MS,
+  UNWATCHED,
   HASTE_REFILL,
   ACTIONS, BLOCKS_PER_DAY, BLOCKS_PER_REAL_DAY, CATCHUP_CAP_BLOCKS, EGGS_PER_HEN_PER_DAY, FEAST_MORALE, FOOD_SPOIL_PER_DAY, FIREWOOD_PER_HOME_BLOCK,
   FIRE_BELOW_C, GARDEN_MONTHS, GARDEN_POTTAGE_PER_DAY, MARTINMAS_PORK, MORALE_COLD_BLOCK, MORALE_DRIFT, MORALE_HUNGRY_BLOCK, MORALE_ILL_BLOCK, NEGLECT, PIETY_DAILY_DECAY,
@@ -110,10 +111,20 @@ export function hearthOf(s: SimState, tempC: number): Hearth {
 
 /* ───────────── daily processing ───────────── */
 
+/** Nobody has tended this household for a while (the player has not chosen anything for UNWATCHED.afterDays). */
+export function unwatched(s: SimState): boolean {
+  return s.block - (s.counters.lastPlayerBlock ?? 0) > UNWATCHED.afterDays * BLOCKS_PER_DAY;
+}
+
 function dawn(s: SimState, info: DayInfo, w: Weather): void {
   if (s.dead) return;
   const day = info.dayIndex;
   s.soul.morale = clamp(s.soul.morale + w.morale);
+  if (unwatched(s)) {
+    s.soul.morale = Math.max(Math.min(s.soul.morale, UNWATCHED.moraleFloor), s.soul.morale + UNWATCHED.morale);
+    s.standing.village = Math.max(Math.min(s.standing.village, UNWATCHED.villageFloor), s.standing.village + UNWATCHED.village);
+    s.standing.lord = Math.max(Math.min(s.standing.lord, UNWATCHED.lordFloor), s.standing.lord + UNWATCHED.lord);
+  }
   if (w.sky === 'storm' || w.sky === 'snow') log(s, 'weather', w.sky === 'storm' ? 'A storm howls over the village.' : 'Snow lies on the thatch.');
   for (const f of info.feasts) {
     s.soul.morale = clamp(s.soul.morale + FEAST_MORALE[f]);
