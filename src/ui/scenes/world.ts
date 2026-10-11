@@ -1,72 +1,87 @@
-import { anim, type Anim } from '../../render/atlas';
-import { ditherFill } from '../../render/draw';
-import { C } from '../../render/palette';
-import { OPPOSITE, SCENES, colsOf, SCENE_OF, TILE, originY, tileAt, type Dir, type Npc, type SceneDef, type SceneId } from '../../render/scenes/maps';
-import { BODY_VARIANTS } from '../../render/sprites';
-import { drawWorld, setDayListener, type Actor, type WorldView } from '../../render/world';
-import { BED_SLEEP, DOOR_X, FEET_MAX, FEET_MIN, ROOM_TOP, ROOM_W, SPOTS } from '../../render/cottage';
+import { LAYER_BIT, anim, hasAnim, spriteH, spriteId, type Anim } from '../../render/atlas';
+import { INK, parchment, wipe } from '../../render/draw';
+import { W } from '../../render/fb';
+import { drawText, wrap } from '../../render/font';
+import {
+  GROUND_H, OPPOSITE, SCENES, SCENE_OF, SCENE_W, TERRAIN_OF, camFor, objAt, solidAt, terrainAt,
+  type Dir, type Npc, type Obj, type SceneDef, type SceneId,
+} from '../../render/scenes/maps';
+import { drawWorld, roomMeta, setDayListener, type Actor, type RoomMeta, type WorldView } from '../../render/world';
 import { updateWeather } from '../../render/weather';
+import { BELT_TOOLS } from '../../save/schema';
 import { reserveTier } from '../../sim/body';
 import { dayInfo } from '../../sim/calendar';
-import type { SimState } from '../../sim/state';
+import type { Member, SimState } from '../../sim/state';
 import { idx, present } from '../../sim/village';
-import { frame, rect } from '../../render/draw';
-import { drawText, wrap } from '../../render/font';
 import { isBoonDay, isWeekWorkDay } from '../../sim/obligations';
-import type { ActionId, Location } from '../../sim/balance';
+import { DMG_UNLOCK_DAYS, type ActionId, type Location } from '../../sim/balance';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import type { Scene } from '../scene';
 import { probe } from '../probe';
 import { talk } from '../talk';
+import { workAnim, type WorkAnim } from '../work';
 import { ActionMenuScene } from './actionMenu';
 import { DialogueScene } from './dialogue';
+import { QueueScene } from './queue';
 import { StatusScene } from './status';
 import { TitleScene } from './title';
+import { WorkingScene } from './working';
 
-const SPEED = 42; // px per second
-/** SPEED in sixteenths of a pixel per ms, in 8.8 fixed point (42 * 16 / 1000 * 256 ≈ 172). */
-const SPEED_SUB_Q8 = Math.round(((SPEED * 16) / 1000) * 256);
-const FADE_MS = 360;
-const POSE_AFTER_MS = 900;
-
-const POSES = ['idle', 'walk.down', 'walk.up', 'walk.left', 'walk.right', 'work', 'eat', 'sleep', 'pray'] as const;
-type Pose = (typeof POSES)[number];
-/** [variant][pose] resolved once: no strings built while playing. */
-const PEASANT: Anim[][] = BODY_VARIANTS.map((v) => POSES.map((p) => anim(`peasant.${v}.${p}`)));
-
-const SPAWN: Record<SceneId, [number, number]> = {
-  cottage: [7, 0], green: [1, 2], fields: [4, 2], woods: [8, 2], churchyard: [4, 2], church: [4, 6], manor: [5, 2], town: [1, 2], camp: [1, 2],
-};
-
-const STAGES = ['gone', 'fallow', 'unsown', 'growing', 'ripe', 'harvested'] as const;
-const CROPS = [null, 'wheat', 'rye', 'barley', 'oats', 'peas'] as const;
-
-/** What can be done at each spot in the cottage (same order as SPOTS: hearth, table, bed). */
-const SPOT_MENUS: readonly { title: string; actions: readonly ActionId[] }[] = [
-  { title: 'THE HEARTH', actions: ['cook', 'brew', 'rest'] },
-  { title: 'THE TABLE', actions: ['eat', 'rest'] },
-  { title: 'THE BED', actions: ['sleep', 'rest', 'prayHome'] },
-];
+/* ── feel ── */
+const WALK = 62; // px per second
+const RUN = 98;
+/** Holding a direction this long breaks into a run. */
+const RUN_AFTER_MS = 900;
+const ACCEL = 520; // px/s²
+const STOP = 1600; // px/s²: a short stop
+/** Camera easing time constant (ms). */
+const CAM_TAU = 140;
+const WIPE_MS = 520;
+const POSE_AFTER_MS = 700;
+/** Feet box half-width and depth. */
+const FOOT_W = 5;
+const FOOT_D = 3;
 
 /** First-day hints, in order; each is passed by doing what it says. */
 export const HINTS = [
-  'D-PAD: WALK. A: DO SOMETHING HERE',
+  'D-PAD: WALK. A: DO WHAT THE BUBBLE SAYS',
   'EACH TASK TAKES A PART OF THE DAY',
   'START: SEE HOW YOU AND YOURS FARE',
   'AWAY, LIFE GOES ON BY HABIT. B: OK',
 ] as const;
-/** Probe values per hint step, built once (no strings made per frame). */
 const HINT_PROBE = [...HINTS.map((_, i) => String(i)), 'done'];
 
-const PROMPT: Record<Location, string> = {
-  home: 'A:HOME', green: 'A:GREEN', tavern: 'A:ALEHOUSE', strips: 'A:STRIPS', demesne: 'A:DEMESNE',
-  church: 'A:CHURCH', woods: 'A:WOODS', stream: 'A:STREAM', manor: 'A:MANOR', barrow: 'A:BARROW', town: 'A:TOWN', camp: 'A:CAMP',
-};
 const LOCATION_TITLE: Record<Location, string> = {
-  home: 'COTTAGE', green: 'VILLAGE GREEN', tavern: 'ALEHOUSE', strips: 'YOUR STRIPS', demesne: "LORD'S DEMESNE",
-  church: 'CHURCH', woods: 'WOODS', stream: 'STREAM', manor: 'MANOR HALL', barrow: 'THE BARROW', town: 'THE TOWN', camp: 'OUTLAW CAMP',
+  home: 'THE COTTAGE', green: 'THE VILLAGE GREEN', tavern: 'THE ALEHOUSE', strips: 'YOUR STRIPS', demesne: "LORD'S DEMESNE",
+  church: 'THE CHURCH', woods: 'THE WOODS', stream: 'THE STREAM', manor: 'THE MANOR HALL', barrow: 'THE BARROW', town: 'THE TOWN', camp: 'THE CAMP',
 };
+
+/** What can be done at each spot in a room (same order as the room's spots). */
+const SPOTS: Record<'cottage' | 'church', readonly { title: string; verb: string; actions: readonly ActionId[] | null }[]> = {
+  cottage: [
+    { title: 'THE HEARTH', verb: 'A: COOK', actions: ['cook', 'brew', 'rest', 'eat'] },
+    { title: 'THE TABLE', verb: 'A: EAT', actions: ['eat', 'rest'] },
+    { title: 'THE BED', verb: 'A: SLEEP', actions: ['sleep', 'rest', 'prayHome'] },
+  ],
+  church: [
+    { title: 'THE PEWS', verb: 'A: PRAY', actions: null },
+    { title: 'THE ALTAR', verb: 'A: CONFESS', actions: null },
+  ],
+};
+
+/** Verbs for the prompts, built once. */
+const PROMPTS = new Map<string, string>();
+const promptOf = (verb: string): string => {
+  let p = PROMPTS.get(verb);
+  if (!p) PROMPTS.set(verb, (p = `A: ${verb}`));
+  return p;
+};
+
+type Face = 'down' | 'up' | 'left' | 'right';
+const MOVES = ['walk', 'run', 'idle'] as const;
+const FACES = ['down', 'up', 'side'] as const;
+const WORKS: readonly WorkAnim[] = ['chop', 'split', 'hoe', 'reap', 'flail', 'sow', 'carry', 'stir', 'milk', 'pray', 'eat', 'sleep'];
 
 interface NpcRt {
   def: Npc;
@@ -74,47 +89,83 @@ interface NpcRt {
   idle: Anim;
   walk: Anim;
   phase: number;
-  /** Index of the villager this NPC stands for, or -1. */
   vIdx: number;
+  lastX: number;
 }
 
-const mkActor = (a: Anim, x: number, y: number, offset: number): Actor => ({ anim: a, x, y, offset, eyeX: -1, eyeY: -1, visible: true });
+interface Kin {
+  member: string;
+  actor: Actor;
+  idle: Anim;
+  walk: Anim;
+  home: number;
+  phase: number;
+}
+
+const mkActor = (a: Anim, x: number, y: number, offset: number): Actor => ({ anim: a, x, y, flip: false, layers: 0, offset, visible: true, eyes: false });
+
+/** The sprite set for a household member: by role, sex and age. */
+function kinSprite(m: Member, day: number): string | null {
+  const age = (day - m.bornDay) / 365;
+  if (m.role === 'peasant') return null;
+  if (age < 2) return null; // in the cradle
+  if (age < 13) return 'child';
+  if (m.role === 'parent') return m.sex === 'm' ? 'elder' : 'goodwife';
+  if (m.role === 'spouse') return m.sex === 'f' ? 'wife' : 'shepherd';
+  return m.sex === 'f' ? 'maid' : 'shepherd';
+}
 
 export class WorldScene implements Scene {
   readonly opaque = true;
   private sceneId: SceneId;
+  /** Feet position (fractional), and velocity in px/s. */
   private x = 0;
   private y = 0;
-  private dir: Dir | 'up' | 'down' = 'down';
+  private vx = 0;
+  private vy = 0;
+  private face: Face = 'down';
+  private heldSince = 0;
   private moving = false;
   private stillSince = 0;
   private stepAcc = 0;
-  /** Sub-pixel movement in sixteenths of a pixel: positions stay integers (no boxed doubles while walking). */
-  private subX = 0;
-  private subY = 0;
-  private eatUntil = 0;
-  private fadeT = -1;
-  private pending: { to: SceneId; col: number; row: number } | null = null;
+  private cam = 0;
+  /** Wipe progress (ms), -1 when idle; the scene changes at the half. */
+  private wipeT = -1;
+  private pending: { to: SceneId; x: number; y: number } | null = null;
   private player: Actor;
   private npcs: NpcRt[] = [];
+  private kin: Kin[] = [];
+  private kinKey = '';
   private pens: { kind: string; actor: Actor; i: number }[] = [];
-  private message = '';
   private messageUntil = 0;
   private logSeen = 0;
   private view: WorldView;
+  private room: RoomMeta | null = null;
+  /** A cosmetic chore (milking) playing until this frame time. */
+  private choreUntil = 0;
+  private chore: WorkAnim | null = null;
+  private eatUntil = 0;
+  private needsAt = 0;
+  private anims: Record<string, Anim> = {};
 
   constructor(private game: Game) {
-    setDayListener((day, sky, moon, season) => {
-      probe('day', String(day));
-      probe('weather', sky);
-      probe('moon', String(moon));
-      probe('season', season);
+    setDayListener((d) => {
+      probe('day', String(d.day));
+      probe('weather', d.weather.sky);
+      probe('moon', String(d.moon));
+      probe('season', d.season);
+      probe('snow', String(d.snow));
     });
+    for (const m of MOVES) for (const f of FACES) this.anims[`${m}.${f}`] = anim(`peasant.${m}.${f}`);
+    for (const w of WORKS) this.anims[w] = anim(`peasant.${w}`);
     const s = game.sim();
     this.sceneId = SCENE_OF[s.location];
-    this.player = mkActor(PEASANT[1]![0]!, 0, 0, 0);
-    this.view = { scene: SCENES[this.sceneId], px: 0, actors: [], prompt: '' };
-    this.load(this.sceneId, ...SPAWN[this.sceneId]);
+    this.player = mkActor(this.anims['idle.down']!, 0, 0, 0);
+    this.player.glow = true;
+    this.view = { scene: SCENES[this.sceneId], cam: 0, actors: [], prompt: '', promptX: 0, promptY: 0, needs: [], belt: 'axe', queued: 0, message: '' };
+    const sp = this.scene.spawn;
+    this.load(this.sceneId, sp[0], this.scene.room ? this.roomFeetMid(this.sceneId) : sp[1]);
+    this.cam = this.camTarget();
     this.logSeen = s.log.length;
   }
 
@@ -122,42 +173,103 @@ export class WorldScene implements Scene {
     return SCENES[this.sceneId];
   }
 
-  /** Enter a scene with the player standing on tile (col, row). */
-  private load(id: SceneId, col: number, row: number): void {
+  private roomFeetMid(id: SceneId): number {
+    const m = roomMeta(SCENES[id].room!);
+    return ((m.floor + 18 + m.h - 8) >> 1);
+  }
+
+  /** Enter a scene with the player's feet at (x, y). */
+  private load(id: SceneId, x: number, y: number): void {
     this.sceneId = id;
     probe('scene', id);
     const sc = SCENES[id];
-    this.x = col * TILE;
-    // In a side room only the x matters: stand on the middle of the floor.
-    this.y = sc.side ? ROOM_TOP + ((FEET_MIN + FEET_MAX) >> 1) - 16 : originY(sc) + row * TILE;
+    this.room = sc.room ? roomMeta(sc.room) : null;
+    this.x = x;
+    this.y = y;
+    this.vx = this.vy = 0;
+    if (!this.room) this.unstick();
     this.npcs = sc.npcs.map((def, i) => {
-      const idle = anim(`${def.who}.idle`);
-      const walk = anim(`${def.who}.walk`);
-      const a = mkActor(idle, def.x, originY(sc) + def.y, i * 331);
-      if (def.who === 'blackDog') {
-        a.eyeX = 11;
-        a.eyeY = 11;
-      }
-      return { def, actor: a, idle, walk, phase: i * 1.7, vIdx: def.villager ? idx(def.villager) : -1 };
+      const idle = anim(`${def.who}.idle${def.who === 'dog' ? '' : '.down'}`);
+      const walk = anim(`${def.who}.walk${def.who === 'dog' ? '' : '.side'}`);
+      const y0 = this.room ? this.roomFeetMid(id) - 6 + ((i * 13) % 20) : def.y;
+      const a = mkActor(idle, def.x, y0, i * 331);
+      a.eyes = def.who === 'dog';
+      return { def, actor: a, idle, walk, phase: i * 1.7, vIdx: def.villager ? idx(def.villager) : -1, lastX: def.x };
     });
     this.pens = [];
     for (const p of sc.pens ?? []) {
       const n = p.kind === 'hen' ? 4 : 1;
       for (let i = 0; i < n; i++) {
-        const a = mkActor(anim(`${p.kind}.idle${i % 2 ? '.left' : ''}`), p.x + i * 10, originY(sc) + p.y + (i % 2) * 6, i * 177);
+        const a = mkActor(anim(`${p.kind}.idle`), p.x + i * 12, p.y + (i % 2) * 6, i * 177);
+        a.flip = i % 2 === 1;
         this.pens.push({ kind: p.kind, actor: a, i });
       }
     }
-    this.view = { scene: sc, px: this.x, actors: [this.player, ...this.npcs.map((n) => n.actor), ...this.pens.map((p) => p.actor)], prompt: '' };
+    this.kinKey = '';
+    this.kin = [];
+    this.syncKin(this.game.sim());
+    this.view.scene = sc;
+    this.rebuildActors();
   }
 
-  private go(to: SceneId, col: number, row: number): void {
-    if (this.fadeT >= 0) return;
-    this.pending = { to, col, row };
-    this.fadeT = 0;
+  private rebuildActors(): void {
+    this.view.actors = [this.player, ...this.npcs.map((n) => n.actor), ...this.pens.map((p) => p.actor), ...this.kin.map((k) => k.actor)];
   }
 
-  /** Created once (a closure inside onAction would allocate a context on every button press). */
+  /** The household in the cottage, from the sim's members (rebuilt only when the household changes). */
+  private syncKin(s: SimState): void {
+    if (this.sceneId !== 'cottage') {
+      if (this.kin.length) {
+        this.kin = [];
+        this.rebuildActors();
+      }
+      return;
+    }
+    const day = (s.block / 6) | 0;
+    let key = '';
+    for (const m of s.members) if (m.alive && m.role !== 'peasant') key += `${m.id}:${kinSprite(m, day)};`;
+    if (key === this.kinKey) return;
+    this.kinKey = key;
+    const mid = this.roomFeetMid('cottage');
+    this.kin = [];
+    let n = 0;
+    for (const m of s.members) {
+      if (!m.alive || m.role === 'peasant') continue;
+      const who = kinSprite(m, day);
+      if (!who) continue;
+      const homeX = 120 + ((n * 61) % 200);
+      const a = mkActor(anim(`${who}.idle.down`), homeX, mid - 8 + ((n * 11) % 22), n * 97);
+      this.kin.push({ member: m.id, actor: a, idle: a.anim, walk: anim(`${who}.walk.side`), home: homeX, phase: n * 2.3 });
+      n++;
+    }
+    this.rebuildActors();
+  }
+
+  /** Nudges the feet off anything solid (arriving at an edge or a door). */
+  private unstick(): void {
+    if (!this.footBlocked(this.x, this.y)) return;
+    for (let r = 2; r < 80; r += 2)
+      for (const [dx, dy] of [[0, r], [0, -r], [r, 0], [-r, 0]] as const)
+        if (!this.footBlocked(this.x + dx, this.y + dy) && this.y + dy < GROUND_H - 2) {
+          this.x += dx;
+          this.y += dy;
+          return;
+        }
+  }
+
+  private footBlocked(x: number, y: number): boolean {
+    const sc = this.scene;
+    x = Math.round(x);
+    y = Math.round(y);
+    return solidAt(sc, x - FOOT_W, y) || solidAt(sc, x + FOOT_W, y) || solidAt(sc, x - FOOT_W, y - FOOT_D) || solidAt(sc, x + FOOT_W, y - FOOT_D);
+  }
+
+  private go(to: SceneId, x: number, y: number): void {
+    if (this.wipeT >= 0) return;
+    this.pending = { to, x, y };
+    this.wipeT = 0;
+  }
+
   private readonly onMenuReport = (m: string): void => {
     this.say(m);
     if (/^EAT/.test(m)) {
@@ -167,93 +279,72 @@ export class WorldScene implements Scene {
   };
 
   say(text: string): void {
-    this.message = text.slice(0, 12);
-    this.messageUntil = this.game.frameNow() + 2500;
+    this.view.message = text.slice(0, 28);
+    this.messageUntil = this.game.frameNow() + 2600;
   }
 
-  /** The tile in front of the player (written to facingCol/facingRow: no allocation per frame). */
-  private facingCol = 0;
-  private facingRow = 0;
-  private faceTile(): void {
-    const sc = this.scene;
-    const oy = originY(sc);
-    const cx = this.x + 8 + (this.dir === 'west' ? -12 : this.dir === 'east' ? 12 : 0);
-    const cy = this.y + 12 + (this.dir === 'up' ? -12 : this.dir === 'down' ? 10 : 0);
-    this.facingCol = cx >> 4; // TILE = 16: shifts floor without doubles
-    this.facingRow = (cy - oy) >> 4;
+  /* ── what is in reach ── */
+
+  /** The point just in front of the feet. */
+  private frontX(): number {
+    return this.x + (this.face === 'left' ? -12 : this.face === 'right' ? 12 : 0);
   }
-
-  /** The family field underfoot (index into sim fields) or -1, with its label and what A does there. */
-  private fieldIdx = -1;
-  private fieldKey = -1;
-  private fieldLabel = '';
-  private fieldPrompt = '';
-
-  private updateFieldLabel(s: SimState): void {
-    const sc = this.scene;
-    if (sc.side || !sc.outdoor) {
-      this.fieldIdx = -1;
-      return;
-    }
-    const t = tileAt(sc, (this.x + 8) >> 4, (this.y + 12 - originY(sc)) >> 4);
-    const n = t?.field ?? -1;
-    this.fieldIdx = n;
-    if (n < 0) return;
-    const f = s.fields[n];
-    if (!f) return;
-    // Rebuilt only when the field or its state changes (not every frame).
-    const stage = f.acres === 0 ? 'gone' : f.stage;
-    const key = n * 100 + STAGES.indexOf(stage) * 10 + CROPS.indexOf(f.crop);
-    if (key === this.fieldKey) return;
-    this.fieldKey = key;
-    const name = f.id.toUpperCase();
-    const crop = f.crop ? f.crop.toUpperCase() : '';
-    this.fieldLabel =
-      stage === 'gone' ? `${name}: NOT YOURS` : stage === 'fallow' ? `${name}: FALLOW` : stage === 'unsown' ? `${name}: SOW ${crop}`
-      : stage === 'growing' ? `${name}: ${crop} GROWS` : stage === 'ripe' ? `${name}: ${crop} RIPE` : `${name}: STUBBLE`;
-    if (this.fieldLabel.length > 20) this.fieldLabel = this.fieldLabel.slice(0, 20);
-    this.fieldPrompt = stage === 'unsown' ? 'A:SOW' : stage === 'growing' ? 'A:WEED' : stage === 'ripe' ? 'A:REAP' : stage === 'gone' ? '' : 'A:STRIPS';
-  }
-
-  /** Standing just below our own cottage door on the green? */
-  private atHomeDoor(): boolean {
-    const sc = this.scene;
-    const col = (this.x + 8) >> 4;
-    const row = (this.y + 12 - originY(sc)) >> 4;
-    return tileAt(sc, col, row - 1)?.door?.to === 'cottage' || tileAt(sc, col, row)?.door?.to === 'cottage';
-  }
-
-  /** In a side room: the spot the peasant stands at (index into SPOTS), or -1. */
-  private sideSpot(): number {
-    const mid = this.x + 8;
-    for (let i = 0; i < SPOTS.length; i++) if (mid >= SPOTS[i]!.x0 && mid < SPOTS[i]!.x1) return i;
-    return -1;
-  }
-
-  private hotspot(): Location | null {
-    if (this.scene.side) return this.sideSpot() >= 0 ? 'home' : null;
-    this.faceTile();
-    const t = tileAt(this.scene, this.facingCol, this.facingRow);
-    if (t?.hotspot) return t.hotspot;
-    const sc = this.scene;
-    const under = tileAt(sc, (this.x + 8) >> 4, (this.y + 12 - originY(sc)) >> 4);
-    return under?.hotspot ?? sc.ambient ?? null;
+  private frontY(): number {
+    return this.y + (this.face === 'up' ? -12 : this.face === 'down' ? 8 : -2);
   }
 
   private nearNpc(): NpcRt | null {
     for (let i = 0; i < this.npcs.length; i++) {
       const n = this.npcs[i]!;
       if (!n.actor.visible || !n.def.talk) continue;
-      if (Math.abs(n.actor.x - this.x) < 16 && Math.abs(n.actor.y - this.y) < 16) return n;
+      if (Math.abs(n.actor.x - this.x) < 20 && Math.abs(n.actor.y - this.y) < 14) return n;
     }
     return null;
   }
 
+  private nearKin(): Kin | null {
+    for (let i = 0; i < this.kin.length; i++) {
+      const k = this.kin[i]!;
+      if (k.actor.visible && Math.abs(k.actor.x - this.x) < 20 && Math.abs(k.actor.y - this.y) < 14) return k;
+    }
+    return null;
+  }
+
+  /** In a room: the spot the feet stand at (index into the room's spots), or -1. */
+  private roomSpot(): number {
+    const m = this.room;
+    if (!m) return -1;
+    for (let i = 0; i < m.spots.length; i++) if (this.x >= m.spots[i]!.x0 && this.x < m.spots[i]!.x1) return i;
+    return -1;
+  }
+
+  private target(): Obj | null {
+    const sc = this.scene;
+    return objAt(sc, this.frontX(), this.frontY(), 6) ?? objAt(sc, this.x, this.y, 4);
+  }
+
+  /** Family strip (0..2) or the lord's demesne (3) under the feet, or -1. */
+  private fieldUnder(): number {
+    const ch = terrainAt(this.scene, Math.round(this.x) >> 4, Math.round(this.y - 1) >> 4);
+    return ch >= '1' && ch <= '3' ? ch.charCodeAt(0) - 49 : ch === 'd' ? 3 : -1;
+  }
+
+  private waterAhead(): boolean {
+    return TERRAIN_OF[terrainAt(this.scene, Math.round(this.frontX()) >> 4, Math.round(this.frontY() + 4) >> 4)] === 'water';
+  }
+
+  private nearCow(): boolean {
+    if (this.sceneId !== 'fields' || this.game.sim().wealth.cow < 1) return false;
+    for (const p of this.pens) if (p.kind === 'cow' && p.actor.visible && Math.abs(p.actor.x - this.x) < 26 && Math.abs(p.actor.y - this.y) < 14) return true;
+    return false;
+  }
+
+  /* ── input ── */
+
   onAction(e: ActionEvent): void {
-    if (this.fadeT >= 0) return;
+    if (this.wipeT >= 0) return;
     const g = this.game;
     if (e.action === 'confirm' && !e.repeat) {
-      // The line has ended: back to the title, where a new life can begin.
       if (g.sim().dead) return g.scenes.replace(new TitleScene(g));
       const npc = this.nearNpc();
       if (npc) {
@@ -261,256 +352,286 @@ export class WorldScene implements Scene {
         g.scenes.push(new DialogueScene(g, t.speaker, t.pages), false);
         return;
       }
-      const loc = this.hotspot();
+      const kin = this.nearKin();
+      if (kin && this.roomSpot() < 0) {
+        const t = talk('family', g.sim());
+        g.scenes.push(new DialogueScene(g, t.speaker, t.pages), false);
+        return;
+      }
+      if (this.nearCow()) {
+        g.sfx('confirm');
+        this.chore = 'milk';
+        this.choreUntil = g.frameNow() + 2400;
+        this.say('MILKING THE COW');
+        return;
+      }
+      g.advanceTutorial(0);
+      // In a room: the spot's own menu.
+      const spot = this.roomSpot();
+      if (this.room && spot >= 0) {
+        const sp = SPOTS[this.scene.room!][spot]!;
+        g.sfx('confirm');
+        g.scenes.push(new ActionMenuScene(g, this.scene.ambient!, sp.title, this.onMenuReport, sp.actions), false);
+        return;
+      }
+      if (this.room) return g.sfx('error');
+      const o = this.target();
+      if (o?.door && o.home) {
+        g.sfx('door');
+        return this.enterDoor(o);
+      }
+      const field = this.fieldUnder();
+      const loc: Location | null = o?.hot ?? (field === 3 ? 'demesne' : field >= 0 ? 'strips' : this.waterAhead() ? 'stream' : this.scene.ambient ?? null);
       if (!loc) return g.sfx('error');
       g.sfx('confirm');
-      g.advanceTutorial(0);
-      const spot = this.scene.side ? this.sideSpot() : -1;
-      if (spot >= 0) {
-        const s = SPOT_MENUS[spot]!;
-        g.scenes.push(new ActionMenuScene(g, loc, s.title, this.onMenuReport, s.actions), false);
-      } else g.scenes.push(new ActionMenuScene(g, loc, LOCATION_TITLE[loc], this.onMenuReport), false);
-    } else if (e.action === 'start' && !e.repeat) {
+      g.scenes.push(new ActionMenuScene(g, loc, LOCATION_TITLE[loc], this.onMenuReport), false);
+    } else if (e.action === 'start') {
       g.sfx('confirm');
       g.advanceTutorial(2);
       g.scenes.push(new StatusScene(g));
     } else if (e.action === 'cancel' && !e.repeat && g.tutorial() === 3) {
       g.sfx('confirm');
       g.advanceTutorial(3);
+    } else if (e.action === 'belt' && !e.repeat) {
+      const i = BELT_TOOLS.indexOf(g.save.data.belt);
+      g.setBelt(BELT_TOOLS[(i + 1) % BELT_TOOLS.length]!);
+      g.sfx('move');
+      this.say(`BELT: ${g.save.data.belt.toUpperCase()}`);
+    } else if (e.action === 'queue' && !e.repeat) {
+      g.sfx('confirm');
+      g.scenes.push(new QueueScene(g), false);
     }
   }
 
-  /** Corner assist: blocked moving vertically, but an opening is a few pixels to one side? Ease toward it. */
-  private slideX(dy: number): void {
-    for (let k = 1; k <= 6; k++) {
-      if (!this.blocked(this.x - k, this.y + dy)) {
-        if (!this.blocked(this.x - 1, this.y)) this.x--;
-        return;
-      }
-      if (!this.blocked(this.x + k, this.y + dy)) {
-        if (!this.blocked(this.x + 1, this.y)) this.x++;
-        return;
-      }
-    }
+  /** QA and debug: stand in a scene at once (no wipe). */
+  teleport(id: SceneId, x: number, y: number, face: Face = 'down'): void {
+    const sc = SCENES[id];
+    this.load(id, x, sc.room ? this.roomFeetMid(id) : y);
+    this.face = face;
+    this.cam = this.camTarget();
+    this.view.cam = this.cam;
   }
 
-  private slideY(dx: number): void {
-    for (let k = 1; k <= 6; k++) {
-      if (!this.blocked(this.x + dx, this.y - k)) {
-        if (!this.blocked(this.x, this.y - 1)) this.y--;
-        return;
-      }
-      if (!this.blocked(this.x + dx, this.y + k)) {
-        if (!this.blocked(this.x, this.y + 1)) this.y++;
-        return;
-      }
-    }
+  private enterDoor(o: Obj): void {
+    const to = o.door!.to;
+    const m = roomMeta(SCENES[to].room!);
+    const inX = to === 'cottage' ? m.door.x - 14 : m.door.x + m.door.w + 14;
+    this.go(to, inX, this.roomFeetMid(to));
   }
 
-  /** Is the feet box at (x, y) on anything solid? Corner by corner, without allocating. */
-  private blocked(x: number, y: number): boolean {
-    for (let k = 0; k < 4; k++) {
-      const fx = x + (k & 1 ? 11 : 4);
-      const fy = y + (k & 2 ? 15 : 12);
-      if (this.solidAt(fx, fy)) return true;
-    }
-    return false;
-  }
-
-  private solidAt(fx: number, fy: number): boolean {
-    const sc = this.scene;
-    const col = fx >> 4;
-    if (col < 0 || col >= colsOf(sc)) return false; // edges are handled as exits
-    const t = tileAt(sc, col, (fy - originY(sc)) >> 4);
-    return !t || t.solid === true;
-  }
+  /* ── the frame ── */
 
   update(dt: number, now: number): void {
     const g = this.game;
     updateWeather(dt);
-    if (this.fadeT >= 0) {
-      const before = this.fadeT;
-      this.fadeT += dt;
-      if (before < FADE_MS / 2 && this.fadeT >= FADE_MS / 2 && this.pending) {
-        this.load(this.pending.to, this.pending.col, this.pending.row);
+    if (this.wipeT >= 0) {
+      const before = this.wipeT;
+      this.wipeT += dt;
+      if (before < WIPE_MS / 2 && this.wipeT >= WIPE_MS / 2 && this.pending) {
+        this.load(this.pending.to, this.pending.x, this.pending.y);
+        this.cam = this.camTarget();
         this.pending = null;
       }
-      if (this.fadeT >= FADE_MS) this.fadeT = -1;
+      if (this.wipeT >= WIPE_MS) this.wipeT = -1;
     }
 
-    // Walking: held directions move smoothly.
+    // Held directions: accelerate toward walking (or running) speed; let go and stop short.
     const inp = g.input;
-    let dx = 0;
-    let dy = 0;
-    if (this.fadeT < 0 && g.scenes.top === this && !g.sim().dead) {
-      if (inp.isHeld('left')) dx -= 1;
-      if (inp.isHeld('right')) dx += 1;
-      if (inp.isHeld('up')) dy -= 1;
-      if (inp.isHeld('down')) dy += 1;
+    let ix = 0;
+    let iy = 0;
+    const free = this.wipeT < 0 && g.scenes.top === this && !g.sim().dead && now >= this.choreUntil;
+    if (free) {
+      if (inp.isHeld('left')) ix -= 1;
+      if (inp.isHeld('right')) ix += 1;
+      if (inp.isHeld('up')) iy -= 1;
+      if (inp.isHeld('down')) iy += 1;
     }
-    this.moving = dx !== 0 || dy !== 0;
-    if (this.moving && this.scene.side) this.walkSide(dx, dy, dt, now);
-    else if (this.moving) {
+    const want = ix !== 0 || iy !== 0;
+    if (!want) this.heldSince = now;
+    const top = now - this.heldSince > RUN_AFTER_MS ? RUN : WALK;
+    const norm = ix !== 0 && iy !== 0 ? 0.7071 : 1;
+    const s = dt / 1000;
+    this.vx = approach(this.vx, ix * top * norm, (ix !== 0 && Math.sign(ix) === Math.sign(this.vx)) || this.vx === 0 ? ACCEL * s : STOP * s);
+    this.vy = approach(this.vy, iy * top * norm * (this.room ? 0.55 : 1), (iy !== 0 && Math.sign(iy) === Math.sign(this.vy)) || this.vy === 0 ? ACCEL * s : STOP * s);
+    if (want) {
+      this.face = Math.abs(ix) > 0 && (iy === 0 || this.face === 'left' || this.face === 'right') ? (ix < 0 ? 'left' : 'right') : iy < 0 ? 'up' : 'down';
       this.stillSince = now;
-      this.dir = dx < 0 ? 'west' : dx > 0 ? 'east' : dy < 0 ? 'up' : 'down';
-      const sub = (dt * SPEED_SUB_Q8) >> 8;
-      // Move a pixel at a time so collisions are exact.
-      this.subX = dx === 0 ? 0 : this.subX + dx * sub;
-      while (this.subX >= 16) {
-        this.subX -= 16;
-        if (!this.blocked(this.x + 1, this.y)) this.x++;
-        else if (dy === 0) this.slideY(1);
-      }
-      while (this.subX <= -16) {
-        this.subX += 16;
-        if (!this.blocked(this.x - 1, this.y)) this.x--;
-        else if (dy === 0) this.slideY(-1);
-      }
-      this.subY = dy === 0 ? 0 : this.subY + dy * sub;
-      while (this.subY >= 16) {
-        this.subY -= 16;
-        if (!this.blocked(this.x, this.y + 1)) this.y++;
-        else if (dx === 0) this.slideX(1);
-      }
-      while (this.subY <= -16) {
-        this.subY += 16;
-        if (!this.blocked(this.x, this.y - 1)) this.y--;
-        else if (dx === 0) this.slideX(-1);
-      }
-      this.stepAcc += sub;
-      if (this.stepAcc >= 12 * 16) {
+      if (this.chore && now >= this.choreUntil) this.chore = null;
+    }
+    this.moving = Math.abs(this.vx) + Math.abs(this.vy) > 4;
+    if (this.moving) {
+      if (this.room) this.walkRoom(s);
+      else this.walkGround(s, ix, iy);
+      this.stepAcc += (Math.abs(this.vx) + Math.abs(this.vy)) * s;
+      if (this.stepAcc >= 13) {
         this.stepAcc = 0;
         g.sfx('step');
       }
-      const sc = this.scene;
-      const oy = originY(sc);
-      const minY = oy - 8;
-      const maxY = oy + sc.rows.length * TILE - 16;
-      if (this.y < minY) this.y = minY;
-      if (this.y > maxY) this.y = maxY;
-      // Edges: walk off into the next scene, or stop.
-      const right = colsOf(sc) * TILE - 10;
-      if (this.x < -6 || this.x > right) {
-        const d: Dir = this.x < 0 ? 'west' : 'east';
-        const to = sc.exits[d];
-        if (to) {
-          const row = Math.max(0, Math.min(SCENES[to].rows.length - 1, Math.round((this.y - oy) / TILE)));
-          this.go(to, OPPOSITE[d] === 'west' ? 0 : colsOf(SCENES[to]) - 1, row);
-        }
-        if (this.x < -6) this.x = -6;
-        if (this.x > right) this.x = right;
-      }
-      // Doors underfoot.
-      const under = tileAt(sc, (this.x + 8) >> 4, (this.y + 12 - oy) >> 4);
-      if (under?.door) {
-        g.sfx('door');
-        this.go(under.door.to, under.door.col, under.door.row);
-      }
     }
+
+    // The camera eases after the peasant, a little ahead of where they are going.
+    const k = 1 - Math.exp(-dt / CAM_TAU);
+    this.cam += (this.camTarget() - this.cam) * k;
+    this.view.cam = this.cam;
 
     this.followFortune();
+    this.runQueue();
     this.updateActors(now);
     this.watchLog();
+    this.checkUnlock();
   }
 
-  /** Walking in a side room: along the floor and a little into its depth; out through the door on the right. */
-  private walkSide(dx: number, dy: number, dt: number, now: number): void {
-    this.stillSince = now;
-    this.dir = dx < 0 ? 'west' : dx > 0 ? 'east' : dy < 0 ? 'up' : 'down';
-    const sub = (dt * SPEED_SUB_Q8) >> 8;
-    this.subX = dx === 0 ? 0 : this.subX + dx * sub;
-    while (this.subX >= 16) {
-      this.subX -= 16;
-      this.x++;
+  private camTarget(): number {
+    const lead = this.vx * 0.35;
+    return camFor(this.scene, this.x + lead, this.room?.w ?? 384);
+  }
+
+  private walkGround(s: number, ix: number, iy: number): void {
+    const sc = this.scene;
+    const nx = this.x + this.vx * s;
+    if (!this.footBlocked(nx, this.y)) this.x = nx;
+    else {
+      this.vx = 0;
+      // Corner assist: blocked sideways but an opening is a few pixels up or down? Ease toward it.
+      if (iy === 0 && ix !== 0) for (let d = 1; d <= 7; d++) {
+        if (!this.footBlocked(nx, this.y - d)) { this.y -= 0.8; break; }
+        if (!this.footBlocked(nx, this.y + d)) { this.y += 0.8; break; }
+      }
     }
-    while (this.subX <= -16) {
-      this.subX += 16;
-      this.x--;
+    const ny = this.y + this.vy * s;
+    // Our door: walking up into it goes home; so does any door.
+    if (this.vy < 0) {
+      for (const o of sc.objs) if (o.door && this.x >= o.x + o.door.x0 && this.x <= o.x + o.door.x1 && ny <= o.y + 3 && this.y > o.y - 2) {
+        this.game.sfx('door');
+        return this.enterDoor(o);
+      }
     }
-    this.subY = dy === 0 ? 0 : this.subY + dy * sub;
-    while (this.subY >= 32) {
-      this.subY -= 32;
-      this.y++;
+    if (!this.footBlocked(this.x, ny)) this.y = ny;
+    else {
+      this.vy = 0;
+      if (ix === 0 && iy !== 0) for (let d = 1; d <= 7; d++) {
+        if (!this.footBlocked(this.x - d, ny)) { this.x -= 0.8; break; }
+        if (!this.footBlocked(this.x + d, ny)) { this.x += 0.8; break; }
+      }
     }
-    while (this.subY <= -32) {
-      this.subY += 32;
-      this.y--;
+    // Edges: walk off into the next scene, or stop.
+    if (this.x < 2 || this.x > SCENE_W - 2) {
+      const d: Dir = this.x < 2 ? 'west' : 'east';
+      const to = sc.exits[d];
+      if (to) this.go(to, OPPOSITE[d] === 'west' ? 10 : SCENE_W - 10, this.y);
+      this.x = Math.max(2, Math.min(SCENE_W - 2, this.x));
+      this.vx = 0;
     }
-    const minY = ROOM_TOP + FEET_MIN - 16;
-    const maxY = ROOM_TOP + FEET_MAX - 16;
+  }
+
+  private walkRoom(s: number): void {
+    const m = this.room!;
+    this.x += this.vx * s;
+    this.y += this.vy * s;
+    const minY = m.floor + 18, maxY = m.h - 6;
     if (this.y < minY) this.y = minY;
     if (this.y > maxY) this.y = maxY;
-    if (this.x < 2) this.x = 2;
-    if (this.x > ROOM_W - 18) this.x = ROOM_W - 18;
-    this.stepAcc += sub;
-    if (this.stepAcc >= 12 * 16) {
-      this.stepAcc = 0;
-      this.game.sfx('step');
-    }
-    const exit = this.scene.side!.exit;
-    if (dx > 0 && this.x >= DOOR_X) {
+    const out = this.scene.out!;
+    // Out through the door (on the right of the cottage, the left of the church).
+    const doorRight = m.door.x > m.w / 2;
+    if (doorRight ? this.vx > 0 && this.x > m.door.x + 8 : this.vx < 0 && this.x < m.door.x + m.door.w - 8) {
       this.game.sfx('door');
-      this.go(exit.to, exit.col, exit.row);
+      this.go(out.to, out.x, out.y);
     }
+    if (this.x < 8) this.x = 8;
+    if (this.x > m.w - 8) this.x = m.w - 8;
   }
 
   /** Flight, outlawry, capture: the sim moves the family; the world follows. */
   private followFortune(): void {
-    if (this.fadeT >= 0) return;
+    if (this.wipeT >= 0) return;
     const r = this.game.sim().station.residence;
     const want: SceneId | null = r === 'town' ? 'town' : r === 'camp' ? 'camp' : null;
-    if (want !== null && this.sceneId !== want) this.go(want, SPAWN[want][0], SPAWN[want][1]);
-    else if (want === null && (this.sceneId === 'town' || this.sceneId === 'camp')) this.go('cottage', SPAWN.cottage[0], SPAWN.cottage[1]);
+    if (want !== null && this.sceneId !== want) this.go(want, SCENES[want].spawn[0], SCENES[want].spawn[1]);
+    else if (want === null && (this.sceneId === 'town' || this.sceneId === 'camp')) this.go('cottage', SCENES.cottage.spawn[0], this.roomFeetMid('cottage'));
   }
 
-  private bodyVariant(): number {
-    const head = this.game.sim().members[0];
-    if (!head) return 0;
-    const b = head.body;
-    if (b.illness) return BODY_VARIANTS.indexOf('sick');
-    if (b.warmth < 30) return BODY_VARIANTS.indexOf('cold');
-    return BODY_VARIANTS.indexOf(reserveTier(b.reserve));
+  /** Tasks queued with R start, one by one, as each ends. */
+  private runQueue(): void {
+    const g = this.game;
+    const q = g.save.data.queue;
+    if (!q.length || g.scenes.top !== this || this.wipeT >= 0) return;
+    const s = g.sim();
+    if (s.dead || (s.plan && s.block < s.plan.until)) return;
+    const next = q[0]!;
+    g.setQueue(q.slice(1));
+    const r = g.act(next.action, next.param);
+    if (!r.ok) {
+      this.say(r.message.slice(0, 28));
+      g.sfx('error');
+      return;
+    }
+    this.say(`NEXT: ${r.message || next.action.toUpperCase()}`);
+    // The peasant goes where the task is done.
+    const where = SCENE_OF[g.sim().location];
+    if (where !== this.sceneId) {
+      const sc = SCENES[where];
+      this.go(where, sc.spawn[0], sc.room ? this.roomFeetMid(where) : sc.spawn[1]);
+    }
+    g.scenes.push(new WorkingScene(g, next.action), false);
   }
 
-  private pose(now: number): Pose {
-    if (this.moving) return this.dir === 'west' ? 'walk.left' : this.dir === 'east' ? 'walk.right' : this.dir === 'up' ? 'walk.up' : 'walk.down';
+  /** DMG mode is earned by keeping a life going. */
+  private checkUnlock(): void {
+    const g = this.game;
+    if (g.save.data.dmgUnlocked || g.sim().block < DMG_UNLOCK_DAYS * 6) return;
+    g.save.data = { ...g.save.data, dmgUnlocked: true };
+    void g.save.save(g.now());
+    this.say('DMG MODE EARNED (SETTINGS)');
+  }
+
+  private layersOf(m: Member | undefined, work: boolean): number {
+    if (!m) return 0;
+    const b = m.body;
+    const tier = reserveTier(b.reserve);
+    let bits = tier === 'skeletal' ? LAYER_BIT.skeletal : tier === 'gaunt' ? LAYER_BIT.gaunt : tier === 'healthy' ? LAYER_BIT.girth1 : tier === 'stout' ? LAYER_BIT.girth1 | LAYER_BIT.girth2 : 0;
+    if (b.illness) bits |= LAYER_BIT.sick;
+    if (b.warmth < 30) bits |= LAYER_BIT.cold;
+    if (work) bits |= LAYER_BIT.tool;
+    return bits;
+  }
+
+  /** The work going on here now (the plan in hand, if it belongs in this scene), as an animation. */
+  private workHere(now: number): WorkAnim | null {
+    if (this.chore && now < this.choreUntil) return this.chore;
     if (now < this.eatUntil) return 'eat';
-    if (now - this.stillSince < POSE_AFTER_MS) return 'idle';
+    if (this.moving || now - this.stillSince < POSE_AFTER_MS) return null;
     const s = this.game.sim();
     const plan = s.plan && s.block >= s.plan.from && s.block < s.plan.until ? s.plan : null;
-    if (!plan) return 'idle';
-    const id = this.sceneId;
-    if (plan.action === 'sleep' && id === 'cottage') return 'sleep';
-    if ((plan.action === 'workStrips' && id === 'fields') || ((plan.action === 'weekWork' || plan.action === 'hire') && id === 'manor') || (plan.action === 'gatherFirewood' && id === 'woods') || (plan.action === 'hire' && id === 'town') || (plan.action === 'poach' && (id === 'woods' || id === 'camp'))) return 'work';
-    if (plan.action === 'sleep' && (id === 'camp' || id === 'town')) return 'sleep';
-    if ((plan.action === 'pray' || plan.action === 'attendMass' || plan.action === 'confess') && id === 'church') return 'pray';
-    if (plan.action === 'prayHome' && id === 'cottage') return 'pray';
-    return 'idle';
-  }
-
-  private hasRole(role: string): boolean {
-    const ms = this.game.sim().members;
-    for (let i = 0; i < ms.length; i++) if (ms[i]!.role === role && ms[i]!.alive) return true;
-    return false;
+    if (!plan) return null;
+    if (SCENE_OF[s.location] !== this.sceneId && !(plan.action === 'hire' && this.sceneId === 'town')) return null;
+    const f = this.fieldUnder();
+    const field = f >= 0 && f < 3 ? s.fields[f] ?? null : null;
+    return workAnim(plan.action, this.game.save.data.belt, field, ((now / 4000) | 0) % 2 === 1);
   }
 
   private updateActors(now: number): void {
     const s = this.game.sim();
-    const pose = this.pose(now);
     const p = this.player;
-    p.anim = PEASANT[this.bodyVariant()]![POSES.indexOf(pose)]!;
-    if (pose === 'sleep') {
-      // On the bed.
-      p.x = BED_SLEEP.x;
-      p.y = ROOM_TOP + BED_SLEEP.y;
+    const head = s.members[0];
+    const work = this.workHere(now);
+    if (work === 'sleep' && this.room?.bed) {
+      p.anim = this.anims.sleep!;
+      p.x = this.room.bed.x + 16;
+      p.y = this.room.bed.y + 2;
+      p.flip = false;
     } else {
+      const side = this.face === 'left' || this.face === 'right';
+      const move = this.moving ? (Math.abs(this.vx) + Math.abs(this.vy) > WALK + 6 ? 'run' : 'walk') : 'idle';
+      p.anim = work ? this.anims[work]! : this.anims[`${move}.${side ? 'side' : this.face}`]!;
+      p.flip = this.face === 'left';
       p.x = this.x;
       p.y = this.y;
     }
+    p.layers = this.layersOf(head, work !== null && work !== 'pray' && work !== 'sleep');
     p.visible = !s.dead;
-    this.view.px = this.x;
 
-    const day = Math.floor(s.block / 6);
+    const day = (s.block / 6) | 0;
     const bod = s.block % 6;
     const info = dayInfo(day);
     const daytime = bod >= 1 && bod <= 3;
@@ -524,8 +645,6 @@ export class WorldScene implements Scene {
         : w === 'sundayMorning' ? info.isSunday && bod <= 2
         : w === 'weekWork' ? (isWeekWorkDay(info) || isBoonDay(info)) && daytime
         : w === 'feast' ? info.feasts.length > 0 || info.isSunday
-        : w === 'spouse' ? this.hasRole('spouse')
-        : w === 'children' ? this.hasRole('child')
         : true;
       if (n.vIdx >= 0 && !present(s.village[n.vIdx]!)) n.actor.visible = false;
       const range = n.def.wander ?? 0;
@@ -534,31 +653,138 @@ export class WorldScene implements Scene {
         const nx = n.def.x + Math.sin(t) * range;
         const walking = Math.abs(Math.cos(t)) > 0.35;
         n.actor.anim = walking ? n.walk : n.idle;
+        n.actor.flip = walking && nx < n.lastX;
+        n.lastX = nx;
         n.actor.x = nx;
       }
     }
-    const w = s.wealth;
+    this.syncKin(s);
+    const asleep = bod === 5 || bod === 0;
+    for (let i = 0; i < this.kin.length; i++) {
+      const k = this.kin[i]!;
+      const t = now / 3100 + k.phase;
+      const nx = k.home + Math.sin(t) * 26;
+      const walking = Math.abs(Math.cos(t)) > 0.4;
+      k.actor.anim = walking ? k.walk : k.idle;
+      k.actor.flip = walking && Math.cos(t) < 0;
+      k.actor.x = nx;
+      k.actor.visible = !(asleep && i === 0 && work === 'sleep'); // the spouse sleeps too
+    }
+    const wl = s.wealth;
     for (let i = 0; i < this.pens.length; i++) {
       const pe = this.pens[i]!;
-      const owned = pe.kind === 'hen' ? w.hens : pe.kind === 'pig' ? w.pig : pe.kind === 'cow' ? w.cow : w.ox;
+      const owned = pe.kind === 'hen' ? wl.hens : pe.kind === 'pig' ? wl.pig : pe.kind === 'cow' ? wl.cow : wl.ox;
       pe.actor.visible = pe.i < owned;
     }
 
-    if (now > this.messageUntil) this.message = '';
-    const near = this.nearNpc();
-    const loc = near ? null : this.hotspot();
-    this.updateFieldLabel(s);
-    if (!near && !this.message && this.fieldIdx >= 0) {
-      this.view.prompt = this.fieldPrompt;
+    // Needs that want seeing to, pulsing in the HUD (checked twice a second).
+    if (now >= this.needsAt) {
+      this.needsAt = now + 500;
+      const n = this.view.needs;
+      n.length = 0;
+      if (head) {
+        const b = head.body;
+        if (b.hunger > 60) n.push('bread');
+        if (b.warmth < 35) n.push('hearth');
+        if (b.fatigue > 70) n.push('bed');
+        if (b.illness) n.push('prayer');
+      }
+      if (s.wealth.firewood <= 0) n.push('firewood');
+      this.view.belt = this.game.save.data.belt;
+      this.view.queued = this.game.save.data.queue.length;
+      probe('player', `${Math.round(this.x)},${Math.round(this.y)},${this.face},${p.visible ? 1 : 0}`);
+      probe('prompt', this.view.prompt);
+    }
+
+    if (now > this.messageUntil) this.view.message = '';
+    this.updatePrompt(s, work);
+  }
+
+  /** The floating prompt: what A does, above the thing it does it to. */
+  private updatePrompt(s: SimState, work: WorkAnim | null): void {
+    const v = this.view;
+    v.prompt = '';
+    if (s.dead) {
+      v.prompt = 'THE LINE IS ENDED';
+      v.promptX = this.x;
+      v.promptY = this.y - 34;
       return;
     }
-    const spot = this.scene.side ? this.sideSpot() : -1;
-    if (!this.scene.side && !near && !this.message && this.atHomeDoor()) {
-      this.view.prompt = 'UP:HOME';
+    if (this.moving && this.wipeT >= 0) return;
+    if (work === 'sleep') return;
+    const headY = this.y - 34;
+    const npc = this.nearNpc();
+    if (npc) {
+      v.prompt = 'A: TALK';
+      v.promptX = npc.actor.x;
+      v.promptY = npc.actor.y - 34;
       return;
     }
-    const label = spot >= 0 ? SPOTS[spot]!.label : this.scene.side && this.x > DOOR_X - 40 ? 'DOOR >' : loc ? PROMPT[loc] : '';
-    this.view.prompt = s.dead ? 'THE LINE IS ENDED' : this.message || (near ? 'A:TALK' : label);
+    if (this.room) {
+      const spot = this.roomSpot();
+      const m = this.room;
+      const doorRight = m.door.x > m.w / 2;
+      if (doorRight ? this.x > m.door.x - 30 : this.x < m.door.x + m.door.w + 30) {
+        v.prompt = doorRight ? 'OUT >' : '< OUT';
+        v.promptX = m.door.x + (m.door.w >> 1);
+        v.promptY = m.floor - 30;
+        return;
+      }
+      if (this.nearKin()) {
+        v.prompt = 'A: TALK';
+        v.promptX = this.x;
+        v.promptY = headY;
+        if (spot < 0) return;
+      }
+      if (spot >= 0) {
+        v.prompt = SPOTS[this.scene.room!][spot]!.verb;
+        v.promptX = this.x;
+        v.promptY = headY;
+      }
+      return;
+    }
+    if (this.nearCow()) {
+      v.prompt = 'A: MILK';
+      v.promptX = this.x;
+      v.promptY = headY;
+      return;
+    }
+    const o = this.target();
+    if (o) {
+      v.prompt = o.home ? 'UP: HOME' : promptOf(o.verb ?? 'LOOK');
+      const id = o.s;
+      v.promptX = o.home ? o.x + ((o.door!.x0 + o.door!.x1) >> 1) : o.x + (o.foot ? (o.foot[0] + o.foot[1]) >> 1 : 8);
+      v.promptY = o.home ? o.y - 20 : o.y - this.objH(id);
+      return;
+    }
+    const f = this.fieldUnder();
+    if (f >= 0) {
+      v.prompt = f === 3 ? 'A: WORK' : this.fieldPrompt(s, f);
+      v.promptX = this.x;
+      v.promptY = headY;
+      return;
+    }
+    if (this.waterAhead()) {
+      v.prompt = 'A: WASH';
+      v.promptX = this.frontX();
+      v.promptY = this.y - 8;
+    }
+  }
+
+  private objHeights = new Map<string, number>();
+  private objH(name: string): number {
+    let h = this.objHeights.get(name);
+    if (h === undefined) {
+      h = spriteH(hasAnim(name) ? anim(name).frames[0]! : spriteId(name));
+      this.objHeights.set(name, h);
+    }
+    return h;
+  }
+
+  private fieldPrompt(s: SimState, n: number): string {
+    const f = s.fields[n];
+    if (!f || f.acres === 0) return 'NOT YOUR STRIP';
+    return f.stage === 'unsown' ? 'A: SOW' : f.stage === 'growing' ? 'A: WEED' : f.stage === 'ripe' ? 'A: REAP' : f.stage === 'harvested' ? 'A: THRESH' : 'A: STRIPS';
   }
 
   /** Dark events in the log since last frame bring a low sting. */
@@ -575,36 +801,29 @@ export class WorldScene implements Scene {
     this.logSeen = log.length;
   }
 
-  /** Wrapped lines of the current hint, rebuilt only when the step changes. */
   private hintStep = -1;
   private hintLines: string[] = [];
 
-  private drawHint(ctx: CanvasRenderingContext2D): void {
+  private drawHint(): void {
     const step = this.game.tutorial();
     probe('hint', HINT_PROBE[Math.min(step, HINTS.length)]!);
     if (step >= HINTS.length || this.game.scenes.top !== this) return;
     if (step !== this.hintStep) {
       this.hintStep = step;
-      this.hintLines = wrap(HINTS[step]!, 18);
+      this.hintLines = wrap(HINTS[step]!, 28);
     }
-    const h = 6 + this.hintLines.length * 9;
-    // Under the title bar, kept to two lines: the floor where people stand stays in view.
-    const y = 9;
-    frame(ctx, 2, y, 156, h, C.parchment, C.night);
-    for (let i = 0; i < this.hintLines.length; i++) drawText(ctx, this.hintLines[i]!, 7, y + 3 + i * 9, C.gold);
+    const h = 16 + this.hintLines.length * 11;
+    parchment(8, 4, W - 16, h);
+    for (let i = 0; i < this.hintLines.length; i++) drawText(this.hintLines[i]!, 18, 12 + i * 11, INK.title);
   }
 
-  draw(ctx: CanvasRenderingContext2D, now: number): void {
-    drawWorld(ctx, this.game.sim(), this.view, now);
-    if (this.fieldIdx >= 0 && this.fieldLabel && this.game.tutorial() >= HINTS.length) {
-      rect(ctx, 0, 0, this.fieldLabel.length * 8 + 4, 10, C.night);
-      drawText(ctx, this.fieldLabel, 2, 1, C.gold);
-    }
-    this.drawHint(ctx);
-    if (this.fadeT >= 0) {
-      const half = FADE_MS / 2;
-      const a = this.fadeT < half ? this.fadeT / half : 1 - (this.fadeT - half) / half;
-      ditherFill(ctx, Math.round(a * 4) / 4, C.black);
-    }
+  draw(now: number): void {
+    drawWorld(this.game.sim(), this.view, now, this.game.now);
+    this.drawHint();
+    if (this.wipeT >= 0) wipe((this.wipeT / WIPE_MS) * 2);
   }
+}
+
+function approach(v: number, target: number, step: number): number {
+  return v < target ? Math.min(target, v + step) : Math.max(target, v - step);
 }

@@ -61,6 +61,18 @@ describe('migrations', () => {
     delete v2.tutorial;
     expect(loadSave(v2).seenBlock).toBe(99);
   });
+  it('migrates a Phase 4 (schema 4) save: empty queue, axe on the belt, DMG kept unlocked if it was on', () => {
+    const v4 = { ...newSave(7, 10), schema: 4 } as Record<string, unknown>;
+    delete v4.belt;
+    delete v4.queue;
+    delete v4.dmgUnlocked;
+    const s = loadSave({ ...v4, settings: { ...newSave(7, 10).settings, dmg: true } });
+    expect(s.schema).toBe(SCHEMA_VERSION);
+    expect(s.belt).toBe('axe');
+    expect(s.queue).toEqual([]);
+    expect(s.dmgUnlocked).toBe(true);
+    expect(loadSave(v4).dmgUnlocked).toBe(false);
+  });
   it('rejects a migration that forgets to bump the schema', () => {
     expect(() => migrate({ schema: 1 }, 2, { 1: (s) => s })).toThrow(/did not produce/);
   });

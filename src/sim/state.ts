@@ -222,6 +222,12 @@ export interface SimState {
   lastSimMs: number;
   /** Blocks resolved so far = index of the current, unresolved block. */
   block: number;
+  /**
+   * How much the player may still hasten chosen tasks (real ms the life may jump ahead), and when that was
+   * last worked out. It refills with real time, so the life runs at most HASTE_REFILL x faster than the clock
+   * over any long stretch. Missing in older saves: full.
+   */
+  haste?: { budgetMs: number; atMs: number };
   location: Location;
   members: Member[];
   soul: Soul;

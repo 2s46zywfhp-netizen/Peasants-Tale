@@ -1,6 +1,6 @@
-import { frame } from '../../render/draw';
+import { INK, parchment } from '../../render/draw';
+import { H, W } from '../../render/fb';
 import { drawTextCentered } from '../../render/font';
-import { C } from '../../render/palette';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import type { Scene } from '../scene';
@@ -25,11 +25,11 @@ export class ConfirmScene implements Scene {
     }
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    const h = 28 + this.lines.length * 12;
-    const y = Math.floor((144 - h) / 2);
-    frame(ctx, 8, y, 144, h, C.blood, C.night);
-    this.lines.forEach((l, i) => drawTextCentered(ctx, l, y + 8 + i * 12, C.bone));
-    drawTextCentered(ctx, 'A:YES   B:NO', y + h - 14, C.gold);
+  draw(): void {
+    const h = 36 + this.lines.length * 12;
+    const y = (H - h) >> 1;
+    parchment(16, y, W - 32, h);
+    for (let i = 0; i < this.lines.length; i++) drawTextCentered(this.lines[i]!, y + 12 + i * 12, INK.text);
+    drawTextCentered('A: YES    B: NO', y + h - 18, INK.title);
   }
 }

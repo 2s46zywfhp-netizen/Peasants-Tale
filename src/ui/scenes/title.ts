@@ -1,9 +1,10 @@
-import { atlasImage, drawSprite, spriteId } from '../../render/atlas';
-import { clear, ditherFill, rect } from '../../render/draw';
+import { anim, blit, frameAt, spriteId } from '../../render/atlas';
+import { darkPanel, rect } from '../../render/draw';
+import { H, W, addLight, finishWorld, resetLight } from '../../render/fb';
 import { drawTextCentered } from '../../render/font';
-import { C, currentRemap, useUiRemap, type Ci } from '../../render/palette';
-import { CANDLE_FLICKER_MS, TITLE_BLINK_MS } from '../../sim/balance';
-import { Rng } from '../../sim/rng';
+import { C } from '../../render/palette';
+import { drawSky } from '../../render/sky';
+import { TITLE_BLINK_MS } from '../../sim/balance';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import type { Scene } from '../scene';
@@ -12,23 +13,24 @@ import { ParchmentLogScene } from './parchmentLog';
 import { NameEntryScene } from './onboarding';
 import { WorldScene } from './world';
 
-/** Candle-light glow: concentric dithered rings [radius offset, colour, density]. */
-const RINGS: readonly (readonly [number, Ci, number])[] = [
-  [10, C.night, 0.5],
-  [0, C.navy, 0.6],
-  [-8, C.teal, 0.35],
-];
+const HORIZON = 132;
 
+/** The title: a cottage under the moon, its window and fire the only warm things in the dark. */
 export class TitleScene implements Scene {
   readonly opaque = true;
-  private rng = new Rng(1345);
-  private flame = 0;
-  private glow = 22;
-  private nextFlicker = 0;
-  private candle = spriteId('ui.candle');
-  private flames = [0, 1, 2, 3].map((i) => spriteId(`ui.flame.${i}`));
+  private ids = {
+    cottage: spriteId('o.cottage.lit'), tree: spriteId('o.tree'), pine: spriteId('o.pine'), well: spriteId('o.well'),
+    grass: [0, 1, 2, 3].map((v) => spriteId(`t.grass.${v}`)), path: spriteId('t.path.1'),
+  };
+  private fire = anim('fire.camp');
+  private endedText = '';
 
   constructor(private game: Game) {}
+
+  enter(): void {
+    const s = this.game.sim();
+    this.endedText = s.dead && this.game.save.data.onboarded ? `THE ${s.familyName} LINE IS ENDED`.slice(0, 30) : '';
+  }
 
   onAction(e: ActionEvent): void {
     if (e.action === 'start' || e.action === 'confirm') {
@@ -46,40 +48,31 @@ export class TitleScene implements Scene {
     }
   }
 
-  update(_dt: number, now: number): void {
-    if (now >= this.nextFlicker) {
-      this.nextFlicker = now + CANDLE_FLICKER_MS * (1 + this.rng.int(3));
-      this.flame = this.rng.int(this.flames.length);
-      this.glow = 19 + this.rng.int(6);
-    }
-  }
+  draw(now: number): void {
+    const k = this.ids;
+    resetLight();
+    drawSky(5, 'fair', 4, now / 400, 0.2, now, HORIZON);
+    for (let y = HORIZON; y < H; y += 16) for (let x = 0; x < W; x += 16) blit(k.grass[((x * 7 + y * 13) >> 4) & 3]!, x, y);
+    for (let x = 112; x < 144; x += 16) for (let y = 160; y < H; y += 16) blit(k.path, x, y);
+    blit(k.pine, 6, HORIZON - 40);
+    blit(k.tree, 30, HORIZON - 30);
+    blit(k.tree, 214, HORIZON - 34);
+    blit(k.pine, 190, HORIZON - 44);
+    blit(k.cottage, 96, HORIZON - 30);
+    blit(k.well, 30, HORIZON + 30);
+    // A fire by the door, and the window.
+    blit(frameAt(this.fire, now), 150, HORIZON + 38);
+    addLight(158, HORIZON + 46, 58 + ((now >> 7) % 3), 15, true, 0.7);
+    addLight(142, HORIZON + 11, 34, 13, true, 0.7);
+    finishWorld('autumn', false, 5, 0, H, 8);
 
-  draw(ctx: CanvasRenderingContext2D, now: number): void {
-    useUiRemap();
-    clear(ctx, C.black);
-    const cx = 80;
-    const fy = 62;
-    for (let k = 0; k < RINGS.length; k++) {
-      const [dr, c, amt] = RINGS[k]!;
-      const r = this.glow + dr;
-      for (let y = -r; y <= r; y++) {
-        const half = Math.floor(Math.sqrt(r * r - y * y));
-        ditherFill(ctx, amt, c, cx - half, fy + 14 + y, half * 2, 1);
-      }
-    }
-    const img = atlasImage(currentRemap());
-    rect(ctx, cx - 14, 102, 28, 3, C.wood);
-    rect(ctx, cx - 10, 105, 20, 2, C.mud);
-    rect(ctx, cx - 2, 99, 4, 3, C.wood);
-    drawSprite(ctx, img, this.candle, cx - 5, 83);
-    rect(ctx, cx, 80, 1, 3, C.black);
-    drawSprite(ctx, img, this.flames[this.flame]!, cx - 2, fy + 11);
-
-    drawTextCentered(ctx, "PEASANT'S LIFE", 16, C.gold);
-    drawTextCentered(ctx, 'ANNO DOMINI 1345', 30, C.blood);
-    const ended = this.game.sim().dead && this.game.save.data.onboarded;
-    if (ended) drawTextCentered(ctx, `THE ${this.game.sim().familyName} LINE IS ENDED`.slice(0, 20), 44, C.slate);
-    if (Math.floor(now / TITLE_BLINK_MS) % 2 === 0) drawTextCentered(ctx, ended || !this.game.save.data.onboarded ? 'START: NEW LIFE' : 'PRESS START', 118, C.bone);
-    drawTextCentered(ctx, 'SELECT: SETTINGS', 134, C.slate);
+    darkPanel(18, 10, W - 36, 50);
+    drawTextCentered("PEASANT'S LIFE", 20, C.gold, W, 0, C.gore0);
+    drawTextCentered('ANNO DOMINI 1345', 38, C.blood, W, 0, C.black);
+    if (this.endedText) drawTextCentered(this.endedText, 66, C.mist, W, 0, C.black);
+    const ended = !!this.endedText || !this.game.save.data.onboarded;
+    if (Math.floor(now / TITLE_BLINK_MS) % 2 === 0) drawTextCentered(ended ? 'START: NEW LIFE' : 'PRESS START', 196, C.bone, W, 0, C.black);
+    rect(0, H - 12, W, 12, C.black);
+    drawTextCentered('SELECT: SETTINGS', H - 10, C.stone);
   }
 }

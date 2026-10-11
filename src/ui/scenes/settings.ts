@@ -1,5 +1,6 @@
-import { clear, rect } from '../../render/draw';
-import { drawText, drawTextCentered } from '../../render/font';
+import { INK, clear, parchment, rect } from '../../render/draw';
+import { W } from '../../render/fb';
+import { drawText, drawTextCentered, drawTextRight } from '../../render/font';
 import { C } from '../../render/palette';
 import { SaveError, exportSave, importSave, type TextSpeed } from '../../save/schema';
 import type { ActionEvent } from '../../input/input';
@@ -10,6 +11,7 @@ import { Typewriter } from '../typewriter';
 import { ConfirmScene } from './confirm';
 
 const SPEEDS: readonly TextSpeed[] = ['slow', 'normal', 'fast'];
+const SPEED_LABEL: Readonly<Record<TextSpeed, string>> = { slow: 'SLOW', normal: 'NORMAL', fast: 'FAST' };
 type Item = 'textSpeed' | 'sound' | 'scanlines' | 'dmg' | 'export' | 'import' | 'wipe' | 'back';
 const ITEMS: readonly { id: Item; label: string }[] = [
   { id: 'textSpeed', label: 'TEXT SPEED' },
@@ -30,7 +32,7 @@ export class SettingsScene implements Scene {
   constructor(private game: Game) {}
 
   private say(text: string): void {
-    this.msg.show(text.toUpperCase().slice(0, 18), this.game.frameNow(), this.game.save.data.settings.textSpeed);
+    this.msg.show(text.toUpperCase().slice(0, 28), this.game.frameNow(), this.game.save.data.settings.textSpeed);
   }
 
   onAction(e: ActionEvent): void {
@@ -65,6 +67,10 @@ export class SettingsScene implements Scene {
       const i = (SPEEDS.indexOf(s.textSpeed) + dir + SPEEDS.length) % SPEEDS.length;
       this.game.updateSettings({ textSpeed: SPEEDS[i]! });
       this.say('THE QUICK FOX...');
+    } else if (item === 'dmg' && !this.game.save.data.dmgUnlocked) {
+      this.game.sfx('error');
+      this.say('KEEP A LIFE GOING A MONTH');
+      return;
     } else if (item === 'sound' || item === 'scanlines' || item === 'dmg') {
       this.game.updateSettings({ [item]: !s[item] });
     } else return;
@@ -88,11 +94,11 @@ export class SettingsScene implements Scene {
         return this.exportSave();
       case 'import':
         g.sfx('confirm');
-        g.scenes.push(new ConfirmScene(g, ['IMPORT FROM', 'CLIPBOARD?', 'THIS LIFE ENDS.'], () => this.importSave()), false);
+        g.scenes.push(new ConfirmScene(g, ['IMPORT FROM THE CLIPBOARD?', 'THIS LIFE ENDS.'], () => this.importSave()), false);
         return;
       case 'wipe':
         g.sfx('confirm');
-        g.scenes.push(new ConfirmScene(g, ['WIPE SAVE?', 'THE PEASANT', 'WILL BE FORGOT.'], () => this.wipe()), false);
+        g.scenes.push(new ConfirmScene(g, ['WIPE THE SAVE?', 'THE PEASANT WILL BE FORGOT.'], () => this.wipe()), false);
         return;
     }
   }
@@ -143,29 +149,33 @@ export class SettingsScene implements Scene {
     const s = this.game.save.data.settings;
     switch (item) {
       case 'textSpeed':
-        return s.textSpeed.toUpperCase();
+        return SPEED_LABEL[s.textSpeed];
+      case 'dmg':
+        return !this.game.save.data.dmgUnlocked ? 'LOCKED' : s.dmg ? 'ON' : 'OFF';
       case 'sound':
       case 'scanlines':
-      case 'dmg':
         return s[item] ? 'ON' : 'OFF';
       default:
         return '';
     }
   }
 
-  draw(ctx: CanvasRenderingContext2D, now: number): void {
-    clear(ctx, C.night);
-    drawTextCentered(ctx, 'SETTINGS', 6, C.gold);
-    rect(ctx, 8, 16, 144, 1, C.slate);
-    ITEMS.forEach((it, i) => {
-      const y = 22 + i * 12;
+  draw(now: number): void {
+    clear(C.black);
+    parchment(8, 8, W - 16, 208);
+    drawTextCentered('SETTINGS', 20, INK.title);
+    rect(20, 34, W - 40, 1, C.wood);
+    for (let i = 0; i < ITEMS.length; i++) {
+      const it = ITEMS[i]!;
+      const y = 44 + i * 16;
       const sel = i === this.cursor;
-      if (sel) drawText(ctx, '>', 2, y, C.ember);
-      drawText(ctx, it.label, 12, y, sel ? C.bone : C.mist);
+      if (sel) rect(18, y - 4, W - 36, 15, C.parchment);
+      if (sel) drawText('>', 22, y, INK.pick);
+      drawText(it.label, 36, y, sel ? INK.title : INK.text);
       const v = this.value(it.id);
-      if (v) drawText(ctx, v, 156 - v.length * 8, y, sel ? C.gold : C.parchment);
-    });
-    rect(ctx, 8, 121, 144, 1, C.slate);
-    drawText(ctx, this.msg.visible(now), 8, 128, C.sea);
+      if (v) drawTextRight(v, W - 24, y, v === 'LOCKED' ? INK.dim : INK.warn);
+    }
+    rect(20, 176, W - 40, 1, C.wood);
+    drawText(this.msg.visible(now), 22, 186, C.teal);
   }
 }

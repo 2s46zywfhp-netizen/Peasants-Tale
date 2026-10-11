@@ -1,7 +1,7 @@
 import type { Audio, Sfx } from '../audio/sfx';
 import type { Input } from '../input/input';
 import type { SaveManager } from '../save/saveManager';
-import type { Settings } from '../save/schema';
+import type { BeltTool, QueuedTask, Settings } from '../save/schema';
 import type { ActionId } from '../sim/balance';
 import type { SimState } from '../sim/sim';
 import type { LifeOptions } from '../sim/state';
@@ -38,4 +38,7 @@ export interface Game {
   hasten(): void;
   /** Passes hint `step` if it is the current one. */
   advanceTutorial(step: number): void;
+  /** The task queue (R) and the tool on the belt (L); persisted. */
+  setQueue(q: QueuedTask[]): void;
+  setBelt(t: BeltTool): void;
 }

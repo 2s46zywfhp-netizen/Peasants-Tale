@@ -1,4 +1,6 @@
 import {
+  HASTE_BUDGET_MS,
+  HASTE_REFILL,
   ACTIONS, BLOCKS_PER_DAY, BLOCKS_PER_REAL_DAY, CATCHUP_CAP_BLOCKS, EGGS_PER_HEN_PER_DAY, FEAST_MORALE, FOOD_SPOIL_PER_DAY, FIREWOOD_PER_HOME_BLOCK,
   FIRE_BELOW_C, GARDEN_MONTHS, GARDEN_POTTAGE_PER_DAY, MARTINMAS_PORK, MORALE_COLD_BLOCK, MORALE_DRIFT, MORALE_HUNGRY_BLOCK, MORALE_ILL_BLOCK, NEGLECT, PIETY_DAILY_DECAY,
   REAL_DAY_MS, STANDING_DRIFT, URGENT_HUNGER, WARMTH_COLD, type ActionId, type Food,
@@ -347,8 +349,16 @@ export function hasten(state: SimState, nowMs: number): SimState {
   const s = caught === state ? cloneState(state) : caught;
   const elapsed = nowMs - s.anchorMs;
   const target = (plan.until * REAL_DAY_MS) / BLOCKS_PER_REAL_DAY;
-  s.anchorMs -= target - elapsed + 1; // a millisecond into the next block, clear of rounding
-  runTo(s, plan.until);
+  const need = target - elapsed + 1; // a millisecond into the next block, clear of rounding
+  // The allowance refills with real time; the life only jumps as far as it allows.
+  const h = s.haste ?? { budgetMs: HASTE_BUDGET_MS, atMs: nowMs };
+  const budget = Math.min(HASTE_BUDGET_MS, h.budgetMs + Math.max(0, nowMs - h.atMs) * HASTE_REFILL);
+  const jump = Math.min(need, budget);
+  s.haste = { budgetMs: budget - jump, atMs: nowMs };
+  if (jump <= 0) return s;
+  s.anchorMs -= jump;
+  const to = jump >= need ? plan.until : Math.floor(((nowMs - s.anchorMs) * BLOCKS_PER_REAL_DAY) / REAL_DAY_MS);
+  runTo(s, to);
   s.lastSimMs = Math.max(s.lastSimMs, nowMs);
   return s;
 }

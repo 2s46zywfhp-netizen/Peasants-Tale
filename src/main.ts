@@ -1,13 +1,13 @@
 import './style.css';
 import { Audio, type Sfx } from './audio/sfx';
 import { Input } from './input/input';
-import { initSprites } from './render/atlas';
+import { loadSprites } from './render/atlas';
 import { loadFont } from './render/font';
-import { IDENTITY, setDmgMode, useUiRemap } from './render/palette';
+import { setDmgMode } from './render/palette';
 import { Screen } from './render/screen';
 import { SaveManager } from './save/saveManager';
 import { newSave, type Settings } from './save/schema';
-import { act, advance, hasten, type SimState } from './sim/sim';
+import { act, advance, debugFastForward, hasten, type SimState } from './sim/sim';
 import { dayInfo } from './sim/calendar';
 import { BLOCKS_PER_REAL_DAY, DEBUG_HOLD_MS, REAL_DAY_MS } from './sim/balance';
 import { DebugScene } from './ui/scenes/debug';
@@ -15,7 +15,15 @@ import { ParchmentLogScene } from './ui/scenes/parchmentLog';
 import { WorldScene } from './ui/scenes/world';
 import type { Game } from './ui/game';
 import { onActivation } from './ui/gesture';
-import { SceneManager } from './ui/scene';
+import { SceneManager, type Scene } from './ui/scene';
+import type { SceneId } from './render/scenes/maps';
+import { StatusScene } from './ui/scenes/status';
+import { SettingsScene } from './ui/scenes/settings';
+import { GalleryScene } from './ui/scenes/gallery';
+import { QueueScene } from './ui/scenes/queue';
+import { ActionMenuScene } from './ui/scenes/actionMenu';
+import { DialogueScene } from './ui/scenes/dialogue';
+import { WorkingScene } from './ui/scenes/working';
 import { TitleScene } from './ui/scenes/title';
 import { bindControls, lockDownGestures, vibrateTick } from './ui/shell';
 
@@ -36,7 +44,7 @@ async function boot(): Promise<void> {
   const display = new Screen(canvas);
   const input = new Input();
   const audio = new Audio();
-  const [save] = await Promise.all([SaveManager.open(newSeed(), Date.now()), loadFont(), initSprites(IDENTITY)]);
+  const [save] = await Promise.all([SaveManager.open(newSeed(), Date.now()), loadFont(), loadSprites()]);
   const scenes = new SceneManager(input);
   // Frame clock: integer ms since boot keeps numbers small (unboxed) in the render loop.
   let frameNow = 0;
@@ -59,7 +67,15 @@ async function boot(): Promise<void> {
     },
     applySettings() {
       audio.setEnabled(save.data.settings.sound);
-      setDmgMode(save.data.settings.dmg);
+      setDmgMode(save.data.settings.dmg && save.data.dmgUnlocked);
+    },
+    setQueue(q) {
+      save.data = { ...save.data, queue: q };
+      void save.save(Date.now());
+    },
+    setBelt(t) {
+      save.data = { ...save.data, belt: t };
+      void save.save(Date.now());
     },
     sim: () => save.data.sim,
     act(id, param = null) {
@@ -103,17 +119,29 @@ async function boot(): Promise<void> {
   onActivation(() => audio.unlock());
   window.addEventListener('pointerdown', () => audio.unlock(), { capture: true });
 
+  // Physical-pixel scaling: the largest whole number of device pixels per game pixel that fits the
+  // bezel's inside; whatever is left over is bezel. Recomputed on resize, rotation and viewport changes.
   const bezel = document.getElementById('bezel')!;
   const layout = () => {
     const cs = getComputedStyle(bezel);
     const w = bezel.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
     const h = bezel.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
     display.resize(w, h, window.devicePixelRatio || 1);
+    document.body.dataset.scale = String(display.scale);
     display.present(save.data.settings);
   };
   new ResizeObserver(layout).observe(bezel);
   window.addEventListener('resize', layout);
-  matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`).addEventListener?.('change', layout);
+  window.addEventListener('orientationchange', () => setTimeout(layout, 50));
+  window.visualViewport?.addEventListener('resize', layout);
+  let dprQuery = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+  const onDpr = () => {
+    layout();
+    dprQuery.removeEventListener?.('change', onDpr);
+    dprQuery = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+    dprQuery.addEventListener?.('change', onDpr);
+  };
+  dprQuery.addEventListener?.('change', onDpr);
   layout();
 
   // Autosave whenever the app is hidden (home button, app switch, lock screen).
@@ -128,6 +156,46 @@ async function boot(): Promise<void> {
   window.addEventListener('pagehide', flush);
 
   scenes.push(new TitleScene(game), false);
+
+  // Visual QA (?qa in the URL): jump to any scene, time or screen without walking there.
+  if (/[?&]qa\b/.test(location.search)) {
+    (window as unknown as { qa: unknown }).qa = {
+      game,
+      world(id: SceneId, x: number, y: number, face?: 'down' | 'up' | 'left' | 'right') {
+        while (scenes.depth > 1) scenes.pop(false);
+        if (!(scenes.top instanceof WorldScene)) scenes.replace(new WorldScene(game), false);
+        (scenes.top as WorldScene).teleport(id, x, y, face);
+      },
+      ff(blocks: number) {
+        save.data = { ...save.data, sim: debugFastForward(save.data.sim, blocks, Date.now()), seenBlock: save.data.sim.block + blocks };
+        clockCheckAt = 0;
+      },
+      patch(fn: (s: SimState) => void) {
+        const s = structuredClone(save.data.sim);
+        fn(s);
+        save.data = { ...save.data, sim: s };
+      },
+      /** The 256x224 frame as a PNG data URL (after the next present). */
+      frame: () => display.fb.toDataURL('image/png'),
+      tutorialDone() {
+        save.data = { ...save.data, tutorial: 99 };
+      },
+      push(name: string) {
+        const make: Record<string, () => Scene> = {
+          status: () => new StatusScene(game),
+          settings: () => new SettingsScene(game),
+          gallery: () => new GalleryScene(game),
+          debug: () => new DebugScene(game),
+          queue: () => new QueueScene(game),
+          log: () => new ParchmentLogScene(game, Math.max(0, save.data.sim.block - 42), save.data.sim.block),
+          menu: () => new ActionMenuScene(game, 'home', 'THE HEARTH', () => {}, null),
+          talk: () => new DialogueScene(game, 'MARGERY', ['Fine weather for the time of year, though the reeve says otherwise. He always does.']),
+          working: () => new WorkingScene(game, 'workStrips'),
+        };
+        scenes.push(make[name]!(), false);
+      },
+    };
+  }
 
   // Hold SELECT + START to open the debug panel.
   let comboSince: number | null = null;
@@ -174,8 +242,7 @@ async function boot(): Promise<void> {
     audio.setSeason(dayInfo((save.data.sim.block / 6) | 0).season);
     input.update(frameNow);
     scenes.update(dt, frameNow);
-    useUiRemap();
-    scenes.draw(display.ctx, frameNow);
+    scenes.draw(frameNow);
     display.present(save.data.settings);
     requestAnimationFrame(frame);
   };

@@ -13,6 +13,8 @@ const KEYS: Readonly<Record<string, Button>> = {
   KeyD: 'right',
   KeyX: 'a',
   KeyZ: 'b',
+  KeyQ: 'l',
+  KeyE: 'r',
   Enter: 'start',
   ShiftRight: 'select',
   Backspace: 'select',

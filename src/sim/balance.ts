@@ -236,6 +236,17 @@ export const CANDLE_FLICKER_MS = 70;
 export const WALK_STEP_PX = 2;
 /** A chosen task plays out on screen for this long, then its time passes at once. */
 export const WORK_SHOW_MS = 2400;
+/**
+ * Hastening is capped: the life may run ahead of the wall clock by at most this much in one go (half a real
+ * day = three and a half game days), and the allowance refills at HASTE_REFILL real ms per real ms. Over
+ * any long stretch the life lives at most (1 + HASTE_REFILL) times as fast as the clock.
+ */
+export const HASTE_BUDGET_MS = 12 * 60 * 60 * 1000;
+export const HASTE_REFILL = 1;
+/** Tasks that can wait in the queue (R). */
+export const QUEUE_MAX = 3;
+/** Days a life must last before the old four-shade screen (DMG mode) is earned. */
+export const DMG_UNLOCK_DAYS = 28;
 /** Hold SELECT + START this long to open the debug panel. */
 export const DEBUG_HOLD_MS = 2000;
 

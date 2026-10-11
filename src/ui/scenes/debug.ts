@@ -1,6 +1,7 @@
 import { clear, rect } from '../../render/draw';
+import { W } from '../../render/fb';
 import { drawText, drawTextCentered, wrap } from '../../render/font';
-import { C, useUiRemap } from '../../render/palette';
+import { C } from '../../render/palette';
 import { BLOCKS_PER_DAY } from '../../sim/balance';
 import { EVENT_IDS } from '../../sim/events';
 import { createLife, debugFastForward, debugTrigger, stateHash } from '../../sim/sim';
@@ -12,6 +13,7 @@ import { withActivation } from '../gesture';
 import type { Scene } from '../scene';
 
 type Item = { label: string; run: () => void };
+const ROWS = 14;
 
 /** Developer panel: SELECT + START held for 2 seconds. */
 export class DebugScene implements Scene {
@@ -20,8 +22,23 @@ export class DebugScene implements Scene {
   private scroll = 0;
   private events = false;
   private note = '';
+  private noteLines: string[] = [];
+  /** Built when the panel opens or its mode changes, not every frame. */
+  private list: Item[] = [];
+  private header = ['', ''];
 
   constructor(private game: Game) {}
+
+  enter(): void {
+    this.rebuild();
+  }
+
+  private rebuild(): void {
+    const s = this.game.sim();
+    this.list = this.items();
+    this.header = [`SEED ${s.seed}`.slice(0, 30), `BLOCK ${s.block}`];
+    this.noteLines = wrap(this.note, 30).slice(0, 2);
+  }
 
   private ff(days: number, label: string): Item {
     return {
@@ -68,38 +85,48 @@ export class DebugScene implements Scene {
         }),
       },
       { label: 'TRIGGER EVENT >', run: () => { this.events = true; this.cursor = 0; this.scroll = 0; } },
+      {
+        label: 'UNLOCK DMG MODE',
+        run: () => {
+          g.save.data = { ...g.save.data, dmgUnlocked: true };
+          void g.save.save(g.now());
+          this.note = 'DMG MODE UNLOCKED';
+        },
+      },
       { label: 'SPRITE GALLERY', run: () => g.scenes.push(new GalleryScene(g), false) },
       { label: 'CLOSE', run: () => g.scenes.pop(false) },
     ];
   }
 
   onAction(e: ActionEvent): void {
-    const items = this.items();
+    const items = this.list;
     if (e.action === 'up' || e.action === 'down') {
       this.cursor = (this.cursor + (e.action === 'up' ? -1 : 1) + items.length) % items.length;
-      this.scroll = Math.min(Math.max(this.scroll, this.cursor - 9), this.cursor);
+      this.scroll = Math.min(Math.max(this.scroll, this.cursor - ROWS + 1), this.cursor);
     } else if (e.action === 'confirm' && !e.repeat) {
       items[this.cursor]?.run();
       this.game.sfx('confirm');
+      this.rebuild();
     } else if (e.action === 'cancel') {
-      if (this.events) this.events = false;
-      else this.game.scenes.pop(false);
+      if (this.events) {
+        this.events = false;
+        this.rebuild();
+      } else this.game.scenes.pop(false);
     }
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    const s = this.game.sim();
-    useUiRemap();
-    clear(ctx, C.black);
-    drawTextCentered(ctx, 'DEBUG', 2, C.blood);
-    drawText(ctx, `SEED ${s.seed}`.slice(0, 20), 0, 12, C.mist);
-    drawText(ctx, `BLOCK ${s.block}`, 0, 21, C.mist);
-    rect(ctx, 0, 30, 160, 1, C.slate);
-    this.items().slice(this.scroll, this.scroll + 10).forEach((it, i) => {
+  draw(): void {
+    clear(C.black);
+    drawTextCentered('DEBUG', 4, C.blood);
+    drawText(this.header[0]!, 4, 16, C.mist);
+    drawText(this.header[1]!, 4, 26, C.mist);
+    rect(0, 36, W, 1, C.slate);
+    const n = Math.min(ROWS, this.list.length - this.scroll);
+    for (let i = 0; i < n; i++) {
       const idx = this.scroll + i;
-      if (idx === this.cursor) drawText(ctx, '>', 0, 34 + i * 9, C.ember);
-      drawText(ctx, it.label.slice(0, 18), 10, 34 + i * 9, idx === this.cursor ? C.bone : C.mist);
-    });
-    wrap(this.note, 20).slice(0, 2).forEach((l, i) => drawText(ctx, l, 0, 126 + i * 9, C.sea));
+      if (idx === this.cursor) drawText('>', 4, 42 + i * 11, C.flame);
+      drawText(this.list[idx]!.label, 16, 42 + i * 11, idx === this.cursor ? C.bone : C.mist);
+    }
+    for (let i = 0; i < this.noteLines.length; i++) drawText(this.noteLines[i]!, 4, 200 + i * 10, C.aqua);
   }
 }

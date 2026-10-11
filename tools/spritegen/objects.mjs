@@ -283,7 +283,10 @@ export function objects() {
     anims[`${kind}.walk`] = { frames: walk, ms: 170 };
   }
   const fire = [];
-  for (let k = 0; k < 8; k++) (add(`fire.blazing.${k}`, fireFrame(k, 2)), fire.push(`fire.blazing.${k}`));
+  for (let k = 0; k < 8; k++) {
+    add(`fire.blazing.${k}`, fireFrame(k, 2));
+    fire.push(`fire.blazing.${k}`);
+  }
   anims['fire.blazing'] = { frames: fire, ms: 85 };
   const banked = [0, 1, 2, 3].map((k) => (add(`fire.banked.${k}`, fireFrame(k, 1)), `fire.banked.${k}`));
   anims['fire.banked'] = { frames: banked, ms: 220 };

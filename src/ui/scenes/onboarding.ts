@@ -1,6 +1,8 @@
-import { clear, frame, rect } from '../../render/draw';
-import { drawText, drawTextCentered, wrap } from '../../render/font';
-import { C, useUiRemap } from '../../render/palette';
+import { blit, spriteId } from '../../render/atlas';
+import { INK, clear, darkPanel, parchment, rect } from '../../render/draw';
+import { H, W } from '../../render/fb';
+import { drawText, drawTextCentered, drawTextRight, wrap } from '../../render/font';
+import { C } from '../../render/palette';
 import { TEXT_SPEED_CPS } from '../../sim/balance';
 import { FAMILY_NAMES, MALE_NAMES } from '../../sim/state';
 import type { ActionEvent } from '../../input/input';
@@ -11,10 +13,10 @@ import { WorldScene } from './world';
 
 const KEYS = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ', ' ', '-', 'DEL', 'END'] as const;
 const GRID_COLS = 7;
-const CELL_W = 20;
-const CELL_H = 12;
-const GRID_X = 10;
-const GRID_Y = 52;
+const CELL_W = 28;
+const CELL_H = 20;
+const GRID_X = 36;
+const GRID_Y = 78;
 
 /** A letter grid, as on old handhelds: D-pad to a letter, A to write it, B to rub out. */
 export class NameEntryScene implements Scene {
@@ -93,23 +95,23 @@ export class NameEntryScene implements Scene {
     g.scenes.replace(new IntroScene(g));
   }
 
-  draw(ctx: CanvasRenderingContext2D, now: number): void {
-    useUiRemap();
-    clear(ctx, C.night);
-    drawTextCentered(ctx, this.stage === 'name' ? 'YOUR NAME?' : 'YOUR FAMILY NAME?', 10, C.gold);
-    frame(ctx, 20, 26, 120, 16, C.parchment, C.black);
-    const blink = Math.floor(now / 400) % 2 === 0 && this.text.length < this.max() ? '_' : '';
-    drawText(ctx, this.text + blink, 26, 30, C.bone);
+  draw(now: number): void {
+    clear(C.black);
+    parchment(6, 6, W - 12, H - 12);
+    drawTextCentered(this.stage === 'name' ? 'YOUR NAME?' : 'YOUR FAMILY NAME?', 20, INK.title);
+    darkPanel(40, 36, W - 80, 26);
+    drawText(this.text, 52, 45, C.bone);
+    if (Math.floor(now / 400) % 2 === 0 && this.text.length < this.max()) drawText('_', 52 + this.text.length * 8, 45, C.gold);
     for (let i = 0; i < KEYS.length; i++) {
       const k = KEYS[i]!;
       // DEL and END sit in a wide last row of their own.
-      const x = k.length > 1 ? GRID_X + 20 + (i - 28) * 64 : GRID_X + (i % GRID_COLS) * CELL_W;
+      const x = k.length > 1 ? GRID_X + 24 + (i - 28) * 96 : GRID_X + (i % GRID_COLS) * CELL_W;
       const y = GRID_Y + Math.floor(i / GRID_COLS) * CELL_H;
-      if (i === this.cursor) rect(ctx, x - 2, y - 2, k.length > 1 ? k.length * 8 + 3 : 12, 11, C.blood);
-      drawText(ctx, k === ' ' ? '_' : k, x, y, i === this.cursor ? C.bone : k.length > 1 ? C.gold : C.mist);
+      if (i === this.cursor) rect(x - 4, y - 4, k.length > 1 ? k.length * 8 + 8 : 16, 16, C.blood);
+      drawText(k === ' ' ? '_' : k, x, y, i === this.cursor ? C.bone : k.length > 1 ? INK.title : INK.text);
     }
-    drawTextCentered(ctx, 'A:WRITE B:RUB OUT', 124, C.slate);
-    drawTextCentered(ctx, 'START:DONE', 134, C.slate);
+    drawTextCentered('A: WRITE   B: RUB OUT', 186, INK.dim);
+    drawTextCentered('START: DONE', 198, INK.dim);
   }
 }
 
@@ -131,7 +133,7 @@ export class IntroScene implements Scene {
       'Your life goes on when you look away. A week passes for every day of yours, and your peasant lives by habit.',
       'Keep them fed. Keep your name clean. Keep the dark at the door.',
     ];
-    this.pages = raw.map((t) => wrap(t.toUpperCase(), 18));
+    this.pages = raw.map((t) => wrap(t.toUpperCase(), 26));
   }
 
   enter(): void {
@@ -163,18 +165,21 @@ export class IntroScene implements Scene {
     g.scenes.replace(new WorldScene(g));
   }
 
-  draw(ctx: CanvasRenderingContext2D, now: number): void {
-    useUiRemap();
-    clear(ctx, C.black);
+  private candle = spriteId('icon.candle');
+
+  draw(now: number): void {
+    clear(C.black);
+    blit(this.candle, (W >> 1) - 8, 18);
+    rect((W >> 1) - 1 + ((now >> 8) % 2), 19, 1, 2, (now >> 7) % 3 ? C.gold : C.flame);
     const lines = this.pages[this.page]!;
     let left = this.shown(now);
-    const top = 72 - lines.length * 5;
+    const top = 112 - lines.length * 6;
     for (let i = 0; i < lines.length && left > 0; i++) {
       const l = lines[i]!;
-      drawTextCentered(ctx, left >= l.length ? l : l.slice(0, left), top + i * 10, C.parchment);
+      drawTextCentered(left >= l.length ? l : l.slice(0, left), top + i * 12, C.parchment);
       left -= l.length;
     }
-    if (left >= 0 && Math.floor(now / 400) % 2 === 0) drawTextCentered(ctx, this.page + 1 < this.pages.length ? '>' : 'A:BEGIN', 128, C.ember);
-    drawText(ctx, 'B:SKIP', 108, 138, C.slate);
+    if (left >= 0 && Math.floor(now / 400) % 2 === 0) drawTextCentered(this.page + 1 < this.pages.length ? '>' : 'A: BEGIN', 190, C.flame);
+    drawTextRight('B: SKIP', W - 8, H - 14, C.stone);
   }
 }

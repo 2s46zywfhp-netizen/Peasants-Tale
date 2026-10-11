@@ -227,4 +227,29 @@ describe('hastening a chosen task', () => {
     // Time then carries on normally from there.
     expect(advance(done, at(7) + 1000 + BLOCK_MS).state.block).toBe(until + 1);
   });
+
+  it('is capped: the life cannot run ahead faster than the allowance refills', async () => {
+    const { hasten } = await import('./sim');
+    const { HASTE_BUDGET_MS, HASTE_REFILL } = await import('./balance');
+    let s = createLife(5, 0);
+    s = advance(s, at(7)).state;
+    let now = at(7);
+    let jumped = 0;
+    // Hasten task after task without waiting: the jumps stop once the allowance is spent.
+    for (let i = 0; i < 60; i++) {
+      const before = s.anchorMs;
+      const k = s.block % 6;
+      s = act(s, k === 5 || k === 0 ? 'sleep' : 'rest', now).state;
+      s = hasten(s, now);
+      jumped += before - s.anchorMs;
+      now += 10;
+    }
+    expect(jumped).toBeLessThanOrEqual(HASTE_BUDGET_MS + 600 * HASTE_REFILL + 1);
+    expect(s.haste!.budgetMs).toBeLessThan(BLOCK_MS);
+    // Real time refills it.
+    s = act(s, 'rest', now + BLOCK_MS * 2).state;
+    const before = s.anchorMs;
+    s = hasten(s, now + BLOCK_MS * 2);
+    expect(before - s.anchorMs).toBeGreaterThan(0);
+  });
 });

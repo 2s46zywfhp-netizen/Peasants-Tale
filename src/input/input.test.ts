@@ -12,10 +12,27 @@ function rig() {
 describe('Input', () => {
   it('maps every button to an action', () => {
     const { input, got } = rig();
-    BUTTONS.forEach((b, i) => input.press(b, `p${i}`, 0));
-    expect(got.map((e) => e.action)).toEqual(['up', 'down', 'left', 'right', 'confirm', 'cancel', 'start', 'select']);
-    // All eight held simultaneously (multi-touch).
+    BUTTONS.forEach((b, i) => {
+      input.press(b, `p${i}`, 0);
+      input.release(b, `p${i}`);
+    });
+    expect(got.map((e) => e.action)).toEqual(['up', 'down', 'left', 'right', 'confirm', 'cancel', 'start', 'select', 'belt', 'queue']);
+    // All ten held simultaneously (multi-touch).
+    BUTTONS.forEach((b, i) => input.press(b, `q${i}`, 0));
     expect(BUTTONS.every((b) => input.isHeld(b))).toBe(true);
+  });
+
+  it('START and SELECT act on release, and not at all when held together (the debug combo)', () => {
+    const { input, got } = rig();
+    input.press('start', 'a', 0);
+    expect(got).toHaveLength(0);
+    input.press('select', 'b', 10);
+    input.release('start', 'a');
+    input.release('select', 'b');
+    expect(got).toHaveLength(0);
+    input.press('select', 'b', 20);
+    input.release('select', 'b');
+    expect(got.map((e) => e.action)).toEqual(['select']);
   });
 
   it('repeats held directions after a delay, but not A/B/START/SELECT', () => {
@@ -49,6 +66,7 @@ describe('Input', () => {
     const off = input.subscribe(() => got.push({ action: 'start', repeat: true }));
     off();
     input.press('start', 'k', 0);
+    input.release('start', 'k');
     expect(got).toHaveLength(1);
   });
 });

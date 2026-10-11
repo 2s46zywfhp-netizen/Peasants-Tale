@@ -1,6 +1,5 @@
 import { wrap } from '../../render/font';
 import { PARCHMENT_COLS, PARCHMENT_LINES, drawParchment } from '../../render/parchment';
-import { useUiRemap } from '../../render/palette';
 import { summarize } from '../../sim/summary';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
@@ -42,8 +41,7 @@ export class ParchmentLogScene implements Scene {
     return this.lines.join('\n');
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    useUiRemap();
-    drawParchment(ctx, this.title, this.lines, this.scroll, 'A: CLOSE');
+  draw(): void {
+    drawParchment(this.title, this.lines, this.scroll, 'A: CLOSE', 'candle');
   }
 }

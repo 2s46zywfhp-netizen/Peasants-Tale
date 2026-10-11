@@ -4,6 +4,12 @@
   font-display: block;
 }
 
+/*
+ * The handheld: dark plastic in the palette's night ramp, a fine hard-edged grain (no blends: every colour
+ * on screen is a palette colour), a deep bezel round the screen, and the controls in the thumbs' reach.
+ * Every touch target is at least 48x48 CSS px.
+ */
+
 *,
 *::before,
 *::after {
@@ -37,10 +43,12 @@ body {
   inset: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: calc(env(safe-area-inset-top) + 12px) calc(env(safe-area-inset-right) + 12px)
-    calc(env(safe-area-inset-bottom) + 12px) calc(env(safe-area-inset-left) + 12px);
-  background: #1f2d4a;
+  gap: 6px;
+  padding: calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 6px)
+    calc(env(safe-area-inset-bottom) + 10px) calc(env(safe-area-inset-left) + 6px);
+  /* Plastic grain: fine hard-edged lines in palette colours (no blending). */
+  background-color: #141a2e;
+  background-image: repeating-linear-gradient(0deg, #141a2e 0 5px, #0b0d14 5px 6px);
   touch-action: none;
 }
 
@@ -51,51 +59,76 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 14px 18px;
-  background: #141a2e;
-  border-radius: 8px 8px 36px 8px;
-  box-shadow: inset 0 0 0 2px #0b0d14;
+  padding: 10px 2px;
+  background: #0b0d14;
+  border-radius: 10px 10px 34px 10px;
+  box-shadow: inset 0 0 0 2px #1f2d4a, 0 3px 0 #07080d;
 }
 
 .led {
   position: absolute;
   left: 7px;
-  top: 50%;
+  top: 12px;
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: #d4622a;
+  box-shadow: 0 0 0 1px #5c1a1a;
 }
 
 #screen {
   display: block;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  background: #0b0d14;
-  outline: 2px solid #0b0d14;
+  background: #07080d;
 }
 
 #brand {
   flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
   font-size: 8px;
   letter-spacing: 1px;
   color: #c9b99a;
-  padding-left: 4px;
+  padding: 0 6px;
 }
+#brand b { font-weight: normal; }
+#brand i { font-style: normal; color: #4a5468; }
 
 #controls {
   position: relative;
   flex: 0 0 auto;
-  height: clamp(190px, 38dvh, 300px);
+  height: clamp(232px, 40dvh, 320px);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: auto 1fr auto;
   align-items: center;
 }
 
-/* D-pad: a single touch surface, the cross is only visual. */
+/* Shoulder buttons, L and R, at the top of each thumb's reach. */
+.shoulder {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 7px;
+  color: #6b7689;
+}
+.shoulder.l { justify-self: start; align-items: flex-start; }
+.shoulder.r { justify-self: end; align-items: flex-end; }
+.shoulder .btn {
+  width: 96px;
+  height: 48px;
+  border-radius: 8px 8px 14px 14px;
+  background: #4a5468;
+  box-shadow: inset 0 -6px 0 #1f2d4a, 0 4px 0 #07080d;
+}
+.shoulder.l .btn { border-top-left-radius: 22px; }
+.shoulder.r .btn { border-top-right-radius: 22px; }
+.shoulder .btn.down { background: #6b7689; transform: translateY(3px); box-shadow: inset 0 -3px 0 #1f2d4a; }
+
+/* D-pad: a single touch surface, the cross is only visual. Each arm is at least 48px. */
 #dpad {
-  --s: min(40vw, 23dvh, 156px);
+  --s: clamp(150px, min(42vw, 24dvh), 176px);
   position: relative;
   width: var(--s);
   height: var(--s);
@@ -106,22 +139,23 @@ body {
 }
 #dpad .arm,
 #dpad .hub {
-  background: #0b0d14;
-  box-shadow: 0 4px 0 #141a2e;
+  background: #1f2d4a;
+  box-shadow: inset 0 -5px 0 #141a2e, 0 4px 0 #07080d;
 }
-#dpad [data-dir='up'] { grid-area: 1 / 2; border-radius: 4px 4px 0 0; }
-#dpad [data-dir='left'] { grid-area: 2 / 1; border-radius: 4px 0 0 4px; }
+#dpad .hub { background: #1f2d4a; box-shadow: 0 4px 0 #07080d; }
+#dpad [data-dir='up'] { grid-area: 1 / 2; border-radius: 6px 6px 0 0; }
+#dpad [data-dir='left'] { grid-area: 2 / 1; border-radius: 6px 0 0 6px; }
 #dpad .hub { grid-area: 2 / 2; }
-#dpad [data-dir='right'] { grid-area: 2 / 3; border-radius: 0 4px 4px 0; }
-#dpad [data-dir='down'] { grid-area: 3 / 2; border-radius: 0 0 4px 4px; }
-#dpad .arm.down { background: #4a5468; }
+#dpad [data-dir='right'] { grid-area: 2 / 3; border-radius: 0 6px 6px 0; }
+#dpad [data-dir='down'] { grid-area: 3 / 2; border-radius: 0 0 6px 6px; }
+#dpad .arm.down { background: #4a5468; transform: translateY(2px); box-shadow: inset 0 -2px 0 #141a2e; }
 
 #ab {
-  --d: min(17vw, 10dvh, 68px);
+  --d: clamp(60px, min(18vw, 10dvh), 72px);
   justify-self: end;
   position: relative;
   width: calc(var(--d) * 2.3);
-  height: calc(var(--d) * 1.9);
+  height: calc(var(--d) * 2);
   transform: rotate(-25deg);
 }
 .round {
@@ -131,6 +165,7 @@ body {
   align-items: center;
   gap: 6px;
   font-size: 9px;
+  color: #c9b99a;
 }
 .round.b { left: 0; bottom: 0; }
 .round.a { right: 0; top: 0; }
@@ -139,42 +174,49 @@ body {
   height: var(--d);
   border-radius: 50%;
   background: #8c2a2a;
-  box-shadow: 0 4px 0 #5c1a1a;
+  box-shadow: inset 0 -5px 0 #5c1a1a, 0 4px 0 #3a1012;
 }
+.round .btn.down { background: #5c1a1a; transform: translateY(3px); box-shadow: inset 0 -2px 0 #3a1012; }
 
 #meta {
   grid-column: 1 / 3;
   justify-self: center;
   display: flex;
-  gap: 28px;
-  padding-bottom: 4px;
+  gap: 24px;
+  padding-bottom: 2px;
 }
 .pill {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   font-size: 7px;
-  transform: rotate(-25deg);
+  transform: rotate(-20deg);
 }
+/* The visible pill is small; its touch area is 64x48. */
 .pill .btn {
-  width: 58px;
-  height: 18px;
-  border-radius: 9px;
+  position: relative;
+  width: 64px;
+  height: 22px;
+  border-radius: 11px;
   background: #4a5468;
-  box-shadow: 0 3px 0 #141a2e;
+  box-shadow: 0 3px 0 #07080d;
 }
+.pill .btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -13px;
+  bottom: -13px;
+}
+.pill .btn.down { background: #6b7689; transform: translateY(2px); box-shadow: none; }
 
 .btn,
 #dpad {
   cursor: pointer;
   touch-action: none;
 }
-.btn.down {
-  transform: translateY(3px);
-  box-shadow: none;
-}
-.round .btn.down { background: #5c1a1a; }
 
 #rotate {
   display: none;

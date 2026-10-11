@@ -1,17 +1,22 @@
-import { C, PALETTE, currentRemap, type Ci } from './palette';
+import { H, W, pix } from './fb';
+import { C } from './palette';
 
 export const GLYPH = 8;
 const FIRST = 32;
 const LAST = 126;
 const FONT = `${GLYPH}px "Press Start 2P"`;
 
-let masks: Uint8Array[] | null = null;
-/** Glyph atlases per final palette index (after remap): array lookup, no strings in the loop. */
-const atlases: (HTMLCanvasElement | ImageBitmap | undefined)[] = [];
+/** 1-bit glyphs, 8x8, one byte per row (bit 7 = left). Empty until loaded: text then draws nothing. */
+let glyphs: Uint8Array = new Uint8Array((LAST - FIRST + 1) * GLYPH);
+
+/** Installs glyph rows directly (tests, or a font rasterised elsewhere). */
+export function setGlyphs(rows: Uint8Array): void {
+  glyphs = rows;
+}
 
 /**
- * Rasterises the bundled Press Start 2P once and thresholds it to 1-bit
- * glyphs, so text is crisp and only ever uses palette colours.
+ * Rasterises the bundled Press Start 2P once and thresholds it to 1-bit glyphs,
+ * so text is crisp and only ever uses palette colours.
  */
 export async function loadFont(): Promise<void> {
   await document.fonts.load(FONT, 'A');
@@ -22,60 +27,61 @@ export async function loadFont(): Promise<void> {
   const ctx = c.getContext('2d', { willReadFrequently: true })!;
   ctx.font = FONT;
   ctx.textBaseline = 'top';
-  ctx.fillStyle = '#e8e0c4'; // only alpha is read
+  ctx.fillStyle = '#f7f2df'; // only alpha is read
   for (let i = 0; i < n; i++) ctx.fillText(String.fromCharCode(FIRST + i), i * GLYPH, 0);
   const img = ctx.getImageData(0, 0, c.width, c.height).data;
-  masks = [];
-  for (let i = 0; i < n; i++) {
-    const m = new Uint8Array(GLYPH * GLYPH);
-    for (let y = 0; y < GLYPH; y++)
-      for (let x = 0; x < GLYPH; x++) m[y * GLYPH + x] = (img[(y * c.width + i * GLYPH + x) * 4 + 3] ?? 0) >= 128 ? 1 : 0;
-    masks.push(m);
+  const rows = new Uint8Array(n * GLYPH);
+  for (let i = 0; i < n; i++)
+    for (let y = 0; y < GLYPH; y++) {
+      let b = 0;
+      for (let x = 0; x < GLYPH; x++) if ((img[(y * c.width + i * GLYPH + x) * 4 + 3] ?? 0) >= 128) b |= 0x80 >> x;
+      rows[i * GLYPH + y] = b;
+    }
+  glyphs = rows;
+}
+
+function glyph(code: number, x: number, y: number, v: number): void {
+  if (code < FIRST || code > LAST) code = 63; // '?'
+  const g = (code - FIRST) * GLYPH;
+  for (let r = 0; r < GLYPH; r++) {
+    const yy = y + r;
+    if (yy < 0 || yy >= H) continue;
+    const bits = glyphs[g + r]!;
+    if (!bits) continue;
+    const row = yy * W;
+    for (let k = 0; k < GLYPH; k++) {
+      if (!(bits & (0x80 >> k))) continue;
+      const xx = x + k;
+      if (xx >= 0 && xx < W) pix[row + xx] = v;
+    }
   }
 }
 
-/** Glyph atlas in one concrete colour (a hex string from the palette). */
-function atlas(ci: number): HTMLCanvasElement | ImageBitmap {
-  let a = atlases[ci];
-  if (a) return a;
-  const colour = PALETTE[ci]!;
-  if (!masks) throw new Error('font not loaded');
-  a = document.createElement('canvas');
-  a.width = masks.length * GLYPH;
-  a.height = GLYPH;
-  const ctx = a.getContext('2d')!;
-  ctx.fillStyle = colour;
-  masks.forEach((m, i) => {
-    for (let p = 0; p < m.length; p++) if (m[p]) ctx.fillRect(i * GLYPH + (p % GLYPH), Math.floor(p / GLYPH), 1, 1);
-  });
-  atlases[ci] = a;
-  // Promote to an ImageBitmap once ready, like the sprite atlas.
-  if (typeof createImageBitmap === 'function') {
-    const canvas = a;
-    void createImageBitmap(canvas).then((bmp) => {
-      if (atlases[ci] === canvas) atlases[ci] = bmp;
-    });
-  }
-  return a;
-}
-
-export function drawText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, colour: Ci = C.bone): void {
-  const ci = currentRemap()[colour]!;
-  const a = atlases[ci] ?? atlas(ci);
+/**
+ * Draws text at (x, y) in palette colour `v`. With `shadow` >= 0, a one-pixel drop shadow in that colour
+ * first, so light text stays readable over the world.
+ */
+export function drawText(text: string, x: number, y: number, v: number = C.bone, shadow = -1): void {
+  x |= 0;
+  y |= 0;
   for (let i = 0; i < text.length; i++) {
-    let code = text.charCodeAt(i);
-    if (code < FIRST || code > LAST) code = 63; // '?'
+    const code = text.charCodeAt(i);
     if (code === 32) continue;
-    ctx.drawImage(a, (code - FIRST) * GLYPH, 0, GLYPH, GLYPH, x + i * GLYPH, y, GLYPH, GLYPH);
+    if (shadow >= 0) glyph(code, x + i * GLYPH + 1, y + 1, shadow);
+    glyph(code, x + i * GLYPH, y, v);
   }
 }
 
-export function drawTextCentered(ctx: CanvasRenderingContext2D, text: string, y: number, colour?: Ci, width = 160): void {
-  drawText(ctx, text, Math.floor((width - text.length * GLYPH) / 2), y, colour);
+export function drawTextCentered(text: string, y: number, v?: number, width = W, x0 = 0, shadow = -1): void {
+  drawText(text, x0 + ((width - text.length * GLYPH) >> 1), y, v, shadow);
+}
+
+export function drawTextRight(text: string, right: number, y: number, v?: number, shadow = -1): void {
+  drawText(text, right - text.length * GLYPH, y, v, shadow);
 }
 
 /** Word-wraps text to lines of at most `cols` characters. */
-export function wrap(text: string, cols = 20): string[] {
+export function wrap(text: string, cols = 30): string[] {
   const lines: string[] = [];
   let line = '';
   for (const word of text.split(/\s+/)) {

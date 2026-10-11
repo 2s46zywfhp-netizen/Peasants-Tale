@@ -1,6 +1,5 @@
 import { wrap } from '../../render/font';
 import { PARCHMENT_COLS, PARCHMENT_LINES, drawParchment } from '../../render/parchment';
-import { useUiRemap } from '../../render/palette';
 import type { ActionEvent } from '../../input/input';
 import type { Game } from '../game';
 import type { Scene } from '../scene';
@@ -9,16 +8,18 @@ import { probe } from '../probe';
 import { TitleScene } from './title';
 
 const PAGES = [
-  ['YOURSELF', (g: Game) => selfLines(g.sim())],
-  ['STORES', (g: Game) => storesLines(g.sim())],
-  ['FAMILY', (g: Game) => householdLines(g.sim())],
-  ['SOUL', (g: Game) => soulLines(g.sim())],
-  ['STANDING', (g: Game) => standingLines(g.sim())],
-  ['VILLAGE', (g: Game) => villageLines(g.sim())],
-  ['FIELDS & DUTIES', (g: Game) => dutyLines(g.sim())],
-  ['CHRONICLE', (g: Game) => chronicleLines(g.sim())],
-  ['ALMANAC', (g: Game) => almanacLines(g.sim(), g.now())],
+  ['YOURSELF', (g: Game) => selfLines(g.sim()), 'bread'],
+  ['STORES', (g: Game) => storesLines(g.sim()), 'grain'],
+  ['FAMILY', (g: Game) => householdLines(g.sim()), 'hearth'],
+  ['SOUL', (g: Game) => soulLines(g.sim()), 'prayer'],
+  ['STANDING', (g: Game) => standingLines(g.sim()), 'coin'],
+  ['VILLAGE', (g: Game) => villageLines(g.sim()), 'ale'],
+  ['FIELDS & DUTIES', (g: Game) => dutyLines(g.sim()), 'sickle'],
+  ['CHRONICLE', (g: Game) => chronicleLines(g.sim()), 'candle'],
+  ['ALMANAC', (g: Game) => almanacLines(g.sim(), g.now()), 'bed'],
 ] as const;
+/** Page titles, built once (no strings made while drawing). */
+const TITLES = PAGES.map((p) => `< ${p[0]} >`);
 
 /** The stat screen: symptoms on parchment, never numbers. */
 export class StatusScene implements Scene {
@@ -58,8 +59,7 @@ export class StatusScene implements Scene {
     }
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    useUiRemap();
-    drawParchment(ctx, `< ${PAGES[this.page]![0]} >`, this.lines, this.scroll, 'B:BACK SELECT:TITLE');
+  draw(): void {
+    drawParchment(TITLES[this.page]!, this.lines, this.scroll, 'B: BACK   SELECT: TITLE', PAGES[this.page]![2]);
   }
 }

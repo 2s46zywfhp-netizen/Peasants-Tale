@@ -1,7 +1,8 @@
 import { createLife, migrateSim, type SimState } from '../sim/sim';
 import type { LifeOptions } from '../sim/state';
+import type { ActionId } from '../sim/balance';
 
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 
 export type TextSpeed = 'slow' | 'normal' | 'fast';
 
@@ -23,12 +24,25 @@ export interface SaveData {
   onboarded: boolean;
   /** Index of the next first-day tutorial hint; past the end = finished. */
   tutorial: number;
+  /** The tool on the belt (L cycles it): picks the work at a place and how it looks. */
+  belt: BeltTool;
+  /** Tasks queued with R, done one after another as each ends. */
+  queue: QueuedTask[];
+  /** The old four-shade screen, earned by keeping a life going (see DMG_UNLOCK_DAYS). */
+  dmgUnlocked: boolean;
+}
+
+export const BELT_TOOLS = ['axe', 'hoe', 'sickle', 'flail', 'seedbag', 'ladle', 'bucket'] as const;
+export type BeltTool = (typeof BELT_TOOLS)[number];
+export interface QueuedTask {
+  action: ActionId;
+  param: string | null;
 }
 
 export const DEFAULT_SETTINGS: Settings = { textSpeed: 'normal', sound: true, scanlines: false, dmg: false };
 
 export function newSave(seed: number, now: number, settings: Settings = DEFAULT_SETTINGS, names: LifeOptions = {}): SaveData {
-  return { schema: SCHEMA_VERSION, savedAt: now, settings: { ...settings }, sim: createLife(seed, now, names), seenBlock: 0, onboarded: false, tutorial: 0 };
+  return { schema: SCHEMA_VERSION, savedAt: now, settings: { ...settings }, sim: createLife(seed, now, names), seenBlock: 0, onboarded: false, tutorial: 0, belt: 'axe', queue: [], dmgUnlocked: settings.dmg };
 }
 
 /** migrations[n] upgrades a schema-n save to schema n+1. */
@@ -47,6 +61,8 @@ export const MIGRATIONS: MigrationRegistry = {
   2: (s) => ({ ...s, schema: 3, seenBlock: (s.sim as { block?: number } | undefined)?.block ?? 0 }),
   // v4 (Phase 4): the village, family and bloodline (sim v3); a life already under way skips onboarding.
   3: (s) => ({ ...s, schema: 4, sim: migrateSim(s.sim as Record<string, unknown>), onboarded: true, tutorial: 99 }),
+  // Phase 5: the belt, the task queue, and DMG mode becoming something earned (kept if already on).
+  4: (s) => ({ ...s, schema: 5, belt: 'axe', queue: [], dmgUnlocked: (s.settings as { dmg?: unknown } | undefined)?.dmg === true }),
 };
 
 export class SaveError extends Error {}
@@ -89,6 +105,8 @@ export function validate(data: Record<string, unknown>): SaveData {
   if (!isNum(data.savedAt)) throw new SaveError('bad savedAt');
   if (!isNum(data.seenBlock)) throw new SaveError('bad seenBlock');
   if (typeof data.onboarded !== 'boolean' || !isNum(data.tutorial)) throw new SaveError('bad onboarding flags');
+  if (!BELT_TOOLS.includes(data.belt as BeltTool)) throw new SaveError('bad belt');
+  if (!Array.isArray(data.queue) || typeof data.dmgUnlocked !== 'boolean') throw new SaveError('bad queue or dmgUnlocked');
   return data as unknown as SaveData;
 }
 

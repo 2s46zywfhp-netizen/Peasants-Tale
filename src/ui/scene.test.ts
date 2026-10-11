@@ -46,8 +46,7 @@ describe('SceneManager', () => {
     sm.push(scene('base', log), false);
     sm.push(scene('dialog', log, false), false);
     log.length = 0;
-    const ctx = { fillRect() {}, fillStyle: '' } as unknown as CanvasRenderingContext2D;
-    sm.draw(ctx, 0);
+    sm.draw(0);
     expect(log).toEqual(['draw base', 'draw dialog']);
   });
 });

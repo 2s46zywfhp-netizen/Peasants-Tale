@@ -1,5 +1,4 @@
-import { ditherFill } from '../render/draw';
-import { C } from '../render/palette';
+import { fade } from '../render/draw';
 import { FADE_MS } from '../sim/balance';
 import type { ActionEvent, Input } from '../input/input';
 
@@ -10,7 +9,8 @@ export interface Scene {
   exit?(): void;
   onAction?(e: ActionEvent): void;
   update?(dtMs: number, nowMs: number): void;
-  draw(ctx: CanvasRenderingContext2D, nowMs: number): void;
+  /** Draws into the 256x224 indexed frame (render/fb). */
+  draw(nowMs: number): void;
 }
 
 type Op = { kind: 'push' | 'replace'; scene: Scene } | { kind: 'pop' };
@@ -88,11 +88,11 @@ export class SceneManager {
     return this.t < half ? this.t / half : Math.max(0, 1 - (this.t - half) / half);
   }
 
-  draw(ctx: CanvasRenderingContext2D, now: number): void {
+  draw(now: number): void {
     let from = this.stack.length - 1;
     while (from > 0 && !this.stack[from]!.opaque) from--;
-    for (let i = Math.max(0, from); i < this.stack.length; i++) this.stack[i]!.draw(ctx, now);
+    for (let i = Math.max(0, from); i < this.stack.length; i++) this.stack[i]!.draw(now);
     // Quantise to a few steps so the fade reads as a retro palette fade.
-    ditherFill(ctx, Math.round(this.fadeAmount() * 4) / 4, C.black);
+    fade(Math.round(this.fadeAmount() * 4) / 4);
   }
 }

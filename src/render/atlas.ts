@@ -1,156 +1,215 @@
-import { PALETTE, hexToRgb, remapKey, type Remap } from './palette';
-import { ANIMS, SPRITES } from './sprites';
+import { NONE, W, H, pix } from './fb';
+import { PALETTE } from './palette';
 
-/** All sprite frames packed into one palette-indexed atlas (255 = transparent). */
-export interface Atlas {
+/** A sprite sheet as palette indices (NONE = transparent). */
+interface Sheet {
   w: number;
   h: number;
-  idx: Uint8Array;
-  /** x, y, w, h per sprite number. */
-  rects: Int16Array;
-  ids: Map<string, number>;
-  names: string[];
+  data: Uint8Array;
 }
 
-const ATLAS_W = 512;
+export interface AtlasJson {
+  palette: string[];
+  sheets: string[];
+  frames: Record<string, [number, number, number, number, number]>;
+  anims: Record<string, { frames: string[]; ms: number }>;
+  meta: Record<string, unknown>;
+}
 
-export function buildAtlas(sprites: Readonly<Record<string, readonly string[]>>): Atlas {
-  const names = Object.keys(sprites).sort((a, b) => sprites[b]!.length - sprites[a]!.length || a.localeCompare(b));
-  const rects = new Int16Array(names.length * 4);
-  let x = 0;
-  let y = 0;
-  let shelf = 0;
-  names.forEach((n, i) => {
-    const rows = sprites[n]!;
-    const w = rows[0]!.length;
-    const h = rows.length;
-    if (x + w > ATLAS_W) {
-      x = 0;
-      y += shelf;
-      shelf = 0;
+export interface Anim {
+  frames: Int32Array;
+  ms: number;
+}
+
+let sheets: Sheet[] = [];
+let names = new Map<string, number>();
+let fSheet = new Int16Array(0);
+let fX = new Int16Array(0);
+let fY = new Int16Array(0);
+let fW = new Int16Array(0);
+let fH = new Int16Array(0);
+let animsJson: AtlasJson['anims'] = {};
+let metaJson: AtlasJson['meta'] = {};
+const anims = new Map<string, Anim>();
+
+/** Colour (0xRRGGBB) -> palette index. */
+const INDEX = new Map(PALETTE.map((h, i) => [parseInt(h.slice(1), 16), i]));
+
+/** Converts RGBA sheet pixels to palette indices. Any colour outside the palette is a hard error. */
+export function toIndices(rgba: Uint8ClampedArray | Uint8Array, w: number, h: number, name = 'sheet'): Uint8Array {
+  const out = new Uint8Array(w * h);
+  for (let i = 0; i < w * h; i++) {
+    if (rgba[i * 4 + 3]! < 128) {
+      out[i] = NONE;
+      continue;
     }
-    rects.set([x, y, w, h], i * 4);
-    x += w;
-    shelf = Math.max(shelf, h);
-  });
-  const H = y + shelf;
-  const idx = new Uint8Array(ATLAS_W * H).fill(255);
-  names.forEach((n, i) => {
-    const [rx, ry] = [rects[i * 4]!, rects[i * 4 + 1]!];
-    sprites[n]!.forEach((row, sy) => {
-      for (let sx = 0; sx < row.length; sx++) {
-        const c = row[sx]!;
-        if (c !== '.') idx[(ry + sy) * ATLAS_W + rx + sx] = parseInt(c, 16);
-      }
-    });
-  });
-  return { w: ATLAS_W, h: H, idx, rects, ids: new Map(names.map((n, i) => [n, i])), names };
-}
-
-const RGB = PALETTE.map(hexToRgb);
-
-/** RGBA pixels for the atlas under a remap. */
-export function atlasRgba(a: Atlas, remap: Remap): Uint8ClampedArray<ArrayBuffer> {
-  const out = new Uint8ClampedArray(new ArrayBuffer(a.w * a.h * 4));
-  for (let i = 0; i < a.idx.length; i++) {
-    const v = a.idx[i]!;
-    if (v === 255) continue;
-    const rgb = RGB[remap[v]!]!;
-    out[i * 4] = rgb[0];
-    out[i * 4 + 1] = rgb[1];
-    out[i * 4 + 2] = rgb[2];
-    out[i * 4 + 3] = 255;
+    const v = INDEX.get((rgba[i * 4]! << 16) | (rgba[i * 4 + 1]! << 8) | rgba[i * 4 + 2]!);
+    if (v === undefined) throw new Error(`${name}: off-palette pixel at ${i % w},${(i / w) | 0}`);
+    out[i] = v;
   }
   return out;
 }
 
-export const ATLAS: Atlas = buildAtlas(SPRITES);
+/** Installs a loaded atlas (used by the browser loader and by tests). */
+export function installAtlas(json: AtlasJson, sheetData: { w: number; h: number; data: Uint8Array }[]): void {
+  sheets = sheetData;
+  const entries = Object.entries(json.frames);
+  names = new Map(entries.map(([n], i) => [n, i]));
+  fSheet = Int16Array.from(entries, ([, f]) => f[0]);
+  fX = Int16Array.from(entries, ([, f]) => f[1]);
+  fY = Int16Array.from(entries, ([, f]) => f[2]);
+  fW = Int16Array.from(entries, ([, f]) => f[3]);
+  fH = Int16Array.from(entries, ([, f]) => f[4]);
+  animsJson = json.anims;
+  metaJson = json.meta;
+  anims.clear();
+}
+
+/** Loads /sprites/atlas.json and its sheets (browser). */
+export async function loadSprites(base = '/sprites/'): Promise<AtlasJson> {
+  const json = (await (await fetch(`${base}atlas.json`)).json()) as AtlasJson;
+  const data = await Promise.all(
+    json.sheets.map(async (s) => {
+      const bmp = await createImageBitmap(await (await fetch(`${base}${s}`)).blob());
+      const c = document.createElement('canvas');
+      c.width = bmp.width;
+      c.height = bmp.height;
+      const g = c.getContext('2d', { willReadFrequently: true })!;
+      g.drawImage(bmp, 0, 0);
+      return { w: bmp.width, h: bmp.height, data: toIndices(g.getImageData(0, 0, bmp.width, bmp.height).data, bmp.width, bmp.height, s) };
+    }),
+  );
+  installAtlas(json, data);
+  return json;
+}
 
 export function spriteId(name: string): number {
-  const id = ATLAS.ids.get(name);
-  if (id === undefined) throw new Error(`no sprite ${name}`);
+  const id = names.get(name);
+  if (id === undefined) throw new Error(`no sprite '${name}'`);
   return id;
 }
+export const hasSprite = (name: string): boolean => names.has(name);
+export const spriteW = (id: number): number => fW[id]!;
+export const spriteH = (id: number): number => fH[id]!;
+export const spriteNames = (): string[] => [...names.keys()];
+export const animNames = (): string[] => Object.keys(animsJson);
+export const meta = <T>(key: string): T => metaJson[key] as T;
 
-/** An animation resolved to sprite numbers, for allocation-free frame lookup. */
-export interface Anim {
-  ids: Int32Array;
-  ms: number;
-}
-
-const animCache = new Map<string, Anim>();
 export function anim(name: string): Anim {
-  let a = animCache.get(name);
+  let a = anims.get(name);
   if (!a) {
-    const def = ANIMS[name];
-    if (!def) throw new Error(`no animation ${name}`);
-    a = { ids: Int32Array.from(def.frames.map(spriteId)), ms: def.ms };
-    animCache.set(name, a);
+    const j = animsJson[name];
+    if (!j) throw new Error(`no animation '${name}'`);
+    a = { frames: Int32Array.from(j.frames, (f) => spriteId(f)), ms: j.ms };
+    anims.set(name, a);
   }
   return a;
 }
+export const hasAnim = (name: string): boolean => name in animsJson;
 
-export function frameAt(a: Anim, nowMs: number, offset = 0): number {
-  return a.ids[Math.floor((nowMs + offset) / a.ms) % a.ids.length]!;
+/** The frame of `a` showing at time `now` (ms), offset to desynchronise identical animations. */
+export function frameAt(a: Anim, now: number, offset = 0): number {
+  return a.frames[(((now + offset) / a.ms) | 0) % a.frames.length]!;
 }
 
-/* ── Browser side: one image per remap, cached ── */
-
-export type Img = HTMLCanvasElement | ImageBitmap;
-const images = new Map<string, Img>();
-const MAX_IMAGES = 24;
-
-function makeImage(remap: Remap, key: string): Img {
-  const c = document.createElement('canvas');
-  c.width = ATLAS.w;
-  c.height = ATLAS.h;
-  c.getContext('2d')!.putImageData(new ImageData(atlasRgba(ATLAS, remap), ATLAS.w, ATLAS.h), 0, 0);
-  // Promote to an ImageBitmap (GPU-friendly) as soon as the browser has made one.
-  if (typeof createImageBitmap === 'function') {
-    void createImageBitmap(c).then((bmp) => {
-      if (images.get(key) === c) images.set(key, bmp);
-    });
+/**
+ * Draws sprite `id` with its top-left at (x, y): transparent pixels skipped, clipped to the frame.
+ * `flip` mirrors it left-right. `remap` (optional) recolours indices.
+ */
+export function blit(id: number, x: number, y: number, flip = false, remap: Uint8Array | null = null): void {
+  const s = sheets[fSheet[id]!]!;
+  const sw = s.w, data = s.data;
+  const w = fW[id]!, h = fH[id]!, sx = fX[id]!, sy = fY[id]!;
+  x |= 0;
+  y |= 0;
+  const x0 = x < 0 ? -x : 0, y0 = y < 0 ? -y : 0;
+  const x1 = x + w > W ? W - x : w, y1 = y + h > H ? H - y : h;
+  for (let j = y0; j < y1; j++) {
+    const src = (sy + j) * sw + sx;
+    const dst = (y + j) * W + x;
+    for (let i = x0; i < x1; i++) {
+      const v = data[src + (flip ? w - 1 - i : i)]!;
+      if (v !== NONE) pix[dst + i] = remap ? remap[v]! : v;
+    }
   }
-  return c;
 }
 
-/** The atlas image for a remap, built on first use and cached. */
-export function atlasImage(remap: Remap): Img {
-  const key = remapKey(remap);
-  let img = images.get(key);
-  if (!img) {
-    if (images.size >= MAX_IMAGES) images.delete(images.keys().next().value!);
-    img = makeImage(remap, key);
-    images.set(key, img);
+/** Draws a horizontal slice [u, u + w) of a sprite at (x, y) (parallax strips, 9-slice parts). */
+export function blitPart(id: number, u: number, v: number, w: number, h: number, x: number, y: number): void {
+  const s = sheets[fSheet[id]!]!;
+  const sw = s.w, data = s.data;
+  const sx = fX[id]! + u, sy = fY[id]! + v;
+  x |= 0;
+  y |= 0;
+  for (let j = 0; j < h; j++) {
+    const yy = y + j;
+    if (yy < 0 || yy >= H) continue;
+    const src = (sy + j) * sw + sx;
+    const dst = yy * W;
+    for (let i = 0; i < w; i++) {
+      const xx = x + i;
+      if (xx < 0 || xx >= W) continue;
+      const c = data[src + i]!;
+      if (c !== NONE) pix[dst + xx] = c;
+    }
   }
-  return img;
 }
 
-/** Like atlasImage, with the key precomputed (no string building per frame). Without a remap, only cached images are returned. */
-export function atlasImageKeyed(remap: Remap, key: string): Img;
-export function atlasImageKeyed(remap: null, key: string): Img | undefined;
-export function atlasImageKeyed(remap: Remap | null, key: string): Img | undefined {
-  const img = images.get(key);
-  if (img || !remap) return img;
-  if (images.size >= MAX_IMAGES) images.delete(images.keys().next().value!);
-  const made = makeImage(remap, key);
-  images.set(key, made);
-  return made;
+/* ── body-state, tool and carried-item layers ── */
+
+/** Layers a frame may have, drawn over it in this order: `<frame>@<layer>` in the atlas. */
+export const LAYERS = ['girth1', 'girth2', 'gaunt', 'skeletal', 'sick', 'cold', 'tool'] as const;
+export type LayerName = (typeof LAYERS)[number];
+export const LAYER_BIT: Readonly<Record<LayerName, number>> = { girth1: 1, girth2: 2, gaunt: 4, skeletal: 8, sick: 16, cold: 32, tool: 64 };
+let layerIds = new Int32Array(0);
+let layerFor = -1;
+
+function buildLayers(): void {
+  const n = fW.length;
+  layerIds = new Int32Array(n * LAYERS.length).fill(-1);
+  const byId = [...names.keys()];
+  for (let id = 0; id < n; id++) {
+    const base = byId[id]!;
+    if (base.includes('@')) continue;
+    for (let k = 0; k < LAYERS.length; k++) {
+      const l = names.get(`${base}@${LAYERS[k]}`);
+      if (l !== undefined) layerIds[id * LAYERS.length + k] = l;
+    }
+  }
+  layerFor = n;
 }
 
-/** Converts the base atlas to an ImageBitmap at boot. */
-export async function initSprites(identity: Remap): Promise<void> {
-  const key = remapKey(identity);
-  const c = makeImage(identity, key);
-  images.set(key, typeof createImageBitmap === 'function' ? await createImageBitmap(c) : c);
+/** The layer sprite for frame `id`, or -1 if it has none. */
+export function layerId(id: number, k: number): number {
+  if (layerFor !== fW.length) buildLayers();
+  return layerIds[id * LAYERS.length + k]!;
 }
 
-export function drawSprite(ctx: CanvasRenderingContext2D, img: Img, id: number, x: number, y: number): void {
-  const r = ATLAS.rects;
-  const o = id * 4;
-  ctx.drawImage(img, r[o]!, r[o + 1]!, r[o + 2]!, r[o + 3]!, x | 0, y | 0, r[o + 2]!, r[o + 3]!);
+/** Draws a frame and, over it, the layers whose bits are set in `mask`. */
+export function blitLayered(id: number, x: number, y: number, flip: boolean, mask: number, remap: Uint8Array | null = null): void {
+  blit(id, x, y, flip, remap);
+  if (!mask) return;
+  for (let k = 0; k < LAYERS.length; k++) {
+    if (!(mask & (1 << k))) continue;
+    const l = layerId(id, k);
+    if (l >= 0) blit(l, x, y, flip, remap);
+  }
 }
 
-export function spriteSize(id: number): [number, number] {
-  return [ATLAS.rects[id * 4 + 2]!, ATLAS.rects[id * 4 + 3]!];
+/** Per column of a sprite, the first opaque row from the top (or -1): where snow settles. */
+const tops = new Map<number, Int16Array>();
+export function topProfile(id: number): Int16Array {
+  let t = tops.get(id);
+  if (t) return t;
+  const s = sheets[fSheet[id]!]!;
+  const w = fW[id]!, h = fH[id]!;
+  t = new Int16Array(w).fill(-1);
+  for (let x = 0; x < w; x++)
+    for (let y = 0; y < h; y++)
+      if (s.data[(fY[id]! + y) * s.w + fX[id]! + x] !== NONE) {
+        t[x] = y;
+        break;
+      }
+  tops.set(id, t);
+  return t;
 }

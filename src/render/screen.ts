@@ -1,21 +1,29 @@
+import { H, W, present as presentFrame } from './fb';
 import { DMG_SHADES, PALETTE } from './palette';
 
-export const W = 160;
-export const H = 144;
+export { H, W };
 
 export interface DisplayOptions {
   scanlines: boolean;
   dmg: boolean;
 }
 
-/** Largest integer scale (in device pixels) at which a 160x144 screen fits the given CSS box. */
+/**
+ * Physical-pixel scale: the largest whole number of device pixels per game pixel at which 256x224 fits the
+ * available CSS box (width first: the screen spans the phone; height so it never overflows). Never below 1.
+ */
 export function integerScale(availCssW: number, availCssH: number, dpr: number): number {
-  return Math.max(1, Math.floor(Math.min((availCssW * dpr) / W, (availCssH * dpr) / H)));
+  return Math.max(1, Math.min(Math.floor((availCssW * dpr) / W), Math.floor((availCssH * dpr) / H)));
+}
+
+/** Backing-store size in device pixels and CSS size for a scale. */
+export function canvasSize(scale: number, dpr: number): { backW: number; backH: number; cssW: number; cssH: number } {
+  return { backW: W * scale, backH: H * scale, cssW: (W * scale) / dpr, cssH: (H * scale) / dpr };
 }
 
 /**
- * The game draws into a 160x144 framebuffer; present() blits it to the visible
- * canvas at an integer device-pixel scale with smoothing off.
+ * The game draws into a 256x224 indexed frame (render/fb); present() turns it to colour on a small canvas
+ * and blits that onto the visible canvas at an integer device-pixel scale with smoothing off.
  */
 export class Screen {
   readonly fb: HTMLCanvasElement;
@@ -32,30 +40,33 @@ export class Screen {
     this.out = display.getContext('2d', { alpha: false })!;
   }
 
-  /** Sizes the display canvas so each game pixel is exactly `scale` device pixels. */
+  /** Sizes the display canvas so each game pixel is exactly `scale` device pixels; the rest is bezel. */
   resize(availCssW: number, availCssH: number, dpr: number): void {
     const k = integerScale(availCssW, availCssH, dpr);
     this.scale = k;
+    const s = canvasSize(k, dpr);
     const d = this.display;
-    d.width = W * k;
-    d.height = H * k;
-    d.style.width = `${(W * k) / dpr}px`;
-    d.style.height = `${(H * k) / dpr}px`;
+    if (d.width !== s.backW) d.width = s.backW;
+    if (d.height !== s.backH) d.height = s.backH;
+    d.style.width = `${s.cssW}px`;
+    d.style.height = `${s.cssH}px`;
     // Snap the canvas onto the device-pixel grid so the compositor copies it 1:1.
     d.style.transform = '';
     const r = d.getBoundingClientRect();
     const fx = r.left * dpr - Math.round(r.left * dpr);
     const fy = r.top * dpr - Math.round(r.top * dpr);
     if (fx || fy) d.style.transform = `translate(${-fx / dpr}px, ${-fy / dpr}px)`;
+    this.out = d.getContext('2d', { alpha: false })!;
   }
 
-  /** Blits the framebuffer at integer scale. DMG mode is a palette remap applied while drawing, so no readback. */
+  /** Puts the indexed frame on screen. DMG is a shade table applied while converting, so no readback. */
   present(opts: DisplayOptions): void {
+    presentFrame(this.ctx);
     const k = this.scale;
     this.out.imageSmoothingEnabled = false;
     this.out.drawImage(this.fb, 0, 0, W * k, H * k);
-    if (opts.scanlines && k >= 2) {
-      this.out.fillStyle = PALETTE[opts.dmg ? DMG_SHADES[0] : 0];
+    if (opts.scanlines && k >= 3) {
+      this.out.fillStyle = PALETTE[opts.dmg ? DMG_SHADES[0] : 0] as string;
       const t = Math.max(1, Math.floor(k / 3));
       for (let y = 0; y < H; y++) this.out.fillRect(0, y * k + k - t, W * k, t);
     }
