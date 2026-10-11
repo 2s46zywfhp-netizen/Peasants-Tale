@@ -7,7 +7,7 @@ import { anim, blit, blitLayered, frameAt, hasAnim, meta, spriteH, spriteId, spr
 import { darkPanel, bubble, rect } from './draw';
 import { H, LOCK, LOCKED, W, addLight, ambientRemap, ambientSteps, bayer, dither, finishWorld, haze, pix, plot, resetLight } from './fb';
 import { GLYPH, drawText, drawTextRight } from './font';
-import { AMBIENT, C, FOG_LUT, type SeasonName } from './palette';
+import { AMBIENT, C, FOG_LUT, LIGHTER, type SeasonName } from './palette';
 import { COLS, GROUND_H, GROUND_ROWS, GROUND_Y, PRIORITY, TERRAIN_OF, TILE, terrainAt, type Obj, type SceneDef, type SceneId, type Terrain } from './scenes/maps';
 import { drawSky, moonScreenX } from './sky';
 import { drawWeather, lightning, setWeather, snowCover, windFor } from './weather';
@@ -353,9 +353,41 @@ function snowCap(id: number, x: number, y: number, depth: number): void {
     // Only where the top is flat enough to hold snow.
     const l = t[i - 1] ?? top, r = t[i + 1] ?? top;
     if (Math.abs(l - top) > 2 && Math.abs(r - top) > 2) continue;
-    for (let d = 0; d < depth; d++) plot(x + i, y + top + d, d === depth - 1 && bayer(x + i, y + top + d) < 8 ? C.bone : C.moon);
+    for (let d = 0; d < depth; d++) plot(x + i, y + top + d, d === depth - 1 && bayer(x + i, y + top + d) < 8 ? C.frost : C.moon);
   }
 }
+
+/* ───────────── things that want seeing to pulse ───────────── */
+
+const PULSE_MAX = 8;
+const pulseRects = new Int16Array(PULSE_MAX * 4);
+let pulseN = 0;
+function wantPulse(x: number, y: number, w: number, h: number): void {
+  if (pulseN >= PULSE_MAX) return;
+  const k = pulseN++ * 4;
+  pulseRects[k] = x;
+  pulseRects[k + 1] = y;
+  pulseRects[k + 2] = w;
+  pulseRects[k + 3] = h;
+}
+/** A slow glow over each (after lighting, so it shows in the dark too). */
+function drawPulses(now: number): void {
+  const ph = (now % 1400) / 700;
+  const amt = Math.round((ph < 1 ? ph : 2 - ph) * 7);
+  if (amt > 0) for (let i = 0; i < pulseN; i++) haze(pulseRects[i * 4]!, pulseRects[i * 4 + 1]!, pulseRects[i * 4 + 2]!, pulseRects[i * 4 + 3]!, LIGHTER, amt);
+  pulseN = 0;
+}
+
+/** Does this object want seeing to? Hens and the pig with nothing to eat; the woodpile when the fire is dying. */
+function needsCare(s: SimState, o: Obj): boolean {
+  const w = s.wealth;
+  if (o.s === 'o.coop') return w.hens > 0 && w.grain < 1;
+  if (o.s === 'o.sty') return w.pig > 0 && w.grain < 1 && w.pottage < 1;
+  if (o.s === 'o.woodpile') return w.firewood <= FIRE_LOW;
+  return false;
+}
+/** Firewood at or below this: the hearth is dying (it pulses, as does the woodpile). */
+const FIRE_LOW = 2;
 
 /* ───────────── outdoors ───────────── */
 
@@ -401,7 +433,7 @@ function drawOutdoor(s: SimState, view: WorldView, d: Day, now: number): void {
         if (f < 0) break;
         blit(f, x, y);
       }
-      if (d.snow === 1 && !c.water[i]) dither(x, y, TILE, TILE, C.bone, 5);
+      if (d.snow === 1 && !c.water[i]) dither(x, y, TILE, TILE, C.moon, 6);
     }
   }
   if (!snowy) drawTufts(c.tufts, icam, d.windQ, now);
@@ -436,6 +468,7 @@ function drawOutdoor(s: SimState, view: WorldView, d: Day, now: number): void {
     const x = o.x - icam, y = GROUND_Y + o.y - h;
     blit(id, x, y);
     if (o.snow && d.snow > 0) snowCap(id, x, y, d.snow + 1);
+    if (needsCare(s, o)) wantPulse(x, y, spriteW(id), h);
     if (o.smoke && (bod <= 1 || night || d.weather.tempC < 8)) smoke(x + o.smoke[0], y + o.smoke[1], d.windQ, now, i);
     if (o.light && (!o.light.night || night)) {
       const flick = (now >> 7) % 4 === 0 ? 2 : 0;
@@ -458,6 +491,7 @@ function drawOutdoor(s: SimState, view: WorldView, d: Day, now: number): void {
 
   // Light: the hour and the moon outdoors, lamps and fires where they reach.
   finishWorld(d.season, d.plague, bod, 0, HUD_Y, amb);
+  drawPulses(now);
   // Rolling fog: on fog days, and low over the ground at dawn. It pales what it covers, never hides it.
   if (sky === 'fog' || bod === 0) {
     const fogDay = sky === 'fog';
@@ -479,6 +513,22 @@ let roomIds: Record<string, number> | null = null;
 /** Daylight indoors per block: dim, and dark at night but for the fire and the candle. */
 const COTTAGE_AMBIENT = [7, 10, 11, 10, 7, 4] as const;
 const CHURCH_AMBIENT = [8, 11, 12, 11, 8, 5] as const;
+
+/** Where the rushlight stands on the cottage table (room coordinates). */
+const RUSHLIGHT = { x: 200, y: 103 } as const;
+
+/** A rushlight: a peeled rush dipped in fat, held slanting in an iron nip; a small, smoky, yellow light. */
+function rushlight(x: number, y: number, now: number): void {
+  rect(x, y, 1, 8, C.black); // the stand
+  rect(x - 2, y + 8, 5, 1, C.black);
+  plot(x + 1, y - 1, C.ink);
+  plot(x + 2, y - 2, C.mud); // the rush, slanting
+  plot(x + 3, y - 3, C.mud);
+  const f = (now >> 7) % 3;
+  plot(x + 4, y - 4, (f ? C.gold : C.flame) | LOCK);
+  plot(x + 4 + (f === 2 ? 1 : 0), y - 5, C.spark | LOCK);
+  addLight(x + 4, y - 4, 40 + f, 12, true, 0.8);
+}
 
 /** A candle flame at screen (x, y), and its light. */
 function flame(x: number, y: number, now: number): void {
@@ -528,6 +578,7 @@ function drawRoom(s: SimState, view: WorldView, d: Day, now: number): void {
     const fx = m.fire.x - cam, fy = ROOM_Y + m.fire.y + 4;
     const a = h === 'blazing' ? anim('fire.blazing') : h === 'banked' ? anim('fire.banked') : null;
     blit(a ? frameAt(a, now) : spriteId('fire.out'), fx - 16, fy - 28);
+    if (s.wealth.firewood <= FIRE_LOW) wantPulse(fx - 22, fy - 34, 44, 36);
     if (h !== 'out') {
       const flick = ((now >> 6) * 2654435761) >>> 29; // 0..7, a cheap jitter
       const big = h === 'blazing';
@@ -537,6 +588,8 @@ function drawRoom(s: SimState, view: WorldView, d: Day, now: number): void {
   }
   // Candles at night (and in the church, always).
   if (m.candle && night) flame(m.candle.x - cam - 1, ROOM_Y + m.candle.y - 12, now);
+  // A rushlight in its iron holder on the table, lit at dusk.
+  if (sc.room === 'cottage' && (bod === 4 || bod === 5)) rushlight(RUSHLIGHT.x - cam, ROOM_Y + RUSHLIGHT.y, now);
   if (m.candles) for (let i = 0; i < m.candles.length; i++) flame(m.candles[i]!.x - cam - 1, ROOM_Y + m.candles[i]!.y + 1, now);
 
   // People.
@@ -553,6 +606,7 @@ function drawRoom(s: SimState, view: WorldView, d: Day, now: number): void {
 
   const ambient = sc.room === 'church' ? CHURCH_AMBIENT[bod]! : COTTAGE_AMBIENT[bod]!;
   finishWorld(d.season, d.plague, bod, 0, HUD_Y, ambient);
+  drawPulses(now);
 }
 
 /* ───────────── HUD and prompts (after lighting: never darkened) ───────────── */

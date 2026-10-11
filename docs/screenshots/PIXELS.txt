@@ -1,0 +1,5 @@
+375x667@2: scale 2, canvas 512x448 device px (even); 0 stray device pixels inside, 504 on the edge ring
+390x844@3: scale 4, canvas 1024x896 device px (even); 0 stray device pixels inside, 0 on the edge ring
+393x852@3: scale 4, canvas 1024x896 device px (even); 0 stray device pixels inside, 1913 on the edge ring
+412x915@2.625: scale 4, canvas 1024x896 device px (even); 0 stray device pixels inside, 5751 on the edge ring
+430x932@3: scale 4, canvas 1024x896 device px (even); 0 stray device pixels inside, 0 on the edge ring

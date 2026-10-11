@@ -1,5 +1,7 @@
 import { anim, animNames, blit, frameAt, spriteH, spriteId, spriteNames, spriteW, type Anim } from '../../render/atlas';
 import { clear, frame, rect } from '../../render/draw';
+import { SCENES, type SceneId } from '../../render/scenes/maps';
+import { SCENE_IDS, drawWorld, type WorldView } from '../../render/world';
 import { W, finishWorld, resetLight } from '../../render/fb';
 import { drawText } from '../../render/font';
 import { C, setDmgMode, dmgOn, type SeasonName } from '../../render/palette';
@@ -27,6 +29,8 @@ const TOP = 16;
 const BOTTOM = 196;
 
 interface Entry {
+  /** A whole scene (drawn by the world renderer) rather than a sprite. */
+  scene?: SceneId;
   name: string;
   label: string;
   info: string;
@@ -52,6 +56,7 @@ function entries(): Entry[] {
     if (inAnim.has(id)) continue;
     out.push({ name: n, label: n.toUpperCase().slice(0, 30), info: `STILL ${spriteW(id)}X${spriteH(id)}`, anim: null, id, w: spriteW(id), h: spriteH(id) });
   }
+  for (const id of SCENE_IDS) out.push({ scene: id, name: id, label: `SCENE: ${SCENES[id].name}`.slice(0, 30), info: SCENES[id].room ? 'ROOM 384X192' : 'OUTDOORS 512X144', anim: null, id: 0, w: 256, h: 224 });
   return out;
 }
 
@@ -85,6 +90,7 @@ export class GalleryScene implements Scene {
   private headers: string[] = [];
   private headerKey = -1;
   private dmgWas = false;
+  private view: WorldView = { scene: SCENES.green, cam: 0, actors: [], prompt: '', promptX: 0, promptY: 0, needs: [], belt: 'axe', queued: 0, message: '' };
 
   constructor(private game: Game) {}
 
@@ -127,6 +133,19 @@ export class GalleryScene implements Scene {
     clear(C.deep);
     resetLight();
     const p = this.pages[this.page]!;
+    if (p[0]!.scene) {
+      // A whole scene, as the world renderer draws it (in the look of the moment, not the gallery's).
+      const sc = SCENES[p[0]!.scene];
+      this.view.scene = sc;
+      this.view.cam = ((now / 40) | 0) % (sc.room ? 128 : 256);
+      drawWorld(this.game.sim(), this.view, now, this.game.now);
+      rect(0, 0, W, TOP, C.black);
+      drawText(this.headers[0]!, 4, 4, C.gold);
+      rect(0, BOTTOM, W, 224 - BOTTOM, C.black);
+      drawText(p[0]!.label, 4, BOTTOM + 4, C.bone);
+      drawText(p[0]!.info, 4, BOTTOM + 15, C.mist);
+      return;
+    }
     if (p.length === 1 && (p[0]!.w > 16 || p[0]!.h > 16)) {
       const e = p[0]!;
       blit(e.anim ? frameAt(e.anim, now) : e.id, Math.max(0, (W - e.w) >> 1), TOP + Math.max(0, (BOTTOM - TOP - e.h) >> 1));

@@ -44,8 +44,8 @@ export const TERRAIN = {
   },
   snow: (x, y, v) => {
     const n = hash(x, y, 71 + v);
-    if (n < 0.04) return idx('stone', 3);
-    return bayer(x + v, y) < 0.12 ? idx('bone', 2) : idx('bone', 3);
+    if (n < 0.05) return idx('stone', 2);
+    return bayer(x + v, y) < 0.18 ? idx('stone', 3) : idx('bone', 3);
   },
   flagstone: (x, y, v) => {
     if (y % 8 === 7 || x % 8 === 7) return idx('night', 3);

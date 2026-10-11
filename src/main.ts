@@ -159,6 +159,10 @@ async function boot(): Promise<void> {
 
   // Visual QA (?qa in the URL): jump to any scene, time or screen without walking there.
   if (/[?&]qa\b/.test(location.search)) {
+    const qaFF = (blocks: number) => {
+      save.data = { ...save.data, sim: debugFastForward(save.data.sim, blocks, Date.now()), seenBlock: save.data.sim.block + blocks };
+      clockCheckAt = 0;
+    };
     (window as unknown as { qa: unknown }).qa = {
       game,
       scenes: SCENES,
@@ -167,10 +171,7 @@ async function boot(): Promise<void> {
         if (!(scenes.top instanceof WorldScene)) scenes.replace(new WorldScene(game), false);
         (scenes.top as WorldScene).teleport(id, x, y, face);
       },
-      ff(blocks: number) {
-        save.data = { ...save.data, sim: debugFastForward(save.data.sim, blocks, Date.now()), seenBlock: save.data.sim.block + blocks };
-        clockCheckAt = 0;
-      },
+      ff: qaFF,
       patch(fn: (s: SimState) => void) {
         const s = structuredClone(save.data.sim);
         fn(s);
@@ -180,6 +181,10 @@ async function boot(): Promise<void> {
       player: () => (scenes.top instanceof WorldScene ? scenes.top.where() : null),
       /** The 256x224 frame as a PNG data URL (after the next present). */
       frame: () => display.fb.toDataURL('image/png'),
+      /** Fast-forward block by block until the given block of the day (0 dawn .. 5 night). */
+      at(bod: number) {
+        for (let i = 0; i < 7 && save.data.sim.block % 6 !== bod; i++) qaFF(1);
+      },
       tutorialDone() {
         save.data = { ...save.data, tutorial: 99 };
       },

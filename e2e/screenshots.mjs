@@ -36,7 +36,7 @@ const SHOTS = [
   ['manor', (q) => q.world('manor', 228, 72, 'up')],
   ['town', (q) => { q.patch((s) => { s.station.residence = 'town'; }); q.world('town', 256, 90); }],
   ['camp', (q) => { q.patch((s) => { s.station.residence = 'camp'; }); q.world('camp', 240, 104, 'up'); }],
-  ['camp-night', (q) => { q.ff(((5 - (q.game.sim().block % 6) + 6) % 6) + 1); q.world('camp', 240, 104, 'up'); }],
+  ['camp-night', (q) => { q.at(5); q.world('camp', 240, 104, 'up'); }],
   ['menu-action', (q) => { q.patch((s) => { s.station.residence = 'village'; }); q.world('cottage', 60, 0); q.push('menu'); }],
   ['menu-status', (q) => q.push('status')],
   ['menu-settings', (q) => q.push('settings')],
@@ -45,17 +45,17 @@ const SHOTS = [
   ['menu-working', (q) => { q.world('fields', 250, 40); q.push('working'); }],
   ['menu-log', (q) => q.push('log')],
   ['gallery', (q) => q.push('gallery')],
-  ['midday-green', (q) => { q.ff(((2 - (q.game.sim().block % 6) + 6) % 6) + 1); q.world('green', 140, 80); }],
+  ['midday-green', (q) => { q.at(2); q.world('green', 140, 80); }],
   ['midday-fields', (q) => q.world('fields', 250, 72)],
   ['midday-woods', (q) => q.world('woods', 220, 100, 'up')],
   ['midday-churchyard', (q) => q.world('churchyard', 101, 70, 'up')],
   ['midday-manor', (q) => q.world('manor', 228, 72, 'up')],
   ['midday-cottage', (q) => q.world('cottage', 200, 0)],
-  ['dusk-green', (q) => { q.ff(2); q.world('green', 60, 66); }],
-  ['night-green', (q) => { q.ff(1); q.world('green', 60, 66); }],
+  ['dusk-green', (q) => { q.at(4); q.world('green', 60, 66); }],
+  ['night-green', (q) => { q.at(5); q.world('green', 60, 66); }],
   ['night-cottage', (q) => q.world('cottage', 120, 0)],
   ['night-woods', (q) => q.world('woods', 200, 120)],
-  ['winter-green', (q) => { q.ff(6 * 285 + ((2 - ((q.game.sim().block + 6 * 285) % 6) + 6) % 6)); q.world('green', 200, 90); }],
+  ['winter-green', (q) => { q.ff(6 * 285); q.at(2); q.world('green', 200, 90); }],
   ['winter-fields', (q) => q.world('fields', 250, 72)],
 ];
 
@@ -94,7 +94,8 @@ for (const vp of VIEWPORTS) {
   }
   await page.screenshot({ path: `${dir}shell-world.png` });
   const scale = await page.evaluate(() => document.body.dataset.scale);
-  const box = await page.evaluate(() => { const r = document.getElementById('screen').getBoundingClientRect(); return [r.width, r.height]; });
+  const box = await page.evaluate(() => { const r = document.getElementById('screen').getBoundingClientRect(); return [r.width, r.height, r.left, r.top]; });
+  writeFileSync(`${dir}canvas.json`, JSON.stringify({ dpr: vp.dpr, scale: Number(scale), left: box[2], top: box[3], width: box[0], height: box[1] }));
   log.push(`${vp.name}: scale ${scale} (${box[0].toFixed(1)}x${box[1].toFixed(1)} CSS px)${errors.length ? ` ERRORS ${errors.join(' | ')}` : ''}`);
   await ctx.close();
 }

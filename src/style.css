@@ -76,7 +76,16 @@ body {
   box-shadow: 0 0 0 1px #5c1a1a;
 }
 
+/* Sized for layout only; the canvas inside is placed by a transform so no CSS rounding touches it. */
+#screenbox {
+  position: relative;
+  flex: 0 0 auto;
+}
 #screen {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
   display: block;
   image-rendering: pixelated;
   image-rendering: crisp-edges;

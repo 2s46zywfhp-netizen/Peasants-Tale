@@ -48,14 +48,23 @@ export class Screen {
     const d = this.display;
     if (d.width !== s.backW) d.width = s.backW;
     if (d.height !== s.backH) d.height = s.backH;
-    d.style.width = `${s.cssW}px`;
-    d.style.height = `${s.cssH}px`;
-    // Snap the canvas onto the device-pixel grid so the compositor copies it 1:1.
-    d.style.transform = '';
+    // CSS lengths are rounded (to 1/64 px), so backing / dpr (e.g. 1024 / 3) cannot be set exactly as a
+    // width: the compositor would resample by a hair and blur rows. Instead the canvas is laid out at its
+    // full backing size in CSS px and scaled by 1/dpr with a transform (transforms are not rounded), so each
+    // backing pixel lands on exactly one device pixel. A box around it takes the space in the layout.
+    const box = d.parentElement;
+    if (box) {
+      box.style.width = `${s.cssW}px`;
+      box.style.height = `${s.cssH}px`;
+    }
+    d.style.width = `${s.backW}px`;
+    d.style.height = `${s.backH}px`;
+    // Snap onto the device-pixel grid too: measure where the scaled canvas really lands, then nudge it.
+    d.style.transform = `scale(${1 / dpr})`;
     const r = d.getBoundingClientRect();
     const fx = r.left * dpr - Math.round(r.left * dpr);
     const fy = r.top * dpr - Math.round(r.top * dpr);
-    if (fx || fy) d.style.transform = `translate(${-fx / dpr}px, ${-fy / dpr}px)`;
+    if (fx || fy) d.style.transform = `translate(${-fx / dpr}px, ${-fy / dpr}px) scale(${1 / dpr})`;
     this.out = d.getContext('2d', { alpha: false })!;
   }
 

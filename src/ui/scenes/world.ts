@@ -865,7 +865,11 @@ export class WorldScene implements Scene {
   }
 
   draw(now: number): void {
+    // Under a menu or a page, the world keeps still and says nothing.
+    const prompt = this.view.prompt;
+    if (this.game.scenes.top !== this) this.view.prompt = '';
     drawWorld(this.game.sim(), this.view, now, this.game.now);
+    this.view.prompt = prompt;
     this.drawHint();
     if (this.wipeT >= 0) wipe((this.wipeT / WIPE_MS) * 2);
   }
