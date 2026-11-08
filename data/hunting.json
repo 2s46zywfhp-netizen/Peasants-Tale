@@ -1,0 +1,1884 @@
+{
+ "dataset": "hunting",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Hunting, fishing, trapping, game processing, defence and reloading options for Northern Ontario. utility = survival usefulness 0–10 in this region. legal.status is the possession class: legal (no licence), pal, rpal, prohibited, or licence-to-use. legal.useLicence = licence needed to hunt/fish/trap with it. Canadian firearm classes change by Order in Council: lastVerified is blank until YOU check each entry against the RCMP Firearms Reference Table and current Ontario regulations.",
+ "records": [
+  {
+   "id": "rf-22lr-bolt",
+   "category": "firearm",
+   "name": "Bolt-action .22 LR rifle (e.g. CZ 457, Savage Mark II)",
+   "roles": [
+    "small-game",
+    "trapline",
+    "multi-role"
+   ],
+   "utility": 9,
+   "description": "The most useful survival gun for grouse, hare, squirrel and dispatching trapped animals. Quiet, cheap ammo, light.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": "Must not be used on big game."
+   },
+   "cartridge": ".22 LR",
+   "effectiveRangeM": 75,
+   "ammoAvailability": 5,
+   "weightKg": 2.7,
+   "coldReliability": 4,
+   "coldNote": "Rimfire can misfire more in deep cold; bolt actions shrug off thickened lube.",
+   "maintenance": "Low. Clean every few hundred rounds."
+  },
+  {
+   "id": "rf-22lr-semi",
+   "category": "firearm",
+   "name": "Semi-auto .22 LR rifle (e.g. Ruger 10/22)",
+   "roles": [
+    "small-game",
+    "trapline",
+    "multi-role"
+   ],
+   "utility": 8,
+   "description": "Fast follow-up shots, huge parts support.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".22 LR",
+   "effectiveRangeM": 75,
+   "ammoAvailability": 5,
+   "weightKg": 2.3,
+   "coldReliability": 3,
+   "coldNote": "Use lithium/dry lube below −20 °C or it can short-cycle.",
+   "maintenance": "Moderate: rimfire fouling builds up."
+  },
+  {
+   "id": "rf-22wmr",
+   "category": "firearm",
+   "name": "Bolt-action .22 WMR / .17 HMR rifle",
+   "roles": [
+    "small-game",
+    "predator-defence"
+   ],
+   "utility": 6,
+   "description": "More reach for fox, coyote, beaver. Ammo pricier and scarcer.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".22 WMR / .17 HMR",
+   "effectiveRangeM": 125,
+   "ammoAvailability": 3,
+   "weightKg": 2.8,
+   "coldReliability": 4,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "sg-12-pump",
+   "category": "firearm",
+   "name": "12-gauge pump shotgun (e.g. Remington 870, Mossberg 500)",
+   "roles": [
+    "bird",
+    "small-game",
+    "big-game",
+    "predator-defence",
+    "multi-role"
+   ],
+   "utility": 10,
+   "description": "Most versatile single gun: birdshot for grouse/ducks, slugs for moose at short range and bears, buckshot for defence. Ammo everywhere in the north.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": "Long guns with barrels under 457 mm (18 in) or overall under 660 mm are restricted or prohibited."
+   },
+   "cartridge": "12 ga",
+   "effectiveRangeM": 50,
+   "ammoAvailability": 5,
+   "weightKg": 3.4,
+   "coldReliability": 5,
+   "coldNote": "Very reliable in cold if kept nearly dry of oil.",
+   "maintenance": "Low."
+  },
+  {
+   "id": "sg-12-single",
+   "category": "firearm",
+   "name": "12-gauge single-shot break-action",
+   "roles": [
+    "bird",
+    "small-game",
+    "trapline"
+   ],
+   "utility": 7,
+   "description": "Cheap, simple, light. One shot.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": "12 ga",
+   "effectiveRangeM": 40,
+   "ammoAvailability": 5,
+   "weightKg": 2.7,
+   "coldReliability": 5,
+   "coldNote": "Almost nothing to freeze.",
+   "maintenance": "Very low."
+  },
+  {
+   "id": "sg-12-semi",
+   "category": "firearm",
+   "name": "12-gauge semi-auto hunting shotgun (e.g. Beretta A300, Benelli Montefeltro)",
+   "roles": [
+    "bird",
+    "multi-role"
+   ],
+   "utility": 8,
+   "description": "Softer recoil, fast follow-ups for waterfowl.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": "Some semi-auto shotgun models were named in prohibition orders — check the exact model in the FRT."
+   },
+   "cartridge": "12 ga",
+   "effectiveRangeM": 50,
+   "ammoAvailability": 5,
+   "weightKg": 3.3,
+   "coldReliability": 3,
+   "coldNote": "Gas/inertia systems can stiffen in deep cold: clean and run dry.",
+   "maintenance": "Moderate."
+  },
+  {
+   "id": "sg-20",
+   "category": "firearm",
+   "name": "20-gauge pump or single-shot",
+   "roles": [
+    "bird",
+    "small-game"
+   ],
+   "utility": 7,
+   "description": "Lighter, good for smaller shooters. Ammo less common than 12 ga.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": "20 ga",
+   "effectiveRangeM": 40,
+   "ammoAvailability": 4,
+   "weightKg": 2.9,
+   "coldReliability": 5,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "sg-410-combo",
+   "category": "firearm",
+   "name": "Combination gun: .22 LR over 20 ga or .410 (e.g. Savage 42, Chiappa)",
+   "roles": [
+    "small-game",
+    "bird",
+    "trapline",
+    "multi-role"
+   ],
+   "utility": 8,
+   "description": "Classic trapline/bush gun: rimfire for small game, shotgun for flying birds.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".22 LR + 20 ga/.410",
+   "effectiveRangeM": 50,
+   "ammoAvailability": 4,
+   "weightKg": 2.7,
+   "coldReliability": 5,
+   "coldNote": "Break-action, very simple.",
+   "maintenance": "Low."
+  },
+  {
+   "id": "combo-centrefire",
+   "category": "firearm",
+   "name": "Rifle/shotgun combination (e.g. 12 ga over .308 or .223)",
+   "roles": [
+    "big-game",
+    "bird",
+    "multi-role"
+   ],
+   "utility": 7,
+   "description": "One gun for birds and big game. Heavy, rare, costly.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".308 + 12 ga",
+   "effectiveRangeM": 150,
+   "ammoAvailability": 4,
+   "weightKg": 3.6,
+   "coldReliability": 4,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "cf-308-bolt",
+   "category": "firearm",
+   "name": "Bolt-action .308 Win rifle",
+   "roles": [
+    "big-game",
+    "predator-defence",
+    "multi-role"
+   ],
+   "utility": 9,
+   "description": "Enough for moose with good bullets; short action, common ammo.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".308 Win",
+   "effectiveRangeM": 300,
+   "ammoAvailability": 5,
+   "weightKg": 3.6,
+   "coldReliability": 5,
+   "coldNote": "Bolt actions are the most cold-reliable.",
+   "maintenance": "Low."
+  },
+  {
+   "id": "cf-3006-bolt",
+   "category": "firearm",
+   "name": "Bolt-action .30-06 rifle",
+   "roles": [
+    "big-game",
+    "predator-defence",
+    "multi-role"
+   ],
+   "utility": 9,
+   "description": "Classic moose and bear cartridge; very common in Northern Ontario stores.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".30-06",
+   "effectiveRangeM": 300,
+   "ammoAvailability": 5,
+   "weightKg": 3.7,
+   "coldReliability": 5,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "cf-270-bolt",
+   "category": "firearm",
+   "name": "Bolt-action .270 Win rifle",
+   "roles": [
+    "big-game"
+   ],
+   "utility": 7,
+   "description": "Flat-shooting deer/moose cartridge. Lighter bullets than .30 cals.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".270 Win",
+   "effectiveRangeM": 300,
+   "ammoAvailability": 4,
+   "weightKg": 3.5,
+   "coldReliability": 5,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "cf-300wm",
+   "category": "firearm",
+   "name": "Bolt-action .300 Win Mag rifle",
+   "roles": [
+    "big-game"
+   ],
+   "utility": 6,
+   "description": "Long-range moose. Heavy recoil, expensive ammo.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".300 Win Mag",
+   "effectiveRangeM": 400,
+   "ammoAvailability": 3,
+   "weightKg": 3.9,
+   "coldReliability": 5,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "cf-303",
+   "category": "firearm",
+   "name": "Lee-Enfield .303 British",
+   "roles": [
+    "big-game",
+    "multi-role"
+   ],
+   "utility": 6,
+   "description": "Rugged surplus military rifle, historically common in the north. Ammo less common now.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".303 British",
+   "effectiveRangeM": 300,
+   "ammoAvailability": 3,
+   "weightKg": 4.1,
+   "coldReliability": 5,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "cf-3030-lever",
+   "category": "firearm",
+   "name": "Lever-action .30-30 Win (e.g. Marlin 336, Winchester 94)",
+   "roles": [
+    "big-game",
+    "predator-defence",
+    "multi-role"
+   ],
+   "utility": 8,
+   "description": "Handy bush rifle for deer, black bear, moose inside 150 m. Ammo stocked everywhere.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".30-30 Win",
+   "effectiveRangeM": 150,
+   "ammoAvailability": 5,
+   "weightKg": 3.2,
+   "coldReliability": 4,
+   "coldNote": "Keep the action clean of thick grease.",
+   "maintenance": "Low."
+  },
+  {
+   "id": "cf-4570-lever",
+   "category": "firearm",
+   "name": "Lever-action .45-70 Govt",
+   "roles": [
+    "big-game",
+    "predator-defence"
+   ],
+   "utility": 6,
+   "description": "Heavy bullet for bear defence and moose at short range.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".45-70",
+   "effectiveRangeM": 120,
+   "ammoAvailability": 3,
+   "weightKg": 3.4,
+   "coldReliability": 4,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "cf-357-lever",
+   "category": "firearm",
+   "name": "Lever-action .357/.44 Magnum carbine",
+   "roles": [
+    "big-game",
+    "small-game",
+    "predator-defence"
+   ],
+   "utility": 6,
+   "description": "Light and handy; deer-capable at short range. Shares ammo with revolvers.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".357 / .44 Mag",
+   "effectiveRangeM": 100,
+   "ammoAvailability": 3,
+   "weightKg": 2.9,
+   "coldReliability": 4,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "cf-sks",
+   "category": "firearm",
+   "name": "SKS (7.62×39)",
+   "roles": [
+    "big-game",
+    "predator-defence",
+    "multi-role"
+   ],
+   "utility": 7,
+   "description": "Robust semi-auto, cheap surplus. Ammo moderately available.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": "Its status has been debated in Parliament and could change: check the FRT before buying."
+   },
+   "cartridge": "7.62×39",
+   "effectiveRangeM": 200,
+   "ammoAvailability": 3,
+   "weightKg": 3.9,
+   "coldReliability": 4,
+   "coldNote": "Clean preservative out of the firing pin channel or it can slam-fire.",
+   "maintenance": "Low."
+  },
+  {
+   "id": "cf-semi-hunting",
+   "category": "firearm",
+   "name": "Semi-auto hunting rifle, non-restricted (e.g. Browning BAR in .308/.30-06)",
+   "roles": [
+    "big-game",
+    "predator-defence"
+   ],
+   "utility": 7,
+   "description": "Fast follow-ups on moose or bear.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": "Check each model in the Firearms Reference Table: many semi-autos were reclassified in 2020 and 2024."
+   },
+   "cartridge": ".308 / .30-06",
+   "effectiveRangeM": 300,
+   "ammoAvailability": 5,
+   "weightKg": 3.4,
+   "coldReliability": 3,
+   "coldNote": "Gas systems need care in cold.",
+   "maintenance": "Moderate."
+  },
+  {
+   "id": "cf-muzzle-percussion",
+   "category": "firearm",
+   "name": "Muzzleloader, percussion/inline .50",
+   "roles": [
+    "big-game"
+   ],
+   "utility": 5,
+   "description": "Powder, ball and caps are easy to store. Special hunting seasons.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".50 ball/conical",
+   "effectiveRangeM": 100,
+   "ammoAvailability": 3,
+   "weightKg": 3.5,
+   "coldReliability": 3,
+   "coldNote": "Damp powder = misfire. Keep caps dry.",
+   "maintenance": "High: clean after every shoot (corrosive)."
+  },
+  {
+   "id": "cf-flintlock",
+   "category": "firearm",
+   "name": "Flintlock muzzleloader (replica)",
+   "roles": [
+    "big-game",
+    "small-game"
+   ],
+   "utility": 4,
+   "description": "Needs only flint, black powder and lead. Slow, weather-sensitive.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Flintlock, wheel-lock and matchlock replicas are usually 'antique firearms' (no licence to possess), but still need safe storage and a hunting licence to hunt.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": "Antique status depends on the exact design. Verify."
+   },
+   "cartridge": ".50/.54 ball",
+   "effectiveRangeM": 75,
+   "ammoAvailability": 2,
+   "weightKg": 3.6,
+   "coldReliability": 2,
+   "coldNote": "Damp kills it.",
+   "maintenance": "High."
+  },
+  {
+   "id": "af-ar15",
+   "category": "firearm",
+   "name": "AR-15 platform rifle (.223/5.56)",
+   "roles": [
+    "predator-defence",
+    "multi-role"
+   ],
+   "utility": 7,
+   "description": "Light, accurate, modular. Named in the May 2020 prohibition order.",
+   "legal": {
+    "status": "prohibited",
+    "acquirableNow": false,
+    "useLicence": null,
+    "consequence": "Prohibited: possession by anyone not grandfathered or covered by an amnesty/compensation program is a criminal offence (Criminal Code s. 91/92/95), with possible prison and lifetime firearms prohibition. PAL revoked.",
+    "sources": [
+     "rcmp-cfp"
+    ],
+    "lastVerified": "",
+    "note": "Prohibited by Order in Council (May 2020). Amnesty and compensation program terms have changed several times."
+   },
+   "cartridge": ".223 / 5.56",
+   "effectiveRangeM": 400,
+   "ammoAvailability": 4,
+   "weightKg": 3.0,
+   "coldReliability": 3,
+   "coldNote": "Direct-impingement needs lube even in cold.",
+   "maintenance": "Moderate."
+  },
+  {
+   "id": "af-mini14",
+   "category": "firearm",
+   "name": "Ruger Mini-14 (.223)",
+   "roles": [
+    "predator-defence",
+    "multi-role"
+   ],
+   "utility": 7,
+   "description": "Ranch rifle, reliable. Named in the May 2020 prohibition order.",
+   "legal": {
+    "status": "prohibited",
+    "acquirableNow": false,
+    "useLicence": null,
+    "consequence": "Prohibited: possession by anyone not grandfathered or covered by an amnesty/compensation program is a criminal offence (Criminal Code s. 91/92/95), with possible prison and lifetime firearms prohibition. PAL revoked.",
+    "sources": [
+     "rcmp-cfp"
+    ],
+    "lastVerified": "",
+    "note": "Prohibited by Order in Council (May 2020)."
+   },
+   "cartridge": ".223",
+   "effectiveRangeM": 300,
+   "ammoAvailability": 4,
+   "weightKg": 3.2,
+   "coldReliability": 4,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "af-50bmg",
+   "category": "firearm",
+   "name": "Rifles over 10,000 J muzzle energy or 20 mm+ bore (e.g. .50 BMG)",
+   "roles": [
+    "big-game"
+   ],
+   "utility": 2,
+   "description": "Huge, heavy, ammo scarce. Low survival value.",
+   "legal": {
+    "status": "prohibited",
+    "acquirableNow": false,
+    "useLicence": null,
+    "consequence": "Prohibited: possession by anyone not grandfathered or covered by an amnesty/compensation program is a criminal offence (Criminal Code s. 91/92/95), with possible prison and lifetime firearms prohibition. PAL revoked.",
+    "sources": [
+     "rcmp-cfp"
+    ],
+    "lastVerified": "",
+    "note": "Prohibited class since May 2020."
+   },
+   "cartridge": ".50 BMG",
+   "effectiveRangeM": 1000,
+   "ammoAvailability": 1,
+   "weightKg": 13,
+   "coldReliability": 4,
+   "coldNote": "",
+   "maintenance": "Moderate."
+  },
+  {
+   "id": "hg-9mm",
+   "category": "firearm",
+   "name": "Semi-auto 9 mm handgun (barrel over 105 mm)",
+   "roles": [
+    "predator-defence"
+   ],
+   "utility": 4,
+   "description": "Limited role in the bush: low power for bears, legal carry needs a rare wilderness Authorization to Carry.",
+   "legal": {
+    "status": "rpal",
+    "acquirableNow": false,
+    "useLicence": null,
+    "consequence": "Restricted: requires RPAL, registration, Authorization to Transport. National handgun freeze (Oct 2022) blocks most new purchases and transfers. Unlicensed possession = Criminal Code offence.",
+    "sources": [
+     "rcmp-cfp"
+    ],
+    "lastVerified": "",
+    "note": "Handgun transfer freeze since Oct 21, 2022."
+   },
+   "cartridge": "9 mm",
+   "effectiveRangeM": 25,
+   "ammoAvailability": 4,
+   "weightKg": 0.8,
+   "coldReliability": 3,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "hg-revolver",
+   "category": "firearm",
+   "name": "Magnum revolver .357/.44 (barrel over 105 mm)",
+   "roles": [
+    "predator-defence",
+    "trapline"
+   ],
+   "utility": 5,
+   "description": "Trapline bear gun where an Authorization to Carry is held.",
+   "legal": {
+    "status": "rpal",
+    "acquirableNow": false,
+    "useLicence": null,
+    "consequence": "Restricted: requires RPAL, registration, Authorization to Transport. National handgun freeze (Oct 2022) blocks most new purchases and transfers. Unlicensed possession = Criminal Code offence.",
+    "sources": [
+     "rcmp-cfp"
+    ],
+    "lastVerified": "",
+    "note": "Handgun transfer freeze since Oct 21, 2022."
+   },
+   "cartridge": ".357 / .44 Mag",
+   "effectiveRangeM": 25,
+   "ammoAvailability": 3,
+   "weightKg": 1.2,
+   "coldReliability": 4,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "hg-short",
+   "category": "firearm",
+   "name": "Handguns with barrel 105 mm or less, or .25/.32 calibre",
+   "roles": [
+    "predator-defence"
+   ],
+   "utility": 3,
+   "description": "Concealable handguns. Prohibited except for grandfathered owners.",
+   "legal": {
+    "status": "prohibited",
+    "acquirableNow": false,
+    "useLicence": null,
+    "consequence": "Prohibited: possession by anyone not grandfathered or covered by an amnesty/compensation program is a criminal offence (Criminal Code s. 91/92/95), with possible prison and lifetime firearms prohibition. PAL revoked.",
+    "sources": [
+     "rcmp-cfp"
+    ],
+    "lastVerified": "",
+    "note": "Prohibited class (Criminal Code 12(6.1)). Grandfathered owners only."
+   },
+   "cartridge": "various",
+   "effectiveRangeM": 15,
+   "ammoAvailability": 3,
+   "weightKg": 0.6,
+   "coldReliability": 3,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "air-low",
+   "category": "airgun",
+   "name": "Air rifle under 152 m/s (500 fps) or under 5.7 J",
+   "roles": [
+    "small-game"
+   ],
+   "utility": 4,
+   "description": "Pellet rifle for squirrels and pests. Very quiet.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "No licence to possess (must be 18+ to buy). Treated as a firearm under the Criminal Code if used in a crime.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": "Using air guns for hunting in Ontario is restricted. Check the regulations."
+   },
+   "cartridge": ".177 / .22 pellet",
+   "effectiveRangeM": 25,
+   "ammoAvailability": 4,
+   "weightKg": 3.0,
+   "coldReliability": 2,
+   "coldNote": "Springs and seals stiffen in cold; CO2 fails in cold.",
+   "maintenance": "Low."
+  },
+  {
+   "id": "air-high",
+   "category": "airgun",
+   "name": "Air rifle over 152 m/s and over 5.7 J (e.g. .25 PCP)",
+   "roles": [
+    "small-game"
+   ],
+   "utility": 5,
+   "description": "Powerful pellet rifle; needs a pump or tank to refill.",
+   "legal": {
+    "status": "pal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Possession without a valid PAL is a Criminal Code offence. Unsafe storage/transport is also an offence.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "cartridge": ".22/.25 pellet",
+   "effectiveRangeM": 50,
+   "ammoAvailability": 4,
+   "weightKg": 3.5,
+   "coldReliability": 2,
+   "coldNote": "PCP seals can leak in cold.",
+   "maintenance": "Moderate."
+  },
+  {
+   "id": "bow-compound",
+   "category": "archery",
+   "name": "Compound bow (50–70 lb)",
+   "roles": [
+    "big-game",
+    "small-game"
+   ],
+   "utility": 7,
+   "description": "Silent; arrows reusable. Takes lots of practice.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "No licence to own. Hunting licence (and bow season rules) to hunt.",
+    "sources": [
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "effectiveRangeM": 40,
+   "weightKg": 2.0,
+   "coldReliability": 4,
+   "coldNote": "Strings and cams can be stiff in deep cold.",
+   "maintenance": "Moderate: string and cable replacement."
+  },
+  {
+   "id": "bow-recurve",
+   "category": "archery",
+   "name": "Recurve or longbow (45–60 lb)",
+   "roles": [
+    "big-game",
+    "small-game"
+   ],
+   "utility": 6,
+   "description": "Simplest, repairable, can make arrows in the field.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "No licence to own. Hunting licence to hunt.",
+    "sources": [
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "effectiveRangeM": 25,
+   "weightKg": 1.2,
+   "coldReliability": 4,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "crossbow",
+   "category": "archery",
+   "name": "Crossbow (standard, over 500 mm, two-handed)",
+   "roles": [
+    "big-game",
+    "small-game"
+   ],
+   "utility": 7,
+   "description": "Easier to learn than a bow. Slow to reload.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "No licence to own. Hunting licence to hunt; crossbows are allowed in Ontario bow seasons.",
+    "sources": [
+     "rcmp-cfp",
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "effectiveRangeM": 40,
+   "weightKg": 3.5,
+   "coldReliability": 3,
+   "coldNote": "Lubricate rail lightly; strings stiffen.",
+   "maintenance": "Moderate."
+  },
+  {
+   "id": "crossbow-prohibited",
+   "category": "archery",
+   "name": "Crossbow 500 mm or shorter, or designed to fire with one hand",
+   "roles": [
+    "predator-defence"
+   ],
+   "utility": 3,
+   "description": "Pistol crossbows: little survival value.",
+   "legal": {
+    "status": "prohibited",
+    "acquirableNow": false,
+    "useLicence": null,
+    "consequence": "Prohibited weapon: possession is a Criminal Code offence.",
+    "sources": [
+     "rcmp-cfp"
+    ],
+    "lastVerified": "",
+    "note": "Prohibited weapon (Criminal Code regulations)."
+   },
+   "effectiveRangeM": 15,
+   "weightKg": 1.0,
+   "coldReliability": 3,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "slingshot",
+   "category": "archery",
+   "name": "Slingshot with steel shot",
+   "roles": [
+    "small-game"
+   ],
+   "utility": 3,
+   "description": "Light and cheap; hard to be accurate.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal to own. Not a permitted hunting method in Ontario (verify).",
+    "sources": [
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": "Not listed as a legal small-game hunting method."
+   },
+   "effectiveRangeM": 15,
+   "weightKg": 0.3,
+   "coldReliability": 3,
+   "coldNote": "Rubber bands go brittle in cold: carry spares.",
+   "maintenance": "Low."
+  },
+  {
+   "id": "snare-hare",
+   "category": "trapping",
+   "name": "Hare snares (20–22 gauge brass/steel wire)",
+   "roles": [
+    "small-game",
+    "trapline"
+   ],
+   "utility": 9,
+   "description": "Highest calorie return for effort in winter. Set on runs, 10 cm off the snow.",
+   "legal": {
+    "status": "licence-to-use",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Snaring hare needs a small game licence and is limited to north of the French and Mattawa rivers. Other snaring needs a trapping licence.",
+    "sources": [
+     "on-hunting-regs",
+     "on-trapping"
+    ],
+    "lastVerified": "",
+    "note": "Snares must be checked regularly."
+   },
+   "weightKg": 0.02,
+   "coldReliability": 5,
+   "coldNote": "",
+   "maintenance": "Replace kinked wire.",
+   "sustainability": "Hare populations cycle every ~10 years. Ease off in crash years, or you will clean out survivors."
+  },
+  {
+   "id": "conibear-110",
+   "category": "trapping",
+   "name": "Body-grip trap 110/120 (muskrat, mink, marten)",
+   "roles": [
+    "trapline"
+   ],
+   "utility": 7,
+   "description": "Muskrat: set in runs and push-ups. Marten: elevated box set.",
+   "legal": {
+    "status": "licence-to-use",
+    "acquirableNow": true,
+    "useLicence": "trapping",
+    "consequence": "Trapping licence required (Ontario trapper education + registered trapline or landowner permission). Must be a certified humane trap.",
+    "sources": [
+     "on-trapping"
+    ],
+    "lastVerified": "",
+    "note": "Body-grip traps can catch pets: place carefully."
+   },
+   "weightKg": 0.3,
+   "coldReliability": 4,
+   "coldNote": "Can freeze open/shut: wax and keep dry.",
+   "maintenance": "Wax and dye yearly.",
+   "sustainability": "Muskrat breed fast; marten are slow. Rotate areas."
+  },
+  {
+   "id": "conibear-330",
+   "category": "trapping",
+   "name": "Body-grip trap 330 (beaver)",
+   "roles": [
+    "trapline"
+   ],
+   "utility": 7,
+   "description": "Beaver: set in channels or at castor mounds. A large beaver is 10+ kg of fatty meat.",
+   "legal": {
+    "status": "licence-to-use",
+    "acquirableNow": true,
+    "useLicence": "trapping",
+    "consequence": "Trapping licence required. Certified trap rules apply.",
+    "sources": [
+     "on-trapping"
+    ],
+    "lastVerified": "",
+    "note": "Dangerous to set: use setting tongs."
+   },
+   "weightKg": 1.8,
+   "coldReliability": 4,
+   "coldNote": "Under-ice sets work all winter.",
+   "maintenance": "Wax and dye yearly.",
+   "sustainability": "Take no more than about 1–2 beaver per colony per year so the colony survives."
+  },
+  {
+   "id": "foothold",
+   "category": "trapping",
+   "name": "Foothold traps #1.5–#3 (fox, coyote, wolf)",
+   "roles": [
+    "trapline",
+    "predator-defence"
+   ],
+   "utility": 5,
+   "description": "For predators and furbearers. Fur has value; meat less so.",
+   "legal": {
+    "status": "licence-to-use",
+    "acquirableNow": true,
+    "useLicence": "trapping",
+    "consequence": "Trapping licence required; restrictions on jaw types and sizes.",
+    "sources": [
+     "on-trapping"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "weightKg": 1.0,
+   "coldReliability": 3,
+   "coldNote": "Freezes in snow and rain; bed carefully.",
+   "maintenance": "Moderate."
+  },
+  {
+   "id": "trap-cage",
+   "category": "trapping",
+   "name": "Box/cage live traps",
+   "roles": [
+    "small-game"
+   ],
+   "utility": 5,
+   "description": "Catch and release non-targets. Good near home.",
+   "legal": {
+    "status": "licence-to-use",
+    "acquirableNow": true,
+    "useLicence": "hunting",
+    "consequence": "Small game licence covers hares in box/cage traps; other species need the right licence.",
+    "sources": [
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "weightKg": 3.0,
+   "coldReliability": 4,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "trap-kit",
+   "category": "trapping",
+   "name": "Trapping kit: setting tongs, stakes, wire, gloves, lure, stretchers",
+   "roles": [
+    "trapline"
+   ],
+   "utility": 6,
+   "description": "Support gear for a trapline.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal to own.",
+    "sources": [
+     "on-trapping"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "weightKg": 5.0
+  },
+  {
+   "id": "fish-rod",
+   "category": "fishing",
+   "name": "Spinning rod + reel, line, hooks, spoons, jigs",
+   "roles": [
+    "fish"
+   ],
+   "utility": 9,
+   "description": "Pike, walleye, perch, trout in nearly every Shield lake.",
+   "legal": {
+    "status": "licence-to-use",
+    "acquirableNow": true,
+    "useLicence": "fishing",
+    "consequence": "Ontario Outdoors Card + fishing licence. Seasons, limits and sanctuaries apply.",
+    "sources": [
+     "on-fishing-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "weightKg": 1.0,
+   "coldReliability": 4,
+   "coldNote": "Line goes brittle in cold.",
+   "maintenance": "Low."
+  },
+  {
+   "id": "fish-handline",
+   "category": "fishing",
+   "name": "Handlines / yo-yo reels + hook assortment",
+   "roles": [
+    "fish"
+   ],
+   "utility": 7,
+   "description": "Tiny, cheap, lasts forever.",
+   "legal": {
+    "status": "licence-to-use",
+    "acquirableNow": true,
+    "useLicence": "fishing",
+    "consequence": "Fishing licence. Line limits apply.",
+    "sources": [
+     "on-fishing-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "weightKg": 0.2,
+   "coldReliability": 5,
+   "coldNote": "",
+   "maintenance": "None."
+  },
+  {
+   "id": "fish-ice",
+   "category": "fishing",
+   "name": "Ice fishing kit: hand auger, tip-ups, jigging rod, skimmer, ice picks",
+   "roles": [
+    "fish"
+   ],
+   "utility": 9,
+   "description": "Winter protein when hunting is hard. Check ice thickness: 10 cm clear ice minimum on foot.",
+   "legal": {
+    "status": "licence-to-use",
+    "acquirableNow": true,
+    "useLicence": "fishing",
+    "consequence": "Fishing licence; number of lines limited. Some waters closed in winter.",
+    "sources": [
+     "on-fishing-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "weightKg": 6.0,
+   "coldReliability": 5,
+   "coldNote": "Hand augers always start.",
+   "maintenance": "Sharpen auger blades.",
+   "sustainability": "Lake trout grow very slowly in cold Shield lakes: a few seasons of heavy harvest can collapse a lake for decades."
+  },
+  {
+   "id": "fish-setline",
+   "category": "fishing",
+   "name": "Set lines / trotlines",
+   "roles": [
+    "fish"
+   ],
+   "utility": 6,
+   "description": "Fishes while you work.",
+   "legal": {
+    "status": "licence-to-use",
+    "acquirableNow": true,
+    "useLicence": "fishing",
+    "consequence": "Only allowed in some zones, for some species, with conditions. Illegal elsewhere: fines and gear seizure.",
+    "sources": [
+     "on-fishing-regs"
+    ],
+    "lastVerified": "",
+    "note": "Check your Fisheries Management Zone rules."
+   },
+   "weightKg": 0.5,
+   "coldReliability": 4,
+   "coldNote": "",
+   "maintenance": "Check daily."
+  },
+  {
+   "id": "fish-gillnet",
+   "category": "fishing",
+   "name": "Gill net",
+   "roles": [
+    "fish"
+   ],
+   "utility": 9,
+   "description": "Highest-yield fishing tool there is — which is why it is so tightly restricted.",
+   "legal": {
+    "status": "prohibited",
+    "acquirableNow": false,
+    "useLicence": null,
+    "consequence": "Illegal for recreational anglers in Ontario: fines, net and boat seizure. Commercial licences and Indigenous treaty rights are separate.",
+    "sources": [
+     "on-fishing-regs"
+    ],
+    "lastVerified": "",
+    "note": "Illegal recreational gear."
+   },
+   "weightKg": 2.0,
+   "coldReliability": 4,
+   "coldNote": "Ice-setting nets is slow and hard.",
+   "maintenance": "Mend holes; dry to prevent rot.",
+   "sustainability": "A gill net can empty a small lake in one season. Use large mesh only, avoid spawning areas, rotate lakes, and never leave nets unattended for days."
+  },
+  {
+   "id": "fish-dipnet",
+   "category": "fishing",
+   "name": "Dip net (smelt, baitfish)",
+   "roles": [
+    "fish"
+   ],
+   "utility": 5,
+   "description": "Spring smelt and sucker runs.",
+   "legal": {
+    "status": "licence-to-use",
+    "acquirableNow": true,
+    "useLicence": "fishing",
+    "consequence": "Fishing licence; size and season rules.",
+    "sources": [
+     "on-fishing-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "weightKg": 1.0,
+   "coldReliability": 4,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "fish-minnow-trap",
+   "category": "fishing",
+   "name": "Minnow trap",
+   "roles": [
+    "fish"
+   ],
+   "utility": 5,
+   "description": "Bait for tip-ups and set lines; emergency food.",
+   "legal": {
+    "status": "licence-to-use",
+    "acquirableNow": true,
+    "useLicence": "fishing",
+    "consequence": "Fishing licence. Bait Management Zone rules limit moving baitfish.",
+    "sources": [
+     "on-fishing-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "weightKg": 0.5,
+   "coldReliability": 5,
+   "coldNote": "",
+   "maintenance": "Low."
+  },
+  {
+   "id": "fish-weir",
+   "category": "fishing",
+   "name": "Fish trap / weir",
+   "roles": [
+    "fish"
+   ],
+   "utility": 7,
+   "description": "Passive capture in streams.",
+   "legal": {
+    "status": "prohibited",
+    "acquirableNow": false,
+    "useLicence": null,
+    "consequence": "Illegal for recreational use: fines and gear seizure.",
+    "sources": [
+     "on-fishing-regs"
+    ],
+    "lastVerified": "",
+    "note": "Illegal recreational method."
+   },
+   "coldReliability": 4,
+   "coldNote": "",
+   "maintenance": "Repairs after high water.",
+   "sustainability": "Weirs block spawning runs: never block a full stream."
+  },
+  {
+   "id": "proc-knives",
+   "category": "processing",
+   "name": "Knives: skinning, boning, caping + steel",
+   "roles": [
+    "processing"
+   ],
+   "utility": 9,
+   "description": "Core processing tools.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "proc-saw",
+   "category": "processing",
+   "name": "Bone/meat saw + hatchet",
+   "roles": [
+    "processing"
+   ],
+   "utility": 7,
+   "description": "Moose quarters need a saw.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "proc-bags",
+   "category": "processing",
+   "name": "Game bags (breathable), rope, gambrel, block and tackle",
+   "roles": [
+    "processing"
+   ],
+   "utility": 8,
+   "description": "A moose is 200+ kg of meat: you need to hang it.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "proc-grinder",
+   "category": "processing",
+   "name": "Hand meat grinder",
+   "roles": [
+    "processing"
+   ],
+   "utility": 6,
+   "description": "Sausage and burger from tough cuts.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "proc-smoker",
+   "category": "processing",
+   "name": "Smoker / smokehouse plan",
+   "roles": [
+    "processing"
+   ],
+   "utility": 7,
+   "description": "Cold-smoking + salt preserves fish and meat without power.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "proc-cure",
+   "category": "processing",
+   "name": "Curing salt (Prague #1 and #2), non-iodized salt",
+   "roles": [
+    "processing"
+   ],
+   "utility": 7,
+   "description": "Nitrite cures prevent botulism in sausages and cured meats. Measure exactly: toxic in excess.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "proc-canner",
+   "category": "processing",
+   "name": "Pressure canner (metal-to-metal seal, no gasket)",
+   "roles": [
+    "processing"
+   ],
+   "utility": 9,
+   "description": "The only safe way to can meat, fish and low-acid vegetables. Gasketless models never need parts.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "proc-jars",
+   "category": "processing",
+   "name": "Canning jars (500 mL and 1 L)",
+   "roles": [
+    "processing"
+   ],
+   "utility": 8,
+   "description": "Reusable for decades.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "proc-lids",
+   "category": "processing",
+   "name": "Canning lids (single-use) + reusable lids",
+   "roles": [
+    "processing"
+   ],
+   "utility": 8,
+   "description": "Single-use lids are the consumable that runs out. Stock several per jar, or reusable lids.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "proc-dehydrator",
+   "category": "processing",
+   "name": "Drying racks / non-electric dehydrator",
+   "roles": [
+    "processing"
+   ],
+   "utility": 6,
+   "description": "Jerky and dried fish.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "def-bear-spray",
+   "category": "defence",
+   "name": "Bear spray (Health Canada-registered)",
+   "roles": [
+    "predator-defence",
+    "security"
+   ],
+   "utility": 8,
+   "description": "Most effective bear deterrent at close range.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal for defence against animals. Carrying or using it against people makes it a prohibited weapon (Criminal Code offence).",
+    "sources": [
+     "rcmp-cfp"
+    ],
+    "lastVerified": "",
+    "note": ""
+   },
+   "effectiveRangeM": 8,
+   "weightKg": 0.5,
+   "coldReliability": 2,
+   "coldNote": "Weak spray below about −10 °C: keep it inside your jacket.",
+   "maintenance": "Replace by expiry date."
+  },
+  {
+   "id": "def-pepper",
+   "category": "defence",
+   "name": "Pepper spray for use on people",
+   "roles": [
+    "security"
+   ],
+   "utility": 2,
+   "description": "Not legal to own for human defence.",
+   "legal": {
+    "status": "prohibited",
+    "acquirableNow": false,
+    "useLicence": null,
+    "consequence": "Prohibited weapon in Canada: possession is a Criminal Code offence.",
+    "sources": [
+     "rcmp-cfp"
+    ],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "def-airhorn",
+   "category": "defence",
+   "name": "Air horn / bear bangers / flares",
+   "roles": [
+    "predator-defence",
+    "security"
+   ],
+   "utility": 5,
+   "description": "Scare off animals; signal.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal. Bear bangers are regulated pyrotechnics.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "def-dog",
+   "category": "defence",
+   "name": "Guard dog",
+   "roles": [
+    "security",
+    "predator-defence"
+   ],
+   "utility": 8,
+   "description": "Best perimeter alarm ever made; also helps hunting. Needs food and water — add it to your household pets.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal. Local animal bylaws apply.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "def-motion-light",
+   "category": "defence",
+   "name": "Solar motion lights",
+   "roles": [
+    "security"
+   ],
+   "utility": 6,
+   "description": "Lights up approaches without grid power.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "def-driveway-alarm",
+   "category": "defence",
+   "name": "Wireless driveway/perimeter alarm (battery)",
+   "roles": [
+    "security"
+   ],
+   "utility": 7,
+   "description": "Early warning on approaches and trails.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "def-door",
+   "category": "defence",
+   "name": "Door and window reinforcement (strike plates, long screws, bars)",
+   "roles": [
+    "security"
+   ],
+   "utility": 7,
+   "description": "Hardening buys time.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "def-binoculars",
+   "category": "defence",
+   "name": "Binoculars 8×42",
+   "roles": [
+    "security",
+    "big-game"
+   ],
+   "utility": 8,
+   "description": "Scouting game and watching approaches. Good glass works at dusk.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "def-scope",
+   "category": "defence",
+   "name": "Rifle scope (low-power variable, 1–6× or 3–9×)",
+   "roles": [
+    "big-game",
+    "security"
+   ],
+   "utility": 7,
+   "description": "Extends ethical range; fogs when moved from warm to cold: let it acclimatize.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "def-nv",
+   "category": "defence",
+   "name": "Night vision monocular (Gen 2/3 or digital)",
+   "roles": [
+    "security"
+   ],
+   "utility": 6,
+   "description": "Watch the perimeter at night.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal to own. Using night vision or lights to hunt is illegal in Ontario except narrow cases.",
+    "sources": [
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "def-thermal",
+   "category": "defence",
+   "name": "Thermal monocular",
+   "roles": [
+    "security"
+   ],
+   "utility": 7,
+   "description": "Spots people and animals through brush and darkness. Battery hungry in cold.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal to own. Not legal for hunting game at night in Ontario.",
+    "sources": [
+     "on-hunting-regs"
+    ],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "rl-press",
+   "category": "reloading",
+   "name": "Single-stage reloading press + dies per calibre",
+   "roles": [
+    "reloading"
+   ],
+   "utility": 6,
+   "description": "Extends ammo supply; brass can be reloaded many times.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal to own.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   },
+   "maintenance": "Low"
+  },
+  {
+   "id": "rl-tools",
+   "category": "reloading",
+   "name": "Scale, calipers, case trimmer, priming tool, tumbler, manuals",
+   "roles": [
+    "reloading"
+   ],
+   "utility": 6,
+   "description": "Follow published load data exactly.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal to own.",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "rl-powder",
+   "category": "reloading",
+   "name": "Smokeless powder",
+   "roles": [
+    "reloading"
+   ],
+   "utility": 6,
+   "description": "Shelf life 10+ years sealed, cool, dry. Discard if it smells acrid or shows red dust.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "No licence for personal quantities, but Explosives Regulations limit storage: e.g. 25 kg total propellant in a detached dwelling (max 10 kg black powder), 75 kg smokeless in a detached storage unit, less in apartments. Store away from primers.",
+    "sources": [
+     "nrcan-explosives"
+    ],
+    "lastVerified": "",
+    "note": "Check current Explosives Regulations, 2013 limits before stocking up."
+   }
+  },
+  {
+   "id": "rl-primers",
+   "category": "reloading",
+   "name": "Primers",
+   "roles": [
+    "reloading"
+   ],
+   "utility": 6,
+   "description": "The component you cannot make: stock enough for your planned reloads.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal for personal use. Store separately from powder, in original packaging, as the Explosives Regulations require.",
+    "sources": [
+     "nrcan-explosives"
+    ],
+    "lastVerified": "",
+    "note": ""
+   }
+  },
+  {
+   "id": "rl-bullets",
+   "category": "reloading",
+   "name": "Bullets / cast lead + mould, gas checks",
+   "roles": [
+    "reloading"
+   ],
+   "utility": 5,
+   "description": "Casting lets you reuse lead.",
+   "legal": {
+    "status": "legal",
+    "acquirableNow": true,
+    "useLicence": null,
+    "consequence": "Legal. Lead ammunition is banned for some hunting uses (e.g. waterfowl).",
+    "sources": [],
+    "lastVerified": "",
+    "note": ""
+   }
+  }
+ ]
+}

@@ -1,0 +1,58 @@
+{
+ "dataset": "ammo-plan",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Ammunition planning by role. Total = minimum + (roundsPerYear + practicePerYear) × years. Store in sealed ammo cans with desiccant, cool and dry. Edit to match your firearms.",
+ "records": [
+  {
+   "id": "small-game",
+   "label": "Small game (hare, grouse, squirrel)",
+   "cartridge": ".22 LR",
+   "roundsPerYear": 500,
+   "practicePerYear": 500,
+   "minimum": 1000,
+   "packSize": 500,
+   "shelfLifeYears": 10
+  },
+  {
+   "id": "big-game",
+   "label": "Big game (moose, deer, bear)",
+   "cartridge": ".308 Win / .30-06",
+   "roundsPerYear": 20,
+   "practicePerYear": 60,
+   "minimum": 100,
+   "packSize": 20,
+   "shelfLifeYears": 15
+  },
+  {
+   "id": "bird",
+   "label": "Birds (grouse, ducks, geese)",
+   "cartridge": "12 ga birdshot / non-toxic steel for waterfowl",
+   "roundsPerYear": 150,
+   "practicePerYear": 100,
+   "minimum": 250,
+   "packSize": 25,
+   "shelfLifeYears": 15
+  },
+  {
+   "id": "predator-defence",
+   "label": "Predator and defence",
+   "cartridge": "12 ga slugs + 00 buckshot",
+   "roundsPerYear": 10,
+   "practicePerYear": 100,
+   "minimum": 100,
+   "packSize": 5,
+   "shelfLifeYears": 15
+  },
+  {
+   "id": "trapline",
+   "label": "Trapline (dispatch)",
+   "cartridge": ".22 LR",
+   "roundsPerYear": 200,
+   "practicePerYear": 0,
+   "minimum": 200,
+   "packSize": 500,
+   "shelfLifeYears": 10
+  }
+ ]
+}

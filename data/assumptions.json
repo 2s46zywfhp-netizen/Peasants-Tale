@@ -1,6 +1,6 @@
 {
  "dataset": "assumptions",
- "version": "1.0.0",
+ "version": "1.1.0",
  "updated": "2026-11-08",
  "description": "Every tunable number the calculators use. Change a value here and every list updates.",
  "records": [
@@ -180,6 +180,78 @@
    "value": 3600,
    "unit": "kcal/kg",
    "note": "Dry kibble energy density."
+  },
+  {
+   "id": "rowCoverBonusDays",
+   "value": 21,
+   "unit": "days",
+   "note": "Season extension from row cover, low tunnels and wall-o-water (earlier planting + fall frost protection)."
+  },
+  {
+   "id": "hardyLeadDays",
+   "value": 21,
+   "unit": "days",
+   "note": "Hardy crops are sown this many days before last frost."
+  },
+  {
+   "id": "halfHardyLeadDays",
+   "value": 7,
+   "unit": "days",
+   "note": "Half-hardy crops are sown this many days before last frost."
+  },
+  {
+   "id": "tenderLagDays",
+   "value": 7,
+   "unit": "days",
+   "note": "Tender crops go out this many days after last frost."
+  },
+  {
+   "id": "halfHardyFallDays",
+   "value": 14,
+   "unit": "days",
+   "note": "Half-hardy crops keep growing this long after first fall frost."
+  },
+  {
+   "id": "hardyFallDays",
+   "value": 30,
+   "unit": "days",
+   "note": "Hardy crops keep growing this long after first fall frost."
+  },
+  {
+   "id": "needsHeatMinFrostFree",
+   "value": 140,
+   "unit": "days",
+   "note": "Heat-loving crops need at least this many frost-free days."
+  },
+  {
+   "id": "marginalZoneMargin",
+   "value": 0.5,
+   "unit": "zones",
+   "note": "Perennials within this many zones of their limit are marked marginal."
+  },
+  {
+   "id": "houseLossPoor",
+   "value": 2.2,
+   "unit": "W/K per m²",
+   "note": "Whole-house heat loss per m² of floor, poorly insulated."
+  },
+  {
+   "id": "houseLossAverage",
+   "value": 1.4,
+   "unit": "W/K per m²",
+   "note": "Whole-house heat loss per m² of floor, average insulation."
+  },
+  {
+   "id": "houseLossGood",
+   "value": 0.8,
+   "unit": "W/K per m²",
+   "note": "Whole-house heat loss per m² of floor, well insulated."
+  },
+  {
+   "id": "monthDays",
+   "value": 30.4,
+   "unit": "days",
+   "note": "Days per month for per-month quantities."
   }
  ]
 }

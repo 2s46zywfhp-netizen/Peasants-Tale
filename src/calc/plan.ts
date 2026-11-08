@@ -41,6 +41,7 @@ export interface Plan {
   coldLabour: boolean;
   huntingEnabled: boolean;
   collapseMode: boolean;
+  huntingRoles: string[];
 }
 
 export const DURATIONS: { id: DurationPreset; label: string; days: number }[] = [
@@ -82,6 +83,7 @@ export function defaultPlan(): Plan {
     coldLabour: false,
     huntingEnabled: false,
     collapseMode: false,
+    huntingRoles: ['small-game', 'big-game', 'bird'],
   };
 }
 

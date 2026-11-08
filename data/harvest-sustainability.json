@@ -1,0 +1,68 @@
+{
+ "dataset": "harvest-sustainability",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Harvest-sustainability notes shown in Collapse Mode. Overharvest in year one starves you in year two.",
+ "records": [
+  {
+   "id": "moose",
+   "species": "Moose",
+   "note": "Low density on the Shield (about 1 per 2–4 km²). Take bulls, leave cows and calves: one cow is the next decade's moose. One adult gives ~200 kg of meat."
+  },
+  {
+   "id": "deer",
+   "species": "White-tailed deer",
+   "note": "Scarce in the far north, common in central Ontario. Deep-snow winters kill many: hunt bucks, protect deer yards in late winter."
+  },
+  {
+   "id": "bear",
+   "species": "Black bear",
+   "note": "Valuable fat (rendered for cooking and preserving). Slow to reproduce: take few, avoid sows with cubs. Cook bear meat thoroughly (trichinosis)."
+  },
+  {
+   "id": "hare",
+   "species": "Snowshoe hare",
+   "note": "Populations boom and crash on a ~10-year cycle. In crash years, snare far less. Hare alone is too lean to live on (protein poisoning): pair with fat."
+  },
+  {
+   "id": "grouse",
+   "species": "Ruffed and spruce grouse",
+   "note": "Easy to take, easy to over-harvest near camp. Spread hunting out over a wide area."
+  },
+  {
+   "id": "beaver",
+   "species": "Beaver",
+   "note": "Fatty, high-calorie meat. Take 1–2 per colony per year at most; colonies maintain the ponds that hold fish, waterfowl and moose browse."
+  },
+  {
+   "id": "waterfowl",
+   "species": "Ducks and geese",
+   "note": "Spring and fall migrations bring surplus. Do not disturb nesting birds or take eggs from every nest."
+  },
+  {
+   "id": "walleye",
+   "species": "Walleye",
+   "note": "Spawning runs in spring are easy pickings and the worst time to harvest: protect spawning shoals."
+  },
+  {
+   "id": "lake-trout",
+   "species": "Lake trout",
+   "note": "Very slow-growing in cold Shield lakes; a few seasons of heavy fishing can collapse a lake for decades. Treat as a reserve."
+  },
+  {
+   "id": "pike",
+   "species": "Northern pike",
+   "note": "Abundant and resilient; take smaller pike and release large breeders."
+  },
+  {
+   "id": "whitefish",
+   "species": "Whitefish",
+   "note": "Fall spawners in shallows: historically netted and dried for winter. Take part of the run, not all of it."
+  },
+  {
+   "id": "brook-trout",
+   "species": "Brook trout",
+   "note": "Small streams hold few fish: easily wiped out. Rotate streams."
+  }
+ ]
+}

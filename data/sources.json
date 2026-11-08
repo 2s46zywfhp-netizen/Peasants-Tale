@@ -1,16 +1,78 @@
 {
-  "dataset": "sources",
-  "version": "1.0.0",
-  "updated": "2026-11-06",
-  "description": "Citations used by other datasets. Other files refer to these by id.",
-  "records": [
-    { "id": "nrcan-hardiness", "title": "Plant Hardiness Zones of Canada", "publisher": "Natural Resources Canada", "url": "https://planthardiness.gc.ca/", "lastVerified": "2026-11-06" },
-    { "id": "eccc-normals", "title": "Canadian Climate Normals", "publisher": "Environment and Climate Change Canada", "url": "https://climate.weather.gc.ca/climate_normals/", "lastVerified": "2026-11-06" },
-    { "id": "open-meteo-climate", "title": "Open-Meteo Climate API", "publisher": "Open-Meteo", "url": "https://open-meteo.com/en/docs/climate-api", "lastVerified": "2026-11-06" },
-    { "id": "gc-emergency-kit", "title": "Make an emergency kit", "publisher": "Government of Canada (GetPrepared.ca)", "url": "https://www.getprepared.gc.ca/cnt/kts/index-en.aspx", "lastVerified": "2026-11-06" },
-    { "id": "rcmp-cfp", "title": "Canadian Firearms Program", "publisher": "RCMP", "url": "https://rcmp.ca/en/firearms", "lastVerified": "2026-11-06" },
-    { "id": "on-hunting-regs", "title": "Ontario Hunting Regulations Summary", "publisher": "Government of Ontario", "url": "https://www.ontario.ca/document/ontario-hunting-regulations-summary", "lastVerified": "2026-11-06" },
-    { "id": "on-fishing-regs", "title": "Ontario Fishing Regulations Summary", "publisher": "Government of Ontario", "url": "https://www.ontario.ca/document/ontario-fishing-regulations-summary", "lastVerified": "2026-11-06" },
-    { "id": "on-trapping", "title": "Trapping in Ontario", "publisher": "Government of Ontario", "url": "https://www.ontario.ca/page/trapping-ontario", "lastVerified": "2026-11-06" }
-  ]
+ "dataset": "sources",
+ "version": "1.1.0",
+ "updated": "2026-11-08",
+ "description": "Citations used by other datasets. Other files refer to these by id.",
+ "records": [
+  {
+   "id": "nrcan-hardiness",
+   "title": "Plant Hardiness Zones of Canada",
+   "publisher": "Natural Resources Canada",
+   "url": "https://planthardiness.gc.ca/",
+   "lastVerified": "2026-11-06"
+  },
+  {
+   "id": "eccc-normals",
+   "title": "Canadian Climate Normals",
+   "publisher": "Environment and Climate Change Canada",
+   "url": "https://climate.weather.gc.ca/climate_normals/",
+   "lastVerified": "2026-11-06"
+  },
+  {
+   "id": "open-meteo-climate",
+   "title": "Open-Meteo Climate API",
+   "publisher": "Open-Meteo",
+   "url": "https://open-meteo.com/en/docs/climate-api",
+   "lastVerified": "2026-11-06"
+  },
+  {
+   "id": "gc-emergency-kit",
+   "title": "Make an emergency kit",
+   "publisher": "Government of Canada (GetPrepared.ca)",
+   "url": "https://www.getprepared.gc.ca/cnt/kts/index-en.aspx",
+   "lastVerified": "2026-11-06"
+  },
+  {
+   "id": "rcmp-cfp",
+   "title": "Canadian Firearms Program",
+   "publisher": "RCMP",
+   "url": "https://rcmp.ca/en/firearms",
+   "lastVerified": "2026-11-06"
+  },
+  {
+   "id": "on-hunting-regs",
+   "title": "Ontario Hunting Regulations Summary",
+   "publisher": "Government of Ontario",
+   "url": "https://www.ontario.ca/document/ontario-hunting-regulations-summary",
+   "lastVerified": "2026-11-06"
+  },
+  {
+   "id": "on-fishing-regs",
+   "title": "Ontario Fishing Regulations Summary",
+   "publisher": "Government of Ontario",
+   "url": "https://www.ontario.ca/document/ontario-fishing-regulations-summary",
+   "lastVerified": "2026-11-06"
+  },
+  {
+   "id": "on-trapping",
+   "title": "Trapping in Ontario",
+   "publisher": "Government of Ontario",
+   "url": "https://www.ontario.ca/page/trapping-ontario",
+   "lastVerified": "2026-11-06"
+  },
+  {
+   "id": "nrcan-explosives",
+   "title": "Buying, selling and storing smokeless powder (Explosives Regulations, 2013)",
+   "publisher": "Natural Resources Canada",
+   "url": "https://natural-resources.canada.ca/minerals-mining/explosives-fireworks-ammunition/ammunition-propellant-powders/buying-selling-storing-smokeless-powder",
+   "lastVerified": "2026-11-08"
+  },
+  {
+   "id": "rcmp-frt",
+   "title": "Firearms Reference Table (via Canadian Firearms Program)",
+   "publisher": "RCMP",
+   "url": "https://rcmp.ca/en/firearms",
+   "lastVerified": ""
+  }
+ ]
 }
