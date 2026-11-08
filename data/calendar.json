@@ -1,0 +1,29 @@
+{
+ "dataset": "calendar",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Seasonal events for Northern Ontario (months 1-12). Foraging seasons are added automatically from field-guide entries. kind: forage, hunt, fish, garden, task, hazard. Regulated seasons vary by Wildlife Management Unit: check the current regulations.",
+ "records": [
+  {"id": "maple", "label": "Maple and birch tapping", "kind": "task", "months": [3, 4]},
+  {"id": "smelt", "label": "Smelt and sucker runs", "kind": "fish", "months": [4, 5]},
+  {"id": "breakup", "label": "Ice break-up: stay off the ice", "kind": "hazard", "months": [4, 5]},
+  {"id": "blackflies", "label": "Blackflies and mosquitoes peak", "kind": "hazard", "months": [5, 6, 7]},
+  {"id": "walleye-open", "label": "Walleye/pike opener (many zones, mid-May)", "kind": "fish", "months": [5]},
+  {"id": "firewood", "label": "Cut and split next winter's firewood", "kind": "task", "months": [4, 5, 6]},
+  {"id": "garden-start", "label": "Start tomatoes, peppers, onions indoors", "kind": "garden", "months": [3, 4]},
+  {"id": "garden-plant", "label": "Plant out after last frost", "kind": "garden", "months": [5, 6]},
+  {"id": "garden-harvest", "label": "Main garden harvest and canning", "kind": "garden", "months": [8, 9]},
+  {"id": "garlic", "label": "Plant garlic", "kind": "garden", "months": [10]},
+  {"id": "wildfire", "label": "Wildfire season", "kind": "hazard", "months": [5, 6, 7, 8]},
+  {"id": "waterfowl", "label": "Waterfowl season", "kind": "hunt", "months": [9, 10, 11]},
+  {"id": "grouse", "label": "Grouse season", "kind": "hunt", "months": [9, 10, 11, 12]},
+  {"id": "moose", "label": "Moose season (varies by WMU)", "kind": "hunt", "months": [9, 10, 11]},
+  {"id": "bear", "label": "Black bear season (fall)", "kind": "hunt", "months": [8, 9, 10]},
+  {"id": "hare", "label": "Snowshoe hare snaring", "kind": "hunt", "months": [10, 11, 12, 1, 2, 3]},
+  {"id": "trapping", "label": "Fur trapping (licensed)", "kind": "hunt", "months": [10, 11, 12, 1, 2, 3]},
+  {"id": "freezeup", "label": "Freeze-up: new ice is dangerous", "kind": "hazard", "months": [11, 12]},
+  {"id": "ice-fishing", "label": "Ice fishing", "kind": "fish", "months": [1, 2, 3]},
+  {"id": "cold", "label": "Deep cold: frostbite and CO risk", "kind": "hazard", "months": [12, 1, 2]},
+  {"id": "rotate", "label": "Rotate stored water and check stock", "kind": "task", "months": [4, 10]}
+ ]
+}

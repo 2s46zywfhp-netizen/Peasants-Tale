@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 210" fill="none" stroke="currentColor" stroke-width="2" font-family="system-ui,sans-serif" font-size="11">
+<rect x="20" y="150" width="280" height="14"/>
+<rect x="30" y="110" width="260" height="40" rx="20"/>
+<path d="M22 108 Q160 70 298 108" stroke-dasharray="6 3"/>
+<path d="M16 104 Q160 55 304 104" stroke-width="3"/>
+<circle cx="75" cy="130" r="6" fill="currentColor"/><circle cx="125" cy="130" r="6" fill="currentColor"/><circle cx="175" cy="130" r="6" fill="currentColor"/>
+<g fill="currentColor" stroke="none">
+<text x="20" y="185">1 insulation underneath (pad, boughs)</text>
+<text x="40" y="128">2</text><text x="245" y="135">bag/blankets</text>
+<text x="70" y="75">3 vapour barrier (plastic) 4 wind/tarp outside</text>
+<text x="60" y="122">heat packs: chest, armpits, back</text>
+<text x="20" y="22">Keep horizontal. Handle gently. Cover head.</text>
+</g>
+</svg>

@@ -24,7 +24,10 @@ Install on a phone: open the site in Chrome/Safari → "Add to Home screen".
 - `src/lib/` — theme (Sun / Dark / red Night), online status, storage protection
 - `src/pages/`, `src/components/` — UI
 - `scripts/make-icons.mjs` — rebuilds app icons from `public/icons/icon.svg`
-- `scripts/smoke-offline.mjs` — browser test: installs, cuts the network, backs up and restores
+- `scripts/smoke-offline.mjs` — browser test of phases 1–6 with the network cut
+- `scripts/build-climate.ts` — rebuilds the Ontario climate dataset from ECCC normals (`npx vite-node scripts/build-climate.ts`)
+- `scripts/fetch-guide-images.mjs` — downloads freely licensed photos for new field-guide entries that have a `wiki` title
+- `data/diagrams/*.svg` — field-guide diagrams; edit in any text or SVG editor
 
 ## Printing / PDF
 

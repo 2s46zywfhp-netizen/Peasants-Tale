@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 210" fill="none" stroke="currentColor" stroke-width="2" font-family="system-ui,sans-serif" font-size="11">
+<rect x="40" y="20" width="120" height="170" rx="8"/>
+<line x1="100" y1="20" x2="100" y2="5" stroke-width="3"/>
+<path d="M95 12 L100 2 L105 12"/>
+<circle cx="100" cy="120" r="50"/>
+<line x1="70" y1="90" x2="70" y2="150" stroke-dasharray="3 3"/><line x1="100" y1="72" x2="100" y2="168" stroke-dasharray="3 3"/><line x1="130" y1="90" x2="130" y2="150" stroke-dasharray="3 3"/>
+<path d="M92 160 L100 80 L108 160" stroke-width="2.5"/>
+<path d="M100 95 L95 120 L100 116 L105 120 Z" fill="currentColor"/>
+<g fill="currentColor" stroke="none">
+<text x="170" y="15">direction of travel</text>
+<text x="170" y="80">orienting arrow ('shed')</text>
+<text x="170" y="100">needle: red end in the shed</text>
+<text x="170" y="130">orienting lines = map north</text>
+<text x="170" y="160">West declination: ADD</text>
+<text x="170" y="175">East declination: SUBTRACT</text>
+</g>
+</svg>

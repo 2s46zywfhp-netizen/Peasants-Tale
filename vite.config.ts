@@ -27,10 +27,18 @@ export default defineConfig({
       },
       workbox: {
         // Precache everything the app ships, including bundled reference data and images.
-        globPatterns: ['**/*.{js,css,html,json,svg,png,jpg,jpeg,webp,woff2,ico}'],
+        globPatterns: ['**/*.{js,mjs,css,html,json,svg,png,jpg,jpeg,webp,woff2,ico}'],
         maximumFileSizeToCacheInBytes: 15 * 1024 * 1024,
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
+        // Map tiles: served from the cache the app fills with "Save this area for offline".
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.hostname === 'maps-cartes.services.geo.ca' || url.hostname === 'maps.geogratis.gc.ca',
+            handler: 'CacheFirst',
+            options: { cacheName: 'map-tiles', expiration: { maxEntries: 40000 }, cacheableResponse: { statuses: [0, 200] } },
+          },
+        ],
       },
     }),
   ],

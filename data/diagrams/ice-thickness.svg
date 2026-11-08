@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 210" fill="none" stroke="currentColor" stroke-width="2" font-family="system-ui,sans-serif" font-size="11">
+<line x1="40" y1="10" x2="40" y2="170"/>
+<g fill="currentColor" fill-opacity="0.25">
+<rect x="40" y="20" width="60" height="22"/><rect x="40" y="55" width="80" height="22"/><rect x="40" y="90" width="100" height="22"/><rect x="40" y="125" width="120" height="22"/>
+</g>
+<g fill="currentColor" stroke="none">
+<text x="5" y="35">15 cm</text><text x="110" y="35">one person walking</text>
+<text x="5" y="70">20 cm</text><text x="130" y="70">groups, skating parties</text>
+<text x="5" y="105">25 cm</text><text x="150" y="105">snowmobile</text>
+<text x="5" y="140">30+ cm</text><text x="170" y="140">car (rule of thumb)</text>
+<text x="5" y="190">Clear blue ice. White/snow ice: double it. Slush: stay off.</text>
+</g>
+</svg>

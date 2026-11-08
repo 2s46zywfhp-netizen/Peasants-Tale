@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { db } from '../db/db';
 import { BackupError, backupFileName, createBackup, parseBackup, restoreBackup, type RestoreMode } from '../db/backup';
 import { setSetting } from '../db/settings';
@@ -72,6 +73,7 @@ export function Settings() {
   return (
     <div className="space-y-4">
       <h1 className="h1">Settings</h1>
+      <Link to="/help" className="btn-primary w-full">How to use NorthPrep</Link>
 
       <section className="card space-y-3">
         <h2 className="h2">Display</h2>
@@ -167,7 +169,7 @@ export function Settings() {
             </li>
           ))}
         </ul>
-        <p className="pt-2 text-sm text-muted">App v{__APP_VERSION__}</p>
+        <p className="pt-2 text-sm text-muted">App v{__APP_VERSION__} · <Link to="/credits" className="underline">Credits &amp; sources</Link></p>
       </section>
     </div>
   );

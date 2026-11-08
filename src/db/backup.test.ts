@@ -42,7 +42,7 @@ describe('backup', () => {
     const text = JSON.stringify(await createBackup(a, new Date(now)));
     const result = await restoreBackup(b, JSON.parse(text));
 
-    expect(result.counts).toEqual({ settings: 1, locationProfiles: 1, inventory: 1, journal: 1, attachments: 1 });
+    expect(result.counts).toEqual({ settings: 1, locationProfiles: 1, inventory: 1, journal: 1, attachments: 1, guideEntries: 0 });
     expect(await b.inventory.toArray()).toEqual(await a.inventory.toArray());
     expect(await b.journal.toArray()).toEqual(await a.journal.toArray());
     expect((await b.settings.get('theme'))?.value).toBe('red');

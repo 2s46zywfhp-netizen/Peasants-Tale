@@ -1,0 +1,3001 @@
+{
+ "dataset": "field-guide",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Northern Ontario field guide. edibility: edible / edible-caution / medicinal / toxic / deadly. Every edible entry must list lookalikes (enforced by tests). lookalikes[].id links to another entry. images are ids in guide-images.json. diagram names an SVG in data/diagrams. wiki = Wikipedia article whose lead photo scripts/fetch-guide-images.mjs downloads.",
+ "sections": [
+  {
+   "id": "foraging",
+   "label": "Foraging plants"
+  },
+  {
+   "id": "mushrooms",
+   "label": "Mushrooms"
+  },
+  {
+   "id": "lookalikes",
+   "label": "Dangerous lookalikes"
+  },
+  {
+   "id": "water",
+   "label": "Water"
+  },
+  {
+   "id": "fire",
+   "label": "Fire"
+  },
+  {
+   "id": "shelter",
+   "label": "Shelter"
+  },
+  {
+   "id": "navigation",
+   "label": "Navigation"
+  },
+  {
+   "id": "signalling",
+   "label": "Signalling"
+  },
+  {
+   "id": "cold",
+   "label": "Cold injuries"
+  },
+  {
+   "id": "medical",
+   "label": "Wound care / TCCC"
+  },
+  {
+   "id": "game",
+   "label": "Fishing & game"
+  },
+  {
+   "id": "preservation",
+   "label": "Food preservation"
+  },
+  {
+   "id": "ice",
+   "label": "Ice safety"
+  }
+ ],
+ "records": [
+  {
+   "id": "cattail",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Cattail",
+   "latin": "Typha latifolia, T. angustifolia",
+   "edibility": "edible",
+   "wiki": "Typha latifolia",
+   "summary": "The survival supermarket of northern wetlands: shoots, pollen, flower spikes and starchy rhizomes are all edible, and the fluff is tinder.",
+   "idFeatures": [
+    "Tall (1–3 m) flat, sword-like leaves that grow from the base in a fan, with no midrib",
+    "Brown sausage-shaped seed head on a round stalk in summer, fluffy in fall",
+    "Inside the base of young shoots: white, layered, cucumber-like core",
+    "Grows in dense stands in standing water"
+   ],
+   "habitat": "Marshes, ditches, lake and pond edges, beaver ponds.",
+   "season": [
+    5,
+    6,
+    7,
+    9,
+    10,
+    11
+   ],
+   "seasonNote": "Shoots May–June; green spikes and pollen June–July; rhizomes best September to freeze-up.",
+   "prep": "Peel young shoots and eat the white core raw or cooked. Boil green flower spikes like corn. Shake yellow pollen into a bag and mix into flour. Crush rhizomes in water, let starch settle, pour off water, dry the starch.",
+   "warnings": [
+    "Harvest only from clean water: cattails absorb pollutants, road salt and mine runoff.",
+    "Blue flag iris grows in the same places and is poisonous."
+   ],
+   "lookalikes": [
+    {
+     "id": "blue-flag-iris",
+     "name": "Blue flag iris",
+     "danger": "toxic",
+     "howToTell": "Iris leaves are flatter, bluish-green, and overlap in a flat fan; no brown seed head; often a purple flower in June. Iris has no cucumber smell. If no old cattail seed heads are standing in the patch, do not harvest."
+    }
+   ],
+   "related": [
+    "blue-flag-iris"
+   ],
+   "images": [
+    "cattail"
+   ]
+  },
+  {
+   "id": "fiddlehead",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Fiddleheads (ostrich fern)",
+   "latin": "Matteuccia struthiopteris",
+   "edibility": "edible-caution",
+   "wiki": "Matteuccia",
+   "summary": "Coiled spring shoots of the ostrich fern. A seasonal vegetable that MUST be cooked thoroughly.",
+   "idFeatures": [
+    "Tightly coiled, bright green, about 2–4 cm across",
+    "Brown papery scales on the coil that rub off easily",
+    "Smooth stem with a deep U-shaped groove on the inside, like celery",
+    "Grows in clumps (crowns) of several shoots"
+   ],
+   "habitat": "Rich, wet soil on river and stream banks, floodplains.",
+   "season": [
+    5,
+    6
+   ],
+   "seasonNote": "Late April to early June, while still tightly coiled.",
+   "prep": "Remove the brown scales and wash well. Boil in fresh water for 15 minutes (or steam 10–12 minutes), discard the water, then cook as you like. Take only 3 of the shoots per crown so the plant survives.",
+   "warnings": [
+    "Raw or undercooked fiddleheads cause nausea, vomiting and cramps (Health Canada recommends 15 min boiling).",
+    "Do not eat any other fern's fiddleheads: bracken is carcinogenic."
+   ],
+   "lookalikes": [
+    {
+     "id": "bracken",
+     "name": "Bracken fern",
+     "danger": "toxic",
+     "howToTell": "Bracken shoots are fuzzy, not scaly, grow singly (not in clumps), and the stem has no U-shaped groove."
+    },
+    {
+     "id": null,
+     "name": "Interrupted fern / cinnamon fern",
+     "danger": "toxic",
+     "howToTell": "Covered in woolly white or rusty hairs instead of brown papery scales; no deep U-groove."
+    }
+   ],
+   "related": [
+    "bracken"
+   ],
+   "images": [
+    "fiddlehead"
+   ]
+  },
+  {
+   "id": "wild-leek",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Wild leek (ramps)",
+   "latin": "Allium tricoccum",
+   "edibility": "edible-caution",
+   "wiki": "Allium tricoccum",
+   "summary": "Spring onion of hardwood forests. Strong garlic-onion smell is the key test.",
+   "idFeatures": [
+    "1–3 broad, smooth leaves from the ground, 10–25 cm long",
+    "Reddish-purple lower stem, white bulb",
+    "Crushed leaf smells strongly of onion/garlic",
+    "Leaves die back in June before the white flower ball appears"
+   ],
+   "habitat": "Moist, rich deciduous (maple) forests; central and southern parts of the region.",
+   "season": [
+    4,
+    5,
+    6
+   ],
+   "seasonNote": "Leaves late April–May.",
+   "prep": "Eat raw or cooked like green onions. Take one leaf per plant, not the bulb: patches take years to recover.",
+   "warnings": [
+    "Smell every single leaf you pick. Your hands get oniony, so wash them between tests.",
+    "Slow-growing: overharvest wipes out patches."
+   ],
+   "lookalikes": [
+    {
+     "id": "lily-of-the-valley",
+     "name": "Lily-of-the-valley",
+     "danger": "deadly",
+     "howToTell": "Leaves come from a single sheath that wraps around the stem, no onion smell, white bell flowers in a row."
+    },
+    {
+     "id": "false-hellebore",
+     "name": "False hellebore",
+     "danger": "deadly",
+     "howToTell": "Leaves strongly pleated/ribbed and alternate up a thick stalk; no onion smell."
+    }
+   ],
+   "related": [
+    "lily-of-the-valley",
+    "false-hellebore"
+   ],
+   "images": [
+    "wild-leek"
+   ]
+  },
+  {
+   "id": "blueberry",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Lowbush blueberry",
+   "latin": "Vaccinium angustifolium, V. myrtilloides",
+   "edibility": "edible",
+   "wiki": "Vaccinium angustifolium",
+   "summary": "The Shield's most important wild fruit. Abundant after fire and on rocky open ground.",
+   "idFeatures": [
+    "Low shrub 10–60 cm, often in large patches",
+    "Small oval leaves, finely toothed (V. angustifolium) or velvety (velvet-leaf blueberry)",
+    "Blue berries with a dusty bloom and a 5-pointed 'crown' at the bottom",
+    "Many tiny soft seeds inside"
+   ],
+   "habitat": "Rock outcrops, jack pine stands, burns, cutovers, bog edges.",
+   "season": [
+    7,
+    8
+   ],
+   "prep": "Eat fresh, dry in the sun or by a fire into 'leather', or can as jam. Dried berries keep all winter.",
+   "warnings": [
+    "Berries with no crown, or growing on tall plants with large leaves, are not blueberries."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Canada mayflower / false Solomon's seal berries",
+     "danger": "toxic",
+     "howToTell": "These berries are red or speckled, grow on single-stemmed herbaceous plants, not woody shrubs, and have no crown."
+    },
+    {
+     "id": "baneberry",
+     "name": "Baneberry",
+     "danger": "deadly",
+     "howToTell": "Red or white berries on a tall herb with a dark spot (\"doll's eye\") — never blue."
+    }
+   ],
+   "related": [
+    "baneberry"
+   ],
+   "images": [
+    "blueberry"
+   ]
+  },
+  {
+   "id": "raspberry",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Wild red raspberry",
+   "latin": "Rubus idaeus",
+   "edibility": "edible",
+   "wiki": "Rubus idaeus",
+   "summary": "Common in clearings and burns. Leaves make a tea.",
+   "idFeatures": [
+    "Bristly (not thorny) arching canes",
+    "Leaves of 3–5 toothed leaflets, whitish underneath",
+    "Red berry that pulls off leaving a hollow cup"
+   ],
+   "habitat": "Clearings, roadsides, burns, cutovers.",
+   "season": [
+    7,
+    8
+   ],
+   "prep": "Eat fresh or dry. Dry young leaves for tea (use fully dried or fresh — wilted leaves can upset the stomach).",
+   "warnings": [
+    "No dangerous lookalikes when the berry is hollow and made of many small drupelets."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Dewberry / thimbleberry",
+     "danger": "harmless",
+     "howToTell": "Also edible. Any aggregate berry that is hollow when picked is a raspberry relative."
+    }
+   ],
+   "images": [
+    "raspberry"
+   ]
+  },
+  {
+   "id": "wild-strawberry",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Wild strawberry",
+   "latin": "Fragaria virginiana",
+   "edibility": "edible",
+   "wiki": "Fragaria virginiana",
+   "summary": "Tiny, intensely flavoured strawberries. Leaves make a vitamin-rich tea.",
+   "idFeatures": [
+    "3 toothed leaflets on a hairy stalk",
+    "White 5-petal flowers",
+    "Small red berry with seeds sitting in pits on the surface; spreads by runners"
+   ],
+   "habitat": "Open fields, roadsides, clearings, rock barrens.",
+   "season": [
+    6,
+    7
+   ],
+   "prep": "Eat fresh. Dry leaves for tea.",
+   "warnings": [],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Mock strawberry (Potentilla indica)",
+     "danger": "harmless",
+     "howToTell": "Yellow flowers, berry points upward and is tasteless. Not dangerous, just disappointing."
+    }
+   ],
+   "images": [
+    "wild-strawberry"
+   ]
+  },
+  {
+   "id": "saskatoon",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Saskatoon / serviceberry",
+   "latin": "Amelanchier spp.",
+   "edibility": "edible",
+   "wiki": "Amelanchier alnifolia",
+   "summary": "Purple berries that dry like raisins. Traditional pemmican fruit.",
+   "idFeatures": [
+    "Shrub or small tree with smooth grey bark",
+    "Oval leaves toothed mostly on the top half",
+    "White star-shaped flowers in early spring before leaves",
+    "Purple-blue berry with a crown like a blueberry, larger, with a few soft seeds"
+   ],
+   "habitat": "Forest edges, rocky slopes, lakeshores.",
+   "season": [
+    7
+   ],
+   "prep": "Eat fresh or dry. Mix dried berries with rendered fat and dried meat for pemmican.",
+   "warnings": [
+    "Seeds contain small amounts of cyanogenic compounds: fine in normal amounts, don't crush huge quantities of seeds."
+   ],
+   "lookalikes": [
+    {
+     "id": "buckthorn",
+     "name": "Buckthorn",
+     "danger": "toxic",
+     "howToTell": "Black berries without a crown, in clusters along the stem; leaf veins curve toward the tip. Strong laxative."
+    }
+   ],
+   "images": [
+    "saskatoon"
+   ]
+  },
+  {
+   "id": "chokecherry",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Chokecherry and pin cherry",
+   "latin": "Prunus virginiana, P. pensylvanica",
+   "edibility": "edible-caution",
+   "wiki": "Prunus virginiana",
+   "summary": "Astringent cherries in clusters. Flesh is edible; pits, leaves and bark are poisonous.",
+   "idFeatures": [
+    "Shrub or small tree; bark with horizontal lines (lenticels), smells bitter-almond when scratched",
+    "Chokecherry: dark red-black cherries in long hanging clusters",
+    "Pin cherry: bright red cherries on long stalks in small clusters",
+    "Each cherry has one hard pit"
+   ],
+   "habitat": "Forest edges, clearings, roadsides.",
+   "season": [
+    8,
+    9
+   ],
+   "prep": "Cook and strain to remove pits; make syrup or jelly. Traditionally, whole cherries were crushed and dried, but only do this if you know the method.",
+   "warnings": [
+    "Pits, leaves and bark contain cyanide-producing compounds. Never eat crushed raw pits or wilted leaves.",
+    "Livestock die from eating wilted cherry leaves."
+   ],
+   "lookalikes": [
+    {
+     "id": "buckthorn",
+     "name": "Buckthorn",
+     "danger": "toxic",
+     "howToTell": "Buckthorn berries have 3–4 seeds, not one pit, and grow singly or in small groups tight to the stem."
+    }
+   ],
+   "related": [
+    "buckthorn"
+   ],
+   "images": [
+    "chokecherry"
+   ]
+  },
+  {
+   "id": "highbush-cranberry",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Highbush cranberry",
+   "latin": "Viburnum trilobum (V. opulus var. americanum)",
+   "edibility": "edible",
+   "wiki": "Viburnum opulus",
+   "summary": "Red berries that hang on all winter: winter emergency food and vitamin C.",
+   "idFeatures": [
+    "Shrub 2–4 m, opposite leaves shaped like a 3-lobed maple leaf",
+    "Flat clusters of bright red, juicy, translucent berries",
+    "Single flat seed; musty smell when ripe"
+   ],
+   "habitat": "Moist woods, stream banks, wetland edges.",
+   "season": [
+    9,
+    10,
+    11,
+    12,
+    1,
+    2
+   ],
+   "prep": "Better cooked: simmer and strain for juice, jelly or sauce. Tastes better after frost.",
+   "warnings": [
+    "Large amounts of raw berries may upset the stomach."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "European guelder rose (ornamental)",
+     "danger": "toxic",
+     "howToTell": "Planted in towns; very bitter berries. Leaf stalk glands are concave (cup-shaped) in the bitter European type."
+    },
+    {
+     "id": "baneberry",
+     "name": "Red baneberry",
+     "danger": "deadly",
+     "howToTell": "Grows on a knee-high herb, not a woody shrub; berries have a dark spot and grow on a single upright stalk."
+    }
+   ],
+   "related": [
+    "baneberry"
+   ],
+   "images": [
+    "highbush-cranberry"
+   ]
+  },
+  {
+   "id": "bog-cranberry",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Bog cranberry",
+   "latin": "Vaccinium oxycoccos",
+   "edibility": "edible",
+   "wiki": "Vaccinium oxycoccos",
+   "summary": "Small tart cranberries creeping over sphagnum moss in bogs.",
+   "idFeatures": [
+    "Thread-thin creeping stems over moss",
+    "Tiny pointed evergreen leaves, whitish underneath",
+    "Red, often speckled berries on thin stalks"
+   ],
+   "habitat": "Sphagnum bogs and fens.",
+   "season": [
+    9,
+    10
+   ],
+   "prep": "Cook with sugar or dry. Keeps for weeks.",
+   "warnings": [
+    "Bog surfaces can be unstable: test footing."
+   ],
+   "lookalikes": [
+    {
+     "id": "bog-laurel",
+     "name": "Bog laurel",
+     "danger": "toxic",
+     "howToTell": "Leaves are larger, leathery, rolled under at the edges and grow opposite; pink flowers, dry seed capsules — no berries."
+    }
+   ],
+   "related": [
+    "bog-laurel"
+   ],
+   "images": [
+    "bog-cranberry"
+   ]
+  },
+  {
+   "id": "rose-hips",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Wild rose hips",
+   "latin": "Rosa acicularis, R. blanda",
+   "edibility": "edible",
+   "wiki": "Rosa acicularis",
+   "summary": "One of the richest vitamin C sources in the north, and they stay on the bush all winter.",
+   "idFeatures": [
+    "Prickly shrub with leaves of 5–7 toothed leaflets",
+    "Pink 5-petal flowers in June",
+    "Red-orange fruit (hip) topped with dried sepals"
+   ],
+   "habitat": "Open woods, clearings, rocky shores.",
+   "season": [
+    9,
+    10,
+    11,
+    12,
+    1,
+    2,
+    3
+   ],
+   "prep": "Cut open and scoop out the hairy seeds (they irritate the gut). Steep the flesh as tea, dry, or cook into syrup. Do not boil hard: it destroys vitamin C.",
+   "warnings": [
+    "Remove seed hairs."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Other red winter fruits (e.g. bittersweet nightshade)",
+     "danger": "toxic",
+     "howToTell": "Nightshade berries are shiny, oval, in drooping clusters on a vine with purple star flowers; hips are on a prickly shrub and topped with sepals."
+    }
+   ],
+   "images": [
+    "rose-hips"
+   ]
+  },
+  {
+   "id": "labrador-tea",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Labrador tea",
+   "latin": "Rhododendron groenlandicum",
+   "edibility": "edible-caution",
+   "wiki": "Rhododendron groenlandicum",
+   "summary": "Evergreen bog shrub used for tea. Contains toxins: weak tea, in moderation only.",
+   "idFeatures": [
+    "Shrub under 1 m in bogs",
+    "Narrow leathery leaves with edges rolled under, dense rusty-orange wool underneath",
+    "Fragrant when crushed; white flower clusters in June"
+   ],
+   "habitat": "Bogs, wet conifer forests.",
+   "season": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "prep": "Steep (don't boil) a few leaves for a few minutes. Boiling releases more toxins.",
+   "warnings": [
+    "Contains ledol and grayanotoxins: strong or frequent tea can cause headaches, cramps and worse. Not for pregnant women, children or long-term daily use."
+   ],
+   "lookalikes": [
+    {
+     "id": "bog-laurel",
+     "name": "Bog laurel",
+     "danger": "toxic",
+     "howToTell": "Leaves have smooth, pale undersides with NO rusty wool, grow in opposite pairs; pink flowers."
+    },
+    {
+     "id": null,
+     "name": "Bog rosemary",
+     "danger": "toxic",
+     "howToTell": "Leaves bluish-white underneath with no wool; pink urn-shaped flowers."
+    }
+   ],
+   "related": [
+    "bog-laurel"
+   ],
+   "images": [
+    "labrador-tea"
+   ]
+  },
+  {
+   "id": "dandelion",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Dandelion",
+   "latin": "Taraxacum officinale",
+   "edibility": "edible",
+   "wiki": "Taraxacum officinale",
+   "summary": "Every part is edible: greens, flowers, roots (roasted as coffee substitute).",
+   "idFeatures": [
+    "Rosette of deeply toothed leaves, no hairs",
+    "Single yellow flower per hollow stalk with milky sap",
+    "Fluffy round seed head"
+   ],
+   "habitat": "Lawns, roadsides, clearings, everywhere disturbed.",
+   "season": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ],
+   "prep": "Young leaves raw or boiled (older leaves bitter: boil and change water). Flowers battered or in fritters. Roots roasted dark and ground for a coffee-like drink.",
+   "warnings": [
+    "Avoid sprayed lawns and roadsides."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Cat's ear, hawkweeds, sow thistle",
+     "danger": "harmless",
+     "howToTell": "Hairy leaves or branched stems with several flowers. All are edible or harmless."
+    }
+   ],
+   "images": [
+    "dandelion"
+   ]
+  },
+  {
+   "id": "nettle",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Stinging nettle",
+   "latin": "Urtica dioica",
+   "edibility": "edible",
+   "wiki": "Urtica dioica",
+   "summary": "High-protein, high-mineral green. Cooking or drying removes the sting.",
+   "idFeatures": [
+    "Square stem with stinging hairs",
+    "Opposite, heart-shaped, coarsely toothed leaves",
+    "Drooping strings of tiny green flowers"
+   ],
+   "habitat": "Rich moist soil: river banks, old homesteads, clearings.",
+   "season": [
+    5,
+    6
+   ],
+   "prep": "Wear gloves. Pick top 4–6 leaves of young plants. Boil 1–2 minutes or dry; then cook like spinach or make tea.",
+   "warnings": [
+    "Older plants (after flowering) develop gritty particles that irritate kidneys: eat young plants."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Wood nettle / hemp-nettle",
+     "danger": "harmless",
+     "howToTell": "Wood nettle has alternate leaves (also edible). Hemp-nettle has no sting and lipped flowers."
+    }
+   ],
+   "images": [
+    "nettle"
+   ]
+  },
+  {
+   "id": "lambs-quarters",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Lamb's quarters",
+   "latin": "Chenopodium album",
+   "edibility": "edible",
+   "wiki": "Chenopodium album",
+   "summary": "Wild spinach that grows in every garden and clearing; seeds are a grain.",
+   "idFeatures": [
+    "Diamond- or goosefoot-shaped leaves with a white mealy coating underneath (water beads off)",
+    "Upright, often red-striped stem",
+    "Dense clusters of tiny green flowers/seeds"
+   ],
+   "habitat": "Gardens, fields, disturbed ground.",
+   "season": [
+    6,
+    7,
+    8,
+    9
+   ],
+   "prep": "Leaves raw or cooked. Seeds: rub off, winnow, rinse well (saponins), cook like quinoa.",
+   "warnings": [
+    "Contains oxalates: cook if eating large amounts."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Nightshades (young)",
+     "danger": "toxic",
+     "howToTell": "Nightshade leaves are not mealy-white underneath and have a rank smell."
+    }
+   ],
+   "images": [
+    "lambs-quarters"
+   ]
+  },
+  {
+   "id": "plantain",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Broadleaf plantain",
+   "latin": "Plantago major",
+   "edibility": "edible",
+   "wiki": "Plantago major",
+   "summary": "Common trail-side green; chewed leaves are a classic poultice for stings and small wounds.",
+   "idFeatures": [
+    "Rosette of broad oval leaves with 5–7 parallel veins",
+    "Pull a leaf apart: stringy vein threads stretch out",
+    "Narrow spike of tiny flowers/seeds"
+   ],
+   "habitat": "Trails, lawns, roadsides.",
+   "season": [
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "prep": "Young leaves raw or cooked; older leaves boiled. Crush leaf for a poultice on bites and stings.",
+   "warnings": [],
+   "lookalikes": [
+    {
+     "id": "false-hellebore",
+     "name": "False hellebore (young)",
+     "danger": "deadly",
+     "howToTell": "Hellebore leaves are pleated and grow up a tall stalk; plantain stays in a flat rosette with stringy veins."
+    }
+   ],
+   "images": [
+    "plantain"
+   ]
+  },
+  {
+   "id": "spruce-pine",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Spruce and pine (tips, needles, inner bark)",
+   "latin": "Picea, Pinus spp.",
+   "edibility": "edible",
+   "wiki": "Picea glauca",
+   "summary": "Year-round vitamin C tea from needles; spring tips; inner bark as starvation food.",
+   "idFeatures": [
+    "Spruce: square, sharp single needles that roll between fingers; cones hang down",
+    "Pine: needles in bundles (white pine 5, red pine 2 long, jack pine 2 short)",
+    "Balsam fir: flat, soft needles with two white stripes underneath; blisters of resin on bark"
+   ],
+   "habitat": "Throughout the boreal forest.",
+   "season": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "seasonNote": "Tips in May–June; needles all year; inner bark best in spring.",
+   "prep": "Chop a handful of needles, steep (don't boil) 10 minutes. Eat bright green spring tips raw. Inner bark (cambium): strip a section from one side of a live tree, scrape the soft white layer, dry and grind, or fry.",
+   "warnings": [
+    "Never use yew: it is deadly.",
+    "Inner bark harvest damages trees: take from one side only, or from trees being cut anyway.",
+    "Pregnant women should avoid large amounts of pine needle tea."
+   ],
+   "lookalikes": [
+    {
+     "id": "canada-yew",
+     "name": "Canada yew (ground hemlock)",
+     "danger": "deadly",
+     "howToTell": "Low sprawling shrub, flat soft needles green on both sides with no white stripes, red berry-like cups. No cones."
+    }
+   ],
+   "related": [
+    "canada-yew"
+   ],
+   "images": [
+    "spruce-pine"
+   ]
+  },
+  {
+   "id": "birch-sap-chaga",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Birch: sap, bark and chaga",
+   "latin": "Betula papyrifera; Inonotus obliquus",
+   "edibility": "edible",
+   "wiki": "Betula papyrifera",
+   "summary": "White birch gives spring sap, the best tinder there is (bark), and chaga fungus for tea.",
+   "idFeatures": [
+    "White papery bark that peels in strips, black horizontal marks",
+    "Chaga: black, cracked, charcoal-like lump on living birch; rusty orange inside"
+   ],
+   "habitat": "Throughout; burns and mixed forest.",
+   "season": [
+    4,
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "seasonNote": "Sap flows in April, about 2 weeks after maple.",
+   "prep": "Tap like maple: drill 1 cm hole 4 cm deep on the south side, insert a spout, collect. Drink fresh or boil down (100:1, slow). Chaga: break into small pieces, simmer 1 hour for tea.",
+   "warnings": [
+    "Peel bark only from dead or downed trees: girdling kills the tree.",
+    "Chaga is high in oxalates: don't drink litres daily. It interacts with blood thinners and diabetes drugs."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Black burls / canker on birch",
+     "danger": "harmless",
+     "howToTell": "Burls are wood (hard, same colour inside). Chaga is crumbly and rust-orange inside."
+    }
+   ],
+   "images": [
+    "birch-sap-chaga"
+   ]
+  },
+  {
+   "id": "maple-sap",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Maple sap and syrup",
+   "latin": "Acer saccharum, A. rubrum",
+   "edibility": "edible",
+   "wiki": "Acer saccharum",
+   "summary": "Sugar in March and April: 40 L of sap makes about 1 L of syrup.",
+   "idFeatures": [
+    "Opposite branches and buds",
+    "Sugar maple: 5-lobed leaf with U-shaped gaps; red maple: 3–5 lobes with V-gaps and toothed edges"
+   ],
+   "habitat": "Hardwood stands; sugar maple in central Ontario, red maple widespread.",
+   "season": [
+    3,
+    4
+   ],
+   "steps": [
+    "Identify trees in fall while leaves are on; mark them.",
+    "Tap when nights are below freezing and days above (late March–April).",
+    "Drill a 7/16\" (11 mm) hole 5 cm deep, slightly upward, on the south side; trees 25 cm diameter or more.",
+    "Tap in a spout and hang a covered bucket.",
+    "Boil sap outside (lots of steam) until it reaches 4 °C above the boiling point of water (about 104 °C).",
+    "Filter hot through wool or felt, bottle hot."
+   ],
+   "prep": "Raw sap is a mildly sweet, safe drink if fresh and cold.",
+   "warnings": [
+    "Sap spoils in a few days above freezing: keep cold.",
+    "Boiling takes a lot of fuel."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Manitoba maple / box elder",
+     "danger": "harmless",
+     "howToTell": "Compound leaves; also tappable but lower sugar."
+    }
+   ],
+   "images": [
+    "maple-sap"
+   ]
+  },
+  {
+   "id": "wild-rice",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Wild rice (manoomin)",
+   "latin": "Zizania palustris",
+   "edibility": "edible",
+   "wiki": "Zizania palustris",
+   "summary": "Calorie-rich grain of shallow lakes and slow rivers. Harvesting is regulated and culturally important.",
+   "idFeatures": [
+    "Tall grass standing out of shallow water, 1–3 m",
+    "Ribbon leaves floating first, then upright",
+    "Long dark grains in loose seed heads in late summer"
+   ],
+   "habitat": "Shallow (0.3–1 m) lakes and slow rivers with soft bottoms, NW Ontario especially.",
+   "season": [
+    8,
+    9
+   ],
+   "prep": "Knock ripe grains into a canoe with sticks. Dry, parch in a pot while stirring, then dance/rub to loosen hulls and winnow. Store dry.",
+   "warnings": [
+    "Harvesting may need a licence and respects First Nations rights: check before harvesting."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Other tall wetland grasses (e.g. reed canary grass)",
+     "danger": "harmless",
+     "howToTell": "Other grasses have small seeds and grow on land/edges, not standing in water."
+    }
+   ],
+   "images": [
+    "wild-rice"
+   ]
+  },
+  {
+   "id": "arrowhead",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Arrowhead (wapato, duck potato)",
+   "latin": "Sagittaria latifolia",
+   "edibility": "edible",
+   "wiki": "Sagittaria latifolia",
+   "summary": "Starchy tubers in pond mud; cook like potatoes.",
+   "idFeatures": [
+    "Arrow-shaped leaves on long stalks standing out of water",
+    "Smooth leaf edges, veins radiating from where the stalk joins",
+    "White 3-petal flowers on a separate stalk"
+   ],
+   "habitat": "Shallow muddy water, marshes.",
+   "season": [
+    9,
+    10
+   ],
+   "prep": "In fall, wade and work the mud with your feet; tubers float up. Always cook (raw is bitter and irritating).",
+   "warnings": [
+    "Cold water: hypothermia risk."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Arrow arum (Peltandra)",
+     "danger": "toxic",
+     "howToTell": "Arrow arum leaves have a vein along the edge and a hood-like green flower; raw parts contain needle-like oxalate crystals."
+    },
+    {
+     "id": null,
+     "name": "Water plantain",
+     "danger": "toxic",
+     "howToTell": "Oval, not arrow-shaped leaves."
+    }
+   ],
+   "images": [
+    "arrowhead"
+   ]
+  },
+  {
+   "id": "hazelnut",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Beaked hazelnut",
+   "latin": "Corylus cornuta",
+   "edibility": "edible",
+   "wiki": "Corylus cornuta",
+   "summary": "Fat-rich wild nut in a bristly husk with a long 'beak'.",
+   "idFeatures": [
+    "Shrub 1–3 m, often in thickets",
+    "Doubly toothed oval leaves, slightly hairy",
+    "Nut inside a bristly green husk drawn out into a long tube (beak)"
+   ],
+   "habitat": "Forest edges, open woods, clearings.",
+   "season": [
+    8,
+    9
+   ],
+   "prep": "Pick in August while husks are still green (squirrels beat you otherwise); dry husks then rub off with gloves (bristles irritate skin). Crack and eat raw or roasted.",
+   "warnings": [],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "American hazel",
+     "danger": "harmless",
+     "howToTell": "Also edible, with a shorter leafy husk."
+    }
+   ],
+   "images": [
+    "hazelnut"
+   ]
+  },
+  {
+   "id": "acorns",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Red oak acorns",
+   "latin": "Quercus rubra",
+   "edibility": "edible-caution",
+   "wiki": "Quercus rubra",
+   "summary": "High-calorie starch, but tannins must be leached out first.",
+   "idFeatures": [
+    "Oak leaves with pointed (bristle-tipped) lobes",
+    "Acorns 2–3 cm with a flat saucer-like cap",
+    "Mature in the second fall"
+   ],
+   "habitat": "Central and southern parts of the region on dry ridges.",
+   "season": [
+    9,
+    10
+   ],
+   "steps": [
+    "Collect, discard ones with holes. Float test: discard floaters.",
+    "Dry, then crack and remove shells.",
+    "Grind or chop coarse.",
+    "Leach: soak in water, changing it several times a day, until no longer bitter (cold leach: days; hot: boil and change water many times).",
+    "Dry the meal and use like flour."
+   ],
+   "prep": "See steps.",
+   "warnings": [
+    "Unleached acorns are bitter and the tannins upset the stomach and kidneys."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Horse chestnut / buckeye (planted)",
+     "danger": "toxic",
+     "howToTell": "Shiny brown nut with a pale scar, in a spiky or smooth leathery husk, no cap. Not native to the north."
+    }
+   ],
+   "images": [
+    "acorns"
+   ]
+  },
+  {
+   "id": "rock-tripe",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Rock tripe and reindeer lichen",
+   "latin": "Umbilicaria spp.; Cladonia rangiferina",
+   "edibility": "edible-caution",
+   "wiki": "Umbilicaria",
+   "summary": "Last-resort famine food available all year on Shield rock. Low calories; must be soaked and boiled.",
+   "idFeatures": [
+    "Rock tripe: leathery, dark brown-black disc attached to rock at one central point",
+    "Reindeer lichen: grey-white, densely branched spongy mats on the ground"
+   ],
+   "habitat": "Exposed Canadian Shield rock; jack pine and spruce barrens.",
+   "season": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "prep": "Soak overnight in water (change it), then boil, discarding the first water, to remove bitter acids. Use to thicken soups.",
+   "warnings": [
+    "Raw lichens cause severe stomach upset.",
+    "Very little food value: does not replace calories from fat and meat."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Wolf lichen (yellow-green)",
+     "danger": "toxic",
+     "howToTell": "Bright yellow-green, hair-like, grows on conifer trunks — poisonous. Never eat yellow lichens."
+    }
+   ],
+   "images": [
+    "rock-tripe"
+   ]
+  },
+  {
+   "id": "wintergreen",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Wintergreen (teaberry)",
+   "latin": "Gaultheria procumbens",
+   "edibility": "edible",
+   "wiki": "Gaultheria procumbens",
+   "summary": "Small evergreen with minty leaves and red winter berries.",
+   "idFeatures": [
+    "Low (10 cm) shiny evergreen leaves, oval",
+    "Strong wintergreen smell when crushed",
+    "White bell flowers; red berries that last into winter"
+   ],
+   "habitat": "Dry pine and oak woods.",
+   "season": [
+    1,
+    2,
+    3,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "prep": "Berries raw. Steep leaves for tea (they contain methyl salicylate, like aspirin).",
+   "warnings": [
+    "Avoid if allergic to aspirin. Do not use wintergreen oil: it is toxic."
+   ],
+   "lookalikes": [
+    {
+     "id": "baneberry",
+     "name": "Baneberry",
+     "danger": "deadly",
+     "howToTell": "Baneberry is a tall herb (not a low evergreen) and has no mint smell."
+    }
+   ],
+   "images": []
+  },
+  {
+   "id": "wood-sorrel",
+   "section": "foraging",
+   "kind": "plant",
+   "title": "Wood sorrel",
+   "latin": "Oxalis montana, O. stricta",
+   "edibility": "edible",
+   "wiki": "Oxalis montana",
+   "summary": "Lemon-sour clover-like leaves for a trail snack.",
+   "idFeatures": [
+    "Three heart-shaped leaflets that fold down at night",
+    "Sour lemony taste",
+    "White-pink or yellow 5-petal flowers"
+   ],
+   "habitat": "Moist conifer forests (O. montana), disturbed ground (O. stricta).",
+   "season": [
+    6,
+    7,
+    8,
+    9
+   ],
+   "prep": "Raw in small amounts.",
+   "warnings": [
+    "High in oxalic acid: small amounts only."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Clover",
+     "danger": "harmless",
+     "howToTell": "Clover leaflets are oval, not heart-shaped, and not sour; also edible cooked."
+    }
+   ],
+   "images": [
+    "wood-sorrel"
+   ]
+  },
+  {
+   "id": "water-hemlock",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "Water hemlock",
+   "latin": "Cicuta maculata, C. bulbifera",
+   "edibility": "deadly",
+   "wiki": "Cicuta maculata",
+   "summary": "The most poisonous plant in North America. A bite of root can kill in hours (seizures).",
+   "idFeatures": [
+    "Carrot-family plant 1–2 m in wet ground, white umbrella flower clusters",
+    "Leaf veins end in the NOTCHES between teeth, not at the tips",
+    "Stem hollow, often purple-streaked; base of stem has hollow chambers with yellowish oily liquid",
+    "Bulblet water hemlock has small bulbils in leaf axils"
+   ],
+   "habitat": "Marshes, ditches, stream banks — the same places as cattail and arrowhead.",
+   "warnings": [
+    "Do not eat ANY wild carrot-family plant unless you are an expert.",
+    "Touching is generally safe but wash hands; never use stems as straws or whistles."
+   ],
+   "confusedWith": [
+    "Wild carrot (Queen Anne's lace)",
+    "Wild parsnip",
+    "Water parsnip",
+    "Angelica"
+   ],
+   "images": [
+    "water-hemlock"
+   ]
+  },
+  {
+   "id": "poison-hemlock",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "Poison hemlock",
+   "latin": "Conium maculatum",
+   "edibility": "deadly",
+   "wiki": "Conium maculatum",
+   "summary": "Deadly carrot-family plant that killed Socrates; spreading along Ontario roadsides.",
+   "idFeatures": [
+    "Tall (1–3 m), smooth hairless stem with purple blotches",
+    "Finely divided fern-like leaves, mousy/musty smell when crushed",
+    "White umbrella flowers"
+   ],
+   "habitat": "Roadsides, ditches, disturbed ground.",
+   "warnings": [
+    "All parts deadly. No hairs on stem (wild carrot has hairy stems)."
+   ],
+   "confusedWith": [
+    "Wild carrot",
+    "Parsley",
+    "Fiddlehead-like fern leaves"
+   ],
+   "images": [
+    "poison-hemlock"
+   ]
+  },
+  {
+   "id": "baneberry",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "Red and white baneberry",
+   "latin": "Actaea rubra, A. pachypoda",
+   "edibility": "deadly",
+   "wiki": "Actaea rubra",
+   "summary": "Shiny red or white berries; as few as six berries can poison a child.",
+   "idFeatures": [
+    "Knee-high herb with large compound leaves of toothed leaflets",
+    "Cluster of glossy red or white berries, each with a black dot (\"doll's eyes\") on thick stalks"
+   ],
+   "habitat": "Rich deciduous and mixed woods.",
+   "warnings": [
+    "Berries are tempting to children."
+   ],
+   "confusedWith": [
+    "Highbush cranberry",
+    "Wintergreen",
+    "Wild cherries"
+   ],
+   "images": [
+    "baneberry"
+   ]
+  },
+  {
+   "id": "lily-of-the-valley",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "Lily-of-the-valley",
+   "latin": "Convallaria majalis",
+   "edibility": "deadly",
+   "wiki": "Convallaria majalis",
+   "summary": "Garden escape with heart-stopping cardiac glycosides. Common near old homesteads.",
+   "idFeatures": [
+    "Two broad leaves wrapping a single stem from one sheath",
+    "Row of white, nodding bell flowers; red berries later",
+    "No onion smell"
+   ],
+   "habitat": "Shady woods near towns and old homesteads.",
+   "warnings": [
+    "All parts toxic, including water from a vase."
+   ],
+   "confusedWith": [
+    "Wild leek (ramps)"
+   ],
+   "images": [
+    "lily-of-the-valley"
+   ]
+  },
+  {
+   "id": "false-hellebore",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "False hellebore",
+   "latin": "Veratrum viride",
+   "edibility": "deadly",
+   "wiki": "Veratrum viride",
+   "summary": "Spring shoots look like leeks or hostas; causes slowed heart and collapse.",
+   "idFeatures": [
+    "Large strongly pleated (accordion-ribbed) leaves alternating up a thick stalk",
+    "No onion smell",
+    "Green star flowers in tall branched cluster"
+   ],
+   "habitat": "Wet woods, swamps, stream banks.",
+   "warnings": [
+    "Most poisonings happen in spring when shoots are confused with wild leeks."
+   ],
+   "confusedWith": [
+    "Wild leek",
+    "Plantain"
+   ],
+   "images": [
+    "false-hellebore"
+   ]
+  },
+  {
+   "id": "white-camas",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "White camas",
+   "latin": "Anticlea elegans",
+   "edibility": "deadly",
+   "wiki": "Anticlea elegans",
+   "summary": "Onion-like bulb with no onion smell. Neurotoxic.",
+   "idFeatures": [
+    "Grass-like leaves from a bulb",
+    "Creamy flowers with green-yellow spots at petal bases",
+    "No onion/garlic smell"
+   ],
+   "habitat": "Rocky shorelines, fens, limestone areas.",
+   "warnings": [
+    "If a bulb doesn't smell of onion, don't eat it."
+   ],
+   "confusedWith": [
+    "Wild onions"
+   ],
+   "images": [
+    "white-camas"
+   ]
+  },
+  {
+   "id": "blue-flag-iris",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "Blue flag iris",
+   "latin": "Iris versicolor",
+   "edibility": "toxic",
+   "wiki": "Iris versicolor",
+   "summary": "Grows among cattails; roots cause severe vomiting and diarrhea.",
+   "idFeatures": [
+    "Flat bluish-green sword leaves in a flat fan",
+    "Purple-blue iris flower in June",
+    "No brown sausage seed head"
+   ],
+   "habitat": "Marshes, shores, wet meadows.",
+   "warnings": [
+    "Can blister the mouth."
+   ],
+   "confusedWith": [
+    "Cattail"
+   ],
+   "images": [
+    "blue-flag-iris"
+   ]
+  },
+  {
+   "id": "bracken",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "Bracken fern",
+   "latin": "Pteridium aquilinum",
+   "edibility": "toxic",
+   "wiki": "Pteridium aquilinum",
+   "summary": "Carcinogenic fern often mistaken for fiddleheads.",
+   "idFeatures": [
+    "Single shoots (not clumps), fuzzy/hairy coil that looks like a claw",
+    "Mature fern triangular, on a tall stiff stalk"
+   ],
+   "habitat": "Dry open woods, burns, clearings.",
+   "warnings": [
+    "Contains carcinogens and a thiamine-destroying enzyme."
+   ],
+   "confusedWith": [
+    "Ostrich fern fiddleheads"
+   ],
+   "images": [
+    "bracken"
+   ]
+  },
+  {
+   "id": "canada-yew",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "Canada yew (ground hemlock)",
+   "latin": "Taxus canadensis",
+   "edibility": "deadly",
+   "wiki": "Taxus canadensis",
+   "summary": "Low conifer whose needles and seeds can stop the heart.",
+   "idFeatures": [
+    "Sprawling shrub under 1.5 m",
+    "Flat soft needles, green on both sides, no white stripes",
+    "Red fleshy cup around a single seed; no cones"
+   ],
+   "habitat": "Shady mixed and conifer forest understory.",
+   "warnings": [
+    "The red flesh is the only non-toxic part, but the seed inside is deadly: avoid entirely."
+   ],
+   "confusedWith": [
+    "Balsam fir",
+    "Spruce/pine for tea"
+   ],
+   "images": [
+    "canada-yew"
+   ]
+  },
+  {
+   "id": "poison-ivy",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "Poison ivy",
+   "latin": "Toxicodendron radicans, T. rydbergii",
+   "edibility": "toxic",
+   "wiki": "Toxicodendron rydbergii",
+   "summary": "Causes blistering rash for weeks; smoke from burning it damages lungs.",
+   "idFeatures": [
+    "\"Leaves of three\": three leaflets, middle one on a longer stalk",
+    "Shiny or dull, edges smooth or with a few teeth",
+    "Whitish berries in fall"
+   ],
+   "habitat": "Rocky shores, forest edges, sandy soils.",
+   "warnings": [
+    "Never burn it. Wash skin with soap and cold water within 30 minutes; wash clothes and tools."
+   ],
+   "confusedWith": [
+    "Wild strawberry leaves",
+    "Raspberry leaves"
+   ],
+   "images": [
+    "poison-ivy"
+   ]
+  },
+  {
+   "id": "wild-parsnip",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "Wild parsnip and giant hogweed",
+   "latin": "Pastinaca sativa, Heracleum mantegazzianum",
+   "edibility": "toxic",
+   "wiki": "Pastinaca sativa",
+   "summary": "Sap plus sunlight causes severe burns and blisters (phytophotodermatitis).",
+   "idFeatures": [
+    "Wild parsnip: yellow umbrella flowers, grooved stem, 1–1.5 m",
+    "Giant hogweed: 2–5 m, white umbrellas up to 1 m wide, purple-blotched bristly stem"
+   ],
+   "habitat": "Roadsides, ditches, fields.",
+   "warnings": [
+    "Cover skin; if sap contacts skin, wash and keep out of sun for 48 hours."
+   ],
+   "confusedWith": [
+    "Cow parsnip",
+    "Wild carrot"
+   ],
+   "images": [
+    "wild-parsnip"
+   ]
+  },
+  {
+   "id": "bog-laurel",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "Bog laurel",
+   "latin": "Kalmia polifolia",
+   "edibility": "toxic",
+   "wiki": "Kalmia polifolia",
+   "summary": "Bog shrub with grayanotoxins; confused with Labrador tea.",
+   "idFeatures": [
+    "Opposite narrow leathery leaves, rolled edges, pale smooth (no wool) underneath",
+    "Bright pink saucer-shaped flowers"
+   ],
+   "habitat": "Bogs.",
+   "warnings": [
+    "Do not make tea from any bog shrub you cannot positively identify."
+   ],
+   "confusedWith": [
+    "Labrador tea",
+    "Bog cranberry"
+   ],
+   "images": [
+    "bog-laurel"
+   ]
+  },
+  {
+   "id": "buckthorn",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "Buckthorn",
+   "latin": "Rhamnus cathartica, Frangula alnus",
+   "edibility": "toxic",
+   "wiki": "Rhamnus cathartica",
+   "summary": "Invasive shrub with black berries that cause violent diarrhea.",
+   "idFeatures": [
+    "Shrub with dark bark and orange inner bark",
+    "Glossy oval leaves with veins curving toward the tip",
+    "Black berries with 3–4 seeds"
+   ],
+   "habitat": "Forest edges, towns, invasive.",
+   "warnings": [],
+   "confusedWith": [
+    "Chokecherry",
+    "Saskatoon"
+   ],
+   "images": [
+    "buckthorn"
+   ]
+  },
+  {
+   "id": "nightshade",
+   "section": "lookalikes",
+   "kind": "hazard",
+   "title": "Bittersweet nightshade",
+   "latin": "Solanum dulcamara",
+   "edibility": "toxic",
+   "wiki": "Solanum dulcamara",
+   "summary": "Climbing vine with shiny red berries; toxic alkaloids.",
+   "idFeatures": [
+    "Purple star flowers with yellow centre",
+    "Oval shiny berries green → red in drooping clusters",
+    "Leaves often with two small lobes at base"
+   ],
+   "habitat": "Damp thickets, shorelines, towns.",
+   "warnings": [],
+   "confusedWith": [
+    "Rose hips",
+    "Highbush cranberry"
+   ],
+   "images": [
+    "nightshade"
+   ]
+  },
+  {
+   "id": "mushroom-rules",
+   "section": "mushrooms",
+   "kind": "reference",
+   "title": "Mushroom safety rules",
+   "summary": "Read before picking any mushroom.",
+   "steps": [
+    "Only eat mushrooms you have identified with 100 % certainty, ideally confirmed in person by an expert.",
+    "Check every feature: cap, gills/pores/teeth, stem, ring, base (dig up the whole base — the cup of a deadly Amanita is often underground), smell, habitat, spore print colour.",
+    "Never eat white-gilled mushrooms with a ring and a cup at the base (Amanitas).",
+    "Never eat little brown mushrooms (LBMs): too many deadly ones.",
+    "Cook all wild mushrooms thoroughly.",
+    "Try a small amount the first time and keep one uncooked specimen in the fridge in case of illness.",
+    "Amatoxin poisoning (destroying angel, Galerina) shows no symptoms for 6–24 hours, then seems to improve while the liver fails. Get to hospital immediately if you suspect it."
+   ],
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time."
+   ],
+   "wiki": "Spore print",
+   "images": [
+    "mushroom-rules"
+   ]
+  },
+  {
+   "id": "chanterelle",
+   "section": "mushrooms",
+   "kind": "mushroom",
+   "title": "Golden chanterelle",
+   "latin": "Cantharellus cibarius group",
+   "edibility": "edible-caution",
+   "wiki": "Cantharellus cibarius",
+   "summary": "Egg-yolk yellow mushroom with false gills; fruity apricot smell.",
+   "idFeatures": [
+    "Yellow-orange funnel-shaped cap with wavy edge",
+    "Blunt, forked, false gills (ridges) that run down the stem and can't be peeled off separately",
+    "Solid white flesh that pulls apart like string cheese",
+    "Grows from soil, singly or scattered, never in tight clusters on wood"
+   ],
+   "habitat": "Mixed and hardwood forests, often near oak, birch, pine, in moss.",
+   "season": [
+    7,
+    8,
+    9
+   ],
+   "prep": "Sauté well. Dry or cook and freeze; drying makes them tough.",
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time."
+   ],
+   "lookalikes": [
+    {
+     "id": "jack-o-lantern",
+     "name": "Jack-o'-lantern",
+     "danger": "toxic",
+     "howToTell": "Grows in dense clusters on wood or buried roots, true sharp gills, orange flesh inside."
+    },
+    {
+     "id": null,
+     "name": "False chanterelle (Hygrophoropsis)",
+     "danger": "toxic",
+     "howToTell": "Thin, true, crowded forked gills, darker orange, soft flesh; grows on wood debris."
+    }
+   ],
+   "images": [
+    "chanterelle"
+   ]
+  },
+  {
+   "id": "chicken-of-the-woods",
+   "section": "mushrooms",
+   "kind": "mushroom",
+   "title": "Chicken of the woods",
+   "latin": "Laetiporus sulphureus",
+   "edibility": "edible-caution",
+   "wiki": "Laetiporus sulphureus",
+   "summary": "Bright orange and yellow shelves on wood. Pores, no gills.",
+   "idFeatures": [
+    "Overlapping fan-shaped shelves, orange top, sulphur-yellow edges and pore surface",
+    "No gills: tiny pores underneath",
+    "Soft and moist when young"
+   ],
+   "habitat": "On living or dead hardwoods (oak, cherry). Avoid ones on conifers (more stomach upset).",
+   "season": [
+    7,
+    8,
+    9
+   ],
+   "prep": "Use young, tender edges. Cook thoroughly; never raw. Some people react: try a small amount.",
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time.",
+    "Specimens on yew, conifers or eucalyptus may cause illness."
+   ],
+   "lookalikes": [
+    {
+     "id": "jack-o-lantern",
+     "name": "Jack-o'-lantern",
+     "danger": "toxic",
+     "howToTell": "Has gills, not pores; all orange."
+    },
+    {
+     "id": null,
+     "name": "Berkeley's polypore",
+     "danger": "harmless",
+     "howToTell": "Cream-coloured and tough."
+    }
+   ],
+   "images": [
+    "chicken-of-the-woods"
+   ]
+  },
+  {
+   "id": "morel",
+   "section": "mushrooms",
+   "kind": "mushroom",
+   "title": "Morels",
+   "latin": "Morchella spp.",
+   "edibility": "edible-caution",
+   "wiki": "Morchella",
+   "summary": "Spring mushroom with a honeycomb cap. Completely hollow inside.",
+   "idFeatures": [
+    "Cap of pits and ridges like a honeycomb",
+    "Cap attached directly to the stem at the bottom",
+    "Cut lengthwise: one continuous hollow chamber from cap tip to stem base"
+   ],
+   "habitat": "Burns from the previous year, dying elms, old apple orchards, poplar stands.",
+   "season": [
+    5,
+    6
+   ],
+   "prep": "Always cook thoroughly: raw morels are toxic. Slice in half to check, and to shake out insects.",
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time.",
+    "Raw or undercooked morels cause illness."
+   ],
+   "lookalikes": [
+    {
+     "id": "false-morel",
+     "name": "False morel (Gyromitra)",
+     "danger": "deadly",
+     "howToTell": "Brain-like wrinkled lobes (not pits), cap hangs free like a skirt, inside stuffed with cottony fibres, not hollow."
+    },
+    {
+     "id": null,
+     "name": "Half-free morel",
+     "danger": "harmless",
+     "howToTell": "Cap attached only halfway down; still hollow; edible cooked but often avoided."
+    }
+   ],
+   "images": [
+    "morel"
+   ]
+  },
+  {
+   "id": "puffball",
+   "section": "mushrooms",
+   "kind": "mushroom",
+   "title": "Giant and gem puffballs",
+   "latin": "Calvatia gigantea; Lycoperdon perlatum",
+   "edibility": "edible-caution",
+   "wiki": "Calvatia gigantea",
+   "summary": "Round, white puffballs; edible only when pure white and uniform inside.",
+   "idFeatures": [
+    "Round, no stem or short stubby base",
+    "Slice top to bottom: inside must be solid pure white like marshmallow with no outline of a cap, gills or stem",
+    "Gem puffball: covered in small spines"
+   ],
+   "habitat": "Fields, lawns, forest edges.",
+   "season": [
+    7,
+    8,
+    9
+   ],
+   "prep": "Slice and fry. Discard if any yellow, green, brown or purple inside.",
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time.",
+    "Always slice every one from top to bottom."
+   ],
+   "lookalikes": [
+    {
+     "id": "destroying-angel",
+     "name": "Destroying angel 'egg' (Amanita button)",
+     "danger": "deadly",
+     "howToTell": "Sliced, an Amanita button shows the silhouette of a cap, gills and stem inside."
+    },
+    {
+     "id": null,
+     "name": "Earthballs (Scleroderma)",
+     "danger": "toxic",
+     "howToTell": "Thick tough skin; inside dark purple-black when sliced."
+    }
+   ],
+   "images": [
+    "puffball"
+   ]
+  },
+  {
+   "id": "oyster",
+   "section": "mushrooms",
+   "kind": "mushroom",
+   "title": "Oyster mushroom",
+   "latin": "Pleurotus ostreatus, P. populinus",
+   "edibility": "edible-caution",
+   "wiki": "Pleurotus ostreatus",
+   "summary": "Shelf-like clusters on dead poplar and other hardwoods; common in cool weather.",
+   "idFeatures": [
+    "White to grey-brown oyster-shaped caps in overlapping clusters",
+    "White gills that run down to a short or absent off-centre stem",
+    "Lilac to white spore print",
+    "On wood (logs, standing dead trees), not soil"
+   ],
+   "habitat": "Dead aspen/poplar, birch, maple. Spring and fall.",
+   "season": [
+    5,
+    6,
+    9,
+    10,
+    11
+   ],
+   "prep": "Cook well. Check for beetles.",
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Angel wings (Pleurocybella porrigens)",
+     "danger": "deadly",
+     "howToTell": "Thin, pure white, on CONIFER wood. Linked to fatal brain illness. Only pick oysters from hardwoods."
+    },
+    {
+     "id": null,
+     "name": "Late fall oyster (Panellus serotinus)",
+     "danger": "harmless",
+     "howToTell": "Green-yellow cap, orange gills; bitter."
+    }
+   ],
+   "images": [
+    "oyster"
+   ]
+  },
+  {
+   "id": "hedgehog",
+   "section": "mushrooms",
+   "kind": "mushroom",
+   "title": "Hedgehog mushroom",
+   "latin": "Hydnum repandum, H. umbilicatum",
+   "edibility": "edible-caution",
+   "wiki": "Hydnum repandum",
+   "summary": "Teeth instead of gills: easy, safe beginner mushroom.",
+   "idFeatures": [
+    "Buff to orange cap",
+    "Underside covered in small soft spines (teeth), no gills or pores",
+    "Firm white flesh that bruises orange"
+   ],
+   "habitat": "Mixed and conifer forest, in moss.",
+   "season": [
+    8,
+    9,
+    10
+   ],
+   "prep": "Sauté. Older ones may be bitter.",
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Other tooth fungi",
+     "danger": "harmless",
+     "howToTell": "Woody/leathery tooth fungi are too tough to eat but not dangerous."
+    }
+   ],
+   "images": [
+    "hedgehog"
+   ]
+  },
+  {
+   "id": "lobster",
+   "section": "mushrooms",
+   "kind": "mushroom",
+   "title": "Lobster mushroom",
+   "latin": "Hypomyces lactifluorum on Russula/Lactarius",
+   "edibility": "edible-caution",
+   "wiki": "Hypomyces lactifluorum",
+   "summary": "Bright red-orange parasitized mushroom; firm and seafood-like.",
+   "idFeatures": [
+    "Bright orange-red, hard, irregular shape",
+    "Gills replaced by blunt ridges",
+    "White firm flesh"
+   ],
+   "habitat": "Mixed forests.",
+   "season": [
+    7,
+    8,
+    9
+   ],
+   "prep": "Cook well. Discard if soft, purplish or mouldy.",
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time.",
+    "The host mushroom underneath can't be identified once parasitized."
+   ],
+   "lookalikes": [
+    {
+     "id": null,
+     "name": "Other red Russulas",
+     "danger": "toxic",
+     "howToTell": "Have real, brittle gills and break like chalk; lobster has no proper gills."
+    }
+   ],
+   "images": [
+    "lobster"
+   ]
+  },
+  {
+   "id": "destroying-angel",
+   "section": "mushrooms",
+   "kind": "hazard",
+   "title": "Destroying angel",
+   "latin": "Amanita bisporigera, A. virosa",
+   "edibility": "deadly",
+   "wiki": "Amanita bisporigera",
+   "summary": "Pure white mushroom that destroys the liver. Kills even with treatment.",
+   "idFeatures": [
+    "All white: cap, gills, stem",
+    "Skirt-like ring on the stem",
+    "Sac-like cup (volva) at the base — often buried, dig it up",
+    "White spore print"
+   ],
+   "habitat": "Mixed and hardwood forests, summer and fall.",
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time."
+   ],
+   "confusedWith": [
+    "Puffballs (button stage)",
+    "Meadow mushroom",
+    "Any white mushroom"
+   ],
+   "images": [
+    "destroying-angel"
+   ]
+  },
+  {
+   "id": "fly-agaric",
+   "section": "mushrooms",
+   "kind": "hazard",
+   "title": "Fly agaric",
+   "latin": "Amanita muscaria",
+   "edibility": "deadly",
+   "wiki": "Amanita muscaria",
+   "summary": "Red, orange or yellow cap with white warts. Poisonous, sometimes fatal.",
+   "idFeatures": [
+    "Red to yellow-orange cap with white wart patches",
+    "White gills, ring, and bulb at base with rings of scales"
+   ],
+   "habitat": "Under birch, spruce and pine.",
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time."
+   ],
+   "confusedWith": [
+    "Caesar's mushroom (not in Ontario)",
+    "Chanterelle (from a distance)"
+   ],
+   "images": [
+    "fly-agaric"
+   ]
+  },
+  {
+   "id": "galerina",
+   "section": "mushrooms",
+   "kind": "hazard",
+   "title": "Deadly Galerina",
+   "latin": "Galerina marginata",
+   "edibility": "deadly",
+   "wiki": "Galerina marginata",
+   "summary": "Small brown mushroom on wood with the same toxin as death cap.",
+   "idFeatures": [
+    "Small brown cap, brown gills, thin ring on stem",
+    "Rusty brown spore print",
+    "Clusters on rotting wood"
+   ],
+   "habitat": "Conifer and hardwood logs, spring and fall.",
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time."
+   ],
+   "confusedWith": [
+    "Honey mushroom",
+    "Velvet foot",
+    "Psilocybe"
+   ],
+   "images": [
+    "galerina"
+   ]
+  },
+  {
+   "id": "false-morel",
+   "section": "mushrooms",
+   "kind": "hazard",
+   "title": "False morel",
+   "latin": "Gyromitra esculenta",
+   "edibility": "deadly",
+   "wiki": "Gyromitra esculenta",
+   "summary": "Brain-like spring mushroom; contains a toxin that becomes rocket-fuel-like monomethylhydrazine.",
+   "idFeatures": [
+    "Wrinkled, brain-like, reddish-brown lobed cap",
+    "Cap hangs free like a skirt",
+    "Inside chambered and cottony, not hollow"
+   ],
+   "habitat": "Conifer forests, sandy soils, spring.",
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time."
+   ],
+   "confusedWith": [
+    "Morels"
+   ],
+   "images": [
+    "false-morel"
+   ]
+  },
+  {
+   "id": "jack-o-lantern",
+   "section": "mushrooms",
+   "kind": "hazard",
+   "title": "Jack-o'-lantern",
+   "latin": "Omphalotus illudens",
+   "edibility": "toxic",
+   "wiki": "Omphalotus illudens",
+   "summary": "Orange clustered mushroom that causes severe vomiting.",
+   "idFeatures": [
+    "Bright orange caps in dense clusters on wood or buried roots",
+    "True, sharp gills that run down the stem",
+    "Orange flesh"
+   ],
+   "habitat": "On hardwood stumps; southern part of the region.",
+   "warnings": [
+    "Never eat a wild mushroom identified from a photo, app or book alone. Confirm with an experienced forager in person, check every feature, take a spore print, and eat a small cooked amount the first time."
+   ],
+   "confusedWith": [
+    "Chanterelle",
+    "Chicken of the woods"
+   ],
+   "images": [
+    "jack-o-lantern"
+   ]
+  },
+  {
+   "id": "water-sources",
+   "section": "water",
+   "kind": "skill",
+   "title": "Finding water on the Shield",
+   "summary": "Water is everywhere here; clean water is not. Choose the best source, then always purify.",
+   "steps": [
+    "Prefer, in order: springs → fast clear streams → large lakes (collect from deep water away from shore) → small lakes → beaver ponds (last).",
+    "Collect upstream of camps, trails, beaver lodges and animal crossings.",
+    "Rain: catch off a clean tarp or roof (not asphalt shingles for drinking unless filtered).",
+    "Winter: chop through ice and draw lake water rather than melting snow (snow takes 10× the fuel).",
+    "If you must melt snow, put a little water in the pot first so it doesn't scorch, and add snow a bit at a time.",
+    "Mark water sources in your Journal map."
+   ],
+   "warnings": [
+    "Never drink water with a green or blue scum, paint-like slicks or dead fish: blue-green algae toxins are NOT removed by boiling or most filters.",
+    "Avoid water downstream of mines, tailings, farms or roads: chemicals are not removed by boiling.",
+    "Eating snow drops your core temperature and causes dehydration."
+   ],
+   "related": [
+    "water-purify"
+   ],
+   "images": []
+  },
+  {
+   "id": "water-purify",
+   "section": "water",
+   "kind": "skill",
+   "title": "Purifying water",
+   "summary": "Kill or remove bacteria, viruses and parasites (Giardia — 'beaver fever' — and Cryptosporidium).",
+   "steps": [
+    "Pre-filter cloudy water through a cloth, coffee filter or bandana, or let it settle and pour off the top.",
+    "BOIL: rolling boil for 1 minute. This is the most reliable method. Let cool covered.",
+    "FILTER: use a filter rated 0.2 micron or smaller for bacteria and protozoa. Filters don't stop viruses — add chemical treatment if in doubt. Keep hollow-fibre filters from freezing.",
+    "CHEMICAL (chlorine dioxide): follow the label; wait 30 min for bacteria/viruses, 4 hours for Cryptosporidium. Cold water needs the longest time.",
+    "BLEACH (unscented 5–8 %): 2 drops per litre (4 if cloudy or very cold), shake, wait 30 minutes. There should be a slight chlorine smell.",
+    "UV pen: clear water only; stir as directed."
+   ],
+   "warnings": [
+    "None of these remove chemical pollution or algae toxins.",
+    "Iodine is not for pregnant people or long-term use."
+   ],
+   "related": [
+    "water-sources"
+   ],
+   "images": []
+  },
+  {
+   "id": "fire-basics",
+   "section": "fire",
+   "kind": "skill",
+   "title": "Building a fire",
+   "summary": "Tinder → kindling → fuel, in that order, with everything gathered before you strike a light.",
+   "diagram": "fire-lays",
+   "steps": [
+    "Pick a site sheltered from wind, away from overhanging branches and roots; on snow, build a platform of green logs.",
+    "Gather everything first: a double handful of tinder, two armloads of pencil-thin kindling, and wrist-thick fuel. Then double it.",
+    "Tinder: birch bark, dry grass, cattail fluff, old man's beard lichen, fatwood shavings, cotton balls with petroleum jelly.",
+    "Kindling from standing dead branches (dead lower spruce branches, 'squaw wood', snap crisply even in rain).",
+    "Lay a teepee (fast hot start) or log cabin (long, even coals) around the tinder.",
+    "Light the tinder on the upwind side, low down. Feed kindling gradually; don't smother.",
+    "Add larger fuel only when kindling is burning well. Keep a supply within reach.",
+    "Put it out: drown, stir, drown again until cold to the touch."
+   ],
+   "warnings": [
+    "Never run a fire, stove or heater in a closed shelter without ventilation: carbon monoxide kills silently.",
+    "Check fire bans and wildfire risk in summer."
+   ],
+   "related": [
+    "ferro-rod",
+    "bow-drill",
+    "winter-fire"
+   ],
+   "wiki": "Campfire",
+   "images": [
+    "fire-basics"
+   ]
+  },
+  {
+   "id": "ferro-rod",
+   "section": "fire",
+   "kind": "skill",
+   "title": "Ferrocerium rod",
+   "practiceRequired": true,
+   "summary": "Sparks at 3,000 °C, wet or cold. Works for thousands of strikes.",
+   "steps": [
+    "Prepare fine fluffy tinder (birch bark shavings, cotton + petroleum jelly, feather sticks).",
+    "Place the rod tip right in the tinder.",
+    "Hold the striker still and PULL the rod back hard (this keeps the tinder from being knocked apart).",
+    "Use the spine of a knife (90° edge) or the striker; scrape off the black coating on a new rod first.",
+    "Once tinder catches, cup and blow gently, then add kindling."
+   ],
+   "warnings": [
+    "Practise in wet weather before you need it."
+   ],
+   "wiki": "Ferrocerium",
+   "images": [
+    "ferro-rod"
+   ]
+  },
+  {
+   "id": "bow-drill",
+   "section": "fire",
+   "kind": "skill",
+   "title": "Fire by friction: bow drill",
+   "practiceRequired": true,
+   "diagram": "bow-drill",
+   "summary": "Making fire without matches. Hard to do on the first attempt: practise many times.",
+   "steps": [
+    "Materials: dry, soft, non-resinous wood for spindle and board (cedar, basswood, poplar, willow); a bow (curved stick + cord); a handhold (hard wood or stone with a socket).",
+    "Spindle: straight, thumb-thick, about 20 cm, pointed top, blunt bottom.",
+    "Board: 2 cm thick. Carve a small depression near the edge.",
+    "Kneel with your foot on the board, spindle in the cord loop, handhold on top with your wrist braced on your shin.",
+    "Saw the bow in long, steady strokes to burn in a round socket.",
+    "Cut a pie-slice notch (1/8 of the circle) from the edge into the centre of the socket.",
+    "Put a leaf or bark under the notch. Drill steadily, then faster with more pressure, until heavy smoke rises and dark dust fills the notch.",
+    "Lift the spindle carefully; the dust should keep smoking — that's an ember.",
+    "Tip the ember into a tinder bundle and blow gently until it flames."
+   ],
+   "warnings": [
+    "Hand and back strain; takes many hours of practice to be reliable."
+   ],
+   "wiki": "Bow drill",
+   "images": []
+  },
+  {
+   "id": "winter-fire",
+   "section": "fire",
+   "kind": "skill",
+   "title": "Winter fire",
+   "summary": "Fire on snow needs a platform and more fuel than you think.",
+   "steps": [
+    "Stamp down snow or dig to the ground if it's shallow.",
+    "Build a platform of green wrist-thick logs side by side so the fire doesn't sink into meltwater.",
+    "Look for standing dead spruce and the dead lower branches of conifers: drier than anything on the ground.",
+    "Birch bark lights even when damp.",
+    "Build a reflector (stacked logs or a snow wall) behind the fire to bounce heat toward you.",
+    "Plan on 3–5 times more wood than in summer for an overnight fire."
+   ],
+   "warnings": [
+    "Don't build under snow-loaded branches: melting snow will drop on the fire."
+   ],
+   "images": []
+  },
+  {
+   "id": "quinzhee",
+   "section": "shelter",
+   "kind": "skill",
+   "title": "Quinzhee (snow mound shelter)",
+   "diagram": "quinzhee",
+   "practiceRequired": true,
+   "summary": "A hollowed snow pile. Inside stays around 0 °C even at −30 °C outside.",
+   "steps": [
+    "Pick a site free of overhead hazards. Mark a circle 3–4 m across.",
+    "Pile snow 2–2.5 m high, mixing layers (shovel and toss) so different snow types blend.",
+    "Wait 1–3 hours for the snow to sinter (harden). Colder snow needs longer.",
+    "Push 30 cm sticks into the mound all over, pointing at the centre. They are your wall-thickness guides.",
+    "Dig a low entrance on the downwind side, angled slightly up.",
+    "Hollow out the inside, removing snow until you hit the ends of the sticks. Smooth the ceiling into a dome so drips run down the walls.",
+    "Make the sleeping platform higher than the top of the entrance: cold air sinks out.",
+    "Poke a fist-sized vent hole in the roof at an angle. Keep it open.",
+    "Keep your shovel inside. Block the entrance partly with a pack."
+   ],
+   "warnings": [
+    "Always have a partner outside while digging: roofs can collapse.",
+    "Never use a stove or candle without ventilation (carbon monoxide).",
+    "Too-thin walls (light shows through bright) can collapse."
+   ],
+   "related": [
+    "snow-trench"
+   ],
+   "wiki": "Quinzhee",
+   "images": [
+    "quinzhee"
+   ]
+  },
+  {
+   "id": "snow-trench",
+   "section": "shelter",
+   "kind": "skill",
+   "title": "Snow trench",
+   "diagram": "snow-trench",
+   "summary": "The fastest emergency snow shelter when snow is deep or you have little time.",
+   "steps": [
+    "Dig a trench as long as your body plus 30 cm, shoulder width plus a bit, and about 1 m deep.",
+    "Cut snow blocks if the snow is firm; lean them in pairs to form an A-frame roof. Otherwise lay branches or a tarp across and cover with 15–30 cm of snow.",
+    "Lay insulation on the floor: spruce boughs 15+ cm thick, or a foam pad.",
+    "Make the entrance lower than the sleeping area (cold sink), or dig a step.",
+    "Poke a ventilation hole."
+   ],
+   "warnings": [
+    "Don't trench where snowmobiles or vehicles travel; mark the site."
+   ],
+   "wiki": "Snow cave",
+   "images": [
+    "snow-trench"
+   ]
+  },
+  {
+   "id": "lean-to",
+   "section": "shelter",
+   "kind": "skill",
+   "title": "Lean-to with reflector fire",
+   "diagram": "lean-to",
+   "summary": "Quick shelter open to a fire; best with a reflector wall behind the fire.",
+   "steps": [
+    "Find two trees 2–3 m apart, or drive two forked poles into the ground.",
+    "Lash a ridgepole across at chest height.",
+    "Lean poles from the ridgepole to the ground on the windward side at about 45°.",
+    "Cover with a tarp, bark, or thick layers of spruce boughs laid like shingles from the bottom up.",
+    "Build a fire 1–1.5 m in front of the open side.",
+    "Stack green logs as a reflector wall behind the fire so heat bounces into the shelter.",
+    "Insulate the floor with 15+ cm of boughs."
+   ],
+   "warnings": [
+    "Keep the fire small and controlled; tarps melt and boughs burn."
+   ],
+   "images": []
+  },
+  {
+   "id": "debris-hut",
+   "section": "shelter",
+   "kind": "skill",
+   "title": "Debris hut",
+   "summary": "Body-heat shelter for when you have no fire. Needs a lot of leaves/boughs.",
+   "steps": [
+    "Prop a long ridgepole (2.5–3 m) on a stump or forked stick at hip height, other end on the ground.",
+    "Lean ribs along both sides, close together, leaving only a narrow body-sized space inside.",
+    "Pile leaves, grass, boughs at least 60 cm (an arm's length) thick over the frame.",
+    "Stuff the inside with dry debris; crawl in feet first and plug the entrance with a debris pile."
+   ],
+   "warnings": [
+    "Too large a space won't stay warm."
+   ],
+   "wiki": "Debris hut",
+   "images": []
+  },
+  {
+   "id": "site-selection",
+   "section": "shelter",
+   "kind": "skill",
+   "title": "Choosing a shelter site",
+   "summary": "Where you sleep matters as much as what you build.",
+   "steps": [
+    "Look up: no dead trees or branches ('widow-makers') overhead.",
+    "Avoid valley bottoms and lakeshores on still nights: cold air pools there. Mid-slope is warmer.",
+    "Shelter from prevailing wind (northwest in winter here).",
+    "Be close to water and firewood but not in a drainage or flood path.",
+    "In bug season, an open breezy point keeps blackflies and mosquitoes down.",
+    "Stay near your vehicle or the place people will look for you if lost."
+   ],
+   "images": []
+  },
+  {
+   "id": "map-compass",
+   "section": "navigation",
+   "kind": "skill",
+   "title": "Map and compass: taking a bearing",
+   "diagram": "compass",
+   "practiceRequired": true,
+   "summary": "Topo map + baseplate compass works when GPS batteries die.",
+   "steps": [
+    "Find your declination: in Northern Ontario it ranges from about 0° in the far northwest to about 12° west in the northeast. Look yours up (NRCan magnetic declination calculator) before you go and write it on your map.",
+    "Lay the compass edge on the map connecting where you are to where you want to go, direction-of-travel arrow pointing to the destination.",
+    "Turn the dial so the orienting lines match the map's north–south grid lines (orienting arrow to map north).",
+    "Correct for declination: for WEST declination ADD the degrees to the bearing (\"west is best\"); for east, subtract.",
+    "Hold the compass flat at your chest; turn your body until the red needle sits in the orienting arrow ('red in the shed').",
+    "Pick a landmark on that line, walk to it, repeat."
+   ],
+   "warnings": [
+    "Iron, phones, rifles and vehicles deflect the needle: step away.",
+    "Shield rock (iron formations) can cause local magnetic anomalies."
+   ],
+   "wiki": "Orienteering compass",
+   "images": [
+    "map-compass"
+   ]
+  },
+  {
+   "id": "no-compass",
+   "section": "navigation",
+   "kind": "skill",
+   "title": "Direction without a compass",
+   "summary": "Rough direction from the sun and stars.",
+   "steps": [
+    "Shadow stick: push a stick upright, mark the shadow tip, wait 15 minutes, mark again. A line from the first to the second mark points roughly east.",
+    "Sun: rises roughly east, sets roughly west; at midday it is due south.",
+    "North Star: find the Big Dipper; the two stars at the end of the cup point to Polaris (about 5× their spacing). Polaris is within 1° of true north.",
+    "Analog watch (standard time): point the hour hand at the sun; halfway between it and 12 is roughly south."
+   ],
+   "warnings": [
+    "Moss and tree growth are unreliable."
+   ],
+   "wiki": "Polaris",
+   "images": []
+  },
+  {
+   "id": "lost",
+   "section": "navigation",
+   "kind": "skill",
+   "title": "If you are lost: S.T.O.P.",
+   "summary": "Most lost-person deaths come from panic and moving in the wrong direction.",
+   "steps": [
+    "Stop: sit down, drink, eat something.",
+    "Think: when did you last know where you were?",
+    "Observe: terrain, water flow, sun, time left before dark.",
+    "Plan: if someone knows your route and return time, stay put, make shelter and fire before dark, and signal.",
+    "If you must move, use a 'handrail' (shoreline, river, power line, road) or a 'baseline' (a long road or lake you can't miss).",
+    "Following water downstream on the Shield often leads to lakes and swamps, not roads: use it as a handrail, not a guarantee."
+   ],
+   "images": []
+  },
+  {
+   "id": "trip-plan",
+   "section": "navigation",
+   "kind": "skill",
+   "title": "Trip plan",
+   "summary": "Tell someone where you're going and when to call for help.",
+   "steps": [
+    "Write: route, party, vehicle, gear, return time, when to call police (OPP 1-888-310-1122 or 911).",
+    "Leave it with someone reliable and a copy in your vehicle.",
+    "Check in when you return."
+   ],
+   "images": []
+  },
+  {
+   "id": "signals",
+   "section": "signalling",
+   "kind": "skill",
+   "title": "Signals for rescue",
+   "diagram": "ground-signals",
+   "summary": "Three of anything means distress. Make yourself big, bright and different.",
+   "steps": [
+    "Whistle: 3 blasts, pause, repeat. Carries far further than a voice.",
+    "Three fires in a triangle, about 30 m apart. Keep green boughs ready to make white smoke by day; flame shows at night.",
+    "Ground-to-air symbols at least 3 m tall in contrasting colour (stamped snow, logs, rocks, gear): V = need assistance; X = need medical help; N = no; Y = yes; arrow = we went this way.",
+    "Signal mirror: aim through a V of fingers at the aircraft and flash. Visible 15+ km.",
+    "Bright cloth or tarp in an open area (lake ice, clearing).",
+    "PLB/satellite messenger: open the antenna to the sky and activate; leave it on."
+   ],
+   "wiki": "Signal mirror",
+   "images": [
+    "signals"
+   ]
+  },
+  {
+   "id": "plb",
+   "section": "signalling",
+   "kind": "skill",
+   "title": "Personal locator beacon (PLB)",
+   "summary": "A 406 MHz PLB alerts search and rescue by satellite with no subscription.",
+   "steps": [
+    "Register your PLB with the Canadian Beacon Registry (free); update every two years.",
+    "In an emergency, get to open sky, extend the antenna vertically, activate and leave it on.",
+    "Do not turn it off until rescued.",
+    "Test only using the self-test function."
+   ],
+   "wiki": "Emergency position-indicating radiobeacon",
+   "images": [
+    "plb"
+   ]
+  },
+  {
+   "id": "hypothermia",
+   "section": "cold",
+   "kind": "skill",
+   "title": "Hypothermia",
+   "diagram": "hypo-wrap",
+   "practiceRequired": true,
+   "summary": "Core temperature below 35 °C. Watch for the 'umbles': stumbles, mumbles, fumbles, grumbles.",
+   "idFeatures": [
+    "Mild (35–32 °C): shivering, clumsy hands, poor judgement",
+    "Moderate (32–28 °C): shivering slows or stops, confusion, slurred speech, drowsy",
+    "Severe (below 28 °C): unconscious, very slow breathing and pulse, may look dead"
+   ],
+   "steps": [
+    "Stop heat loss: get out of wind and wet, into shelter.",
+    "Handle gently, keep horizontal (rough movement can trigger cardiac arrest in moderate/severe cases).",
+    "Remove wet clothes (cut them if needed) or wrap over them if you can't shelter.",
+    "Hypothermia wrap: insulation under the person (pad, boughs), sleeping bag/blankets, then a vapour barrier (tarp, plastic), then wind barrier. Cover the head.",
+    "Add heat to the chest, armpits and back (warm water bottles, heat packs wrapped in cloth).",
+    "If fully alert and able to swallow: warm, sweet drinks and food (shivering burns sugar).",
+    "Moderate/severe: no food or drink, don't let them walk, evacuate.",
+    "Severe: check breathing and pulse for a full 60 seconds before starting CPR. 'Not dead until warm and dead.'"
+   ],
+   "warnings": [
+    "Don't rub limbs or put a moderate/severe patient in a hot shower.",
+    "Alcohol makes it worse."
+   ],
+   "related": [
+    "frostbite",
+    "cold-water"
+   ],
+   "images": []
+  },
+  {
+   "id": "frostbite",
+   "section": "cold",
+   "kind": "skill",
+   "title": "Frostbite and frostnip",
+   "summary": "Frozen tissue. Prevention: dry socks, loose boots, mitts, cover skin, check each other's faces.",
+   "idFeatures": [
+    "Frostnip: white, numb patches that recover fully with warming",
+    "Superficial: white or grey waxy skin, soft underneath; blisters after warming",
+    "Deep: hard, wooden feeling, numb; later dark blisters and black tissue"
+   ],
+   "steps": [
+    "Frostnip: warm with skin contact (hand in armpit, warm hand over face). Don't rub.",
+    "Only thaw frostbite if it won't refreeze: thawing then refreezing causes far more damage. Walking out on frozen feet is better than thawing them and refreezing.",
+    "Treat hypothermia first.",
+    "Rewarm in water at 37–39 °C (comfortably warm to an uninjured hand) for 15–30 min until skin is soft and colour returns. It will hurt: give ibuprofen.",
+    "Don't use fire, stoves or hot rocks: numb skin burns.",
+    "Pad between fingers/toes, don't break blisters, keep elevated, don't walk on thawed feet.",
+    "Get medical care for anything more than frostnip."
+   ],
+   "warnings": [
+    "Don't rub with snow."
+   ],
+   "related": [
+    "hypothermia"
+   ],
+   "wiki": "Frostbite",
+   "images": [
+    "frostbite"
+   ]
+  },
+  {
+   "id": "trench-foot",
+   "section": "cold",
+   "kind": "skill",
+   "title": "Trench foot (immersion foot)",
+   "summary": "Damage from feet staying cold and wet for hours — common in spring melt and in sweaty winter boots.",
+   "idFeatures": [
+    "Numb, cold, pale or blotchy feet, swollen",
+    "After warming: red, painful, swollen, may blister"
+   ],
+   "steps": [
+    "Prevent: change to dry socks at least daily (twice in wet conditions), dry boot liners overnight, use vapour-barrier liners in deep cold.",
+    "Treat: dry feet gently, warm slowly (not hot water), elevate, don't walk on them if possible.",
+    "Air-dry and keep clean; watch for infection."
+   ],
+   "images": []
+  },
+  {
+   "id": "snow-blindness",
+   "section": "cold",
+   "kind": "skill",
+   "title": "Snow blindness",
+   "summary": "Sunburn of the eyes from snow glare, especially in March and April.",
+   "steps": [
+    "Prevent: sunglasses or improvised slit goggles (bark or cloth with narrow slits).",
+    "Symptoms (often hours later): gritty, painful, watering eyes, sensitivity to light.",
+    "Treat: cover eyes, rest in darkness, cold compresses, pain relief. Heals in 1–3 days. Don't rub."
+   ],
+   "wiki": "Snow goggles",
+   "images": [
+    "snow-blindness"
+   ]
+  },
+  {
+   "id": "carbon-monoxide",
+   "section": "cold",
+   "kind": "skill",
+   "title": "Carbon monoxide poisoning",
+   "summary": "The winter killer when people heat or cook indoors during outages.",
+   "idFeatures": [
+    "Headache, dizziness, nausea, confusion, sleepiness — several people sick at once"
+   ],
+   "steps": [
+    "Never run generators, barbecues, camp stoves or vehicles indoors, in garages, tents or snow shelters.",
+    "Battery CO alarms on every sleeping level.",
+    "If suspected: get everyone into fresh air immediately, call 911, give CPR if needed."
+   ],
+   "images": []
+  },
+  {
+   "id": "cold-water",
+   "section": "cold",
+   "kind": "skill",
+   "title": "Cold water immersion: 1-10-1",
+   "summary": "Cold shock kills before hypothermia does.",
+   "steps": [
+    "1 minute: control your breathing through the cold shock gasps. Keep your head above water.",
+    "10 minutes of meaningful movement: get out now, while your arms still work.",
+    "1 hour before you lose consciousness from hypothermia: if you can't get out, keep still, get as much of your body out of the water as possible (rest arms on the ice), and wait for help.",
+    "See Ice safety for self-rescue."
+   ],
+   "related": [
+    "ice-rescue"
+   ],
+   "wiki": "Ice rescue",
+   "images": [
+    "cold-water"
+   ]
+  },
+  {
+   "id": "march",
+   "section": "medical",
+   "kind": "skill",
+   "title": "Trauma priorities: MARCH",
+   "summary": "Treat what kills fastest first.",
+   "steps": [
+    "Scene safe? Don't become a second casualty.",
+    "M — Massive bleeding: tourniquet or pack and press.",
+    "A — Airway: open it; recovery position if unconscious and breathing.",
+    "R — Respiration: chest wounds; seal open chest holes.",
+    "C — Circulation: other bleeding, shock (lay flat, keep warm).",
+    "H — Hypothermia and Head injury: insulate from the ground, cover; watch for worsening confusion.",
+    "Then check head to toe, and call for help / plan evacuation."
+   ],
+   "warnings": [
+    "This is a memory aid, not training. Take a Stop the Bleed, wilderness first aid or TCCC course."
+   ],
+   "related": [
+    "tourniquet",
+    "wound-packing"
+   ],
+   "images": []
+  },
+  {
+   "id": "tourniquet",
+   "section": "medical",
+   "kind": "skill",
+   "title": "Tourniquet (CAT)",
+   "diagram": "tourniquet",
+   "practiceRequired": true,
+   "summary": "For life-threatening arm or leg bleeding. Fast is better than perfect.",
+   "steps": [
+    "Place it 5–8 cm above the wound (not on a joint), or 'high and tight' on the limb if you can't see the wound.",
+    "Pull the strap as tight as possible before twisting and fasten it.",
+    "Twist the windlass until the bleeding stops (it will hurt a lot).",
+    "Lock the windlass in its clip and secure with the strap.",
+    "Write the time on the tourniquet or the person's forehead.",
+    "If bleeding continues, put a second tourniquet above the first.",
+    "Do not loosen or remove it; get to medical care."
+   ],
+   "warnings": [
+    "This is a memory aid, not training. Take a Stop the Bleed, wilderness first aid or TCCC course.",
+    "Practise with a training tourniquet on yourself, one-handed, on each limb."
+   ],
+   "related": [
+    "march"
+   ],
+   "wiki": "Combat Application Tourniquet",
+   "images": []
+  },
+  {
+   "id": "wound-packing",
+   "section": "medical",
+   "kind": "skill",
+   "title": "Wound packing and pressure",
+   "practiceRequired": true,
+   "summary": "For deep wounds where a tourniquet can't go (neck, armpit, groin) or as backup.",
+   "steps": [
+    "Expose the wound.",
+    "Push gauze (hemostatic if available) deep into the wound directly onto the bleeding point with your fingers.",
+    "Keep packing until the wound is full and tight.",
+    "Hold hard, direct pressure for at least 3 minutes (10 if plain gauze).",
+    "Wrap tightly with a pressure bandage."
+   ],
+   "warnings": [
+    "This is a memory aid, not training. Take a Stop the Bleed, wilderness first aid or TCCC course."
+   ],
+   "images": []
+  },
+  {
+   "id": "chest-seal",
+   "section": "medical",
+   "kind": "skill",
+   "title": "Chest wound",
+   "summary": "An open chest wound can collapse a lung.",
+   "steps": [
+    "Cover the hole immediately with your gloved hand.",
+    "Apply a vented chest seal (or plastic taped on 3 sides) during breath out.",
+    "Check for an exit wound on the back and seal it too.",
+    "Watch for worsening breathing and swelling neck veins (tension pneumothorax): 'burp' the seal by lifting an edge.",
+    "Let them sit up if it helps breathing."
+   ],
+   "warnings": [
+    "This is a memory aid, not training. Take a Stop the Bleed, wilderness first aid or TCCC course."
+   ],
+   "images": []
+  },
+  {
+   "id": "splinting",
+   "section": "medical",
+   "kind": "skill",
+   "title": "Splinting",
+   "practiceRequired": true,
+   "summary": "Immobilize a suspected fracture or bad sprain to reduce pain and damage.",
+   "steps": [
+    "Check circulation, sensation and movement beyond the injury (CSM).",
+    "Splint in the position found unless there is no pulse; then gently straighten along the bone's line.",
+    "Immobilize the joint above and below a broken bone, or the bones above and below a joint.",
+    "Pad well (SAM splint, sticks, rolled sleeping pad, magazine).",
+    "Tie firmly but not tight; check CSM again afterwards and every 30 minutes.",
+    "Elevate and apply cold if available."
+   ],
+   "warnings": [
+    "This is a memory aid, not training. Take a Stop the Bleed, wilderness first aid or TCCC course."
+   ],
+   "images": []
+  },
+  {
+   "id": "wound-care",
+   "section": "medical",
+   "kind": "skill",
+   "title": "Cleaning and closing wounds",
+   "summary": "Infection is the long-term killer when help is far away.",
+   "steps": [
+    "Stop the bleeding first.",
+    "Irrigate with lots of clean (drinkable) water under pressure: a syringe or a bag with a pinhole. At least 500 mL.",
+    "Remove debris.",
+    "Small clean cuts: close with tape strips. Leave dirty wounds, bites and punctures open, packed with moist gauze.",
+    "Cover and change dressings daily.",
+    "Infection signs: spreading redness, heat, swelling, pus, red streaks, fever → get medical help."
+   ],
+   "warnings": [
+    "This is a memory aid, not training. Take a Stop the Bleed, wilderness first aid or TCCC course."
+   ],
+   "images": []
+  },
+  {
+   "id": "burns",
+   "section": "medical",
+   "kind": "skill",
+   "title": "Burns",
+   "summary": "Cool, cover, and watch for shock.",
+   "steps": [
+    "Cool with clean cool water for 20 minutes (not ice).",
+    "Remove rings and tight items before swelling.",
+    "Cover with clean non-stick dressing or plastic wrap.",
+    "Don't break blisters or apply butter/grease.",
+    "Large burns, face/hand/groin burns, or burns around a limb: get medical help; watch for hypothermia."
+   ],
+   "warnings": [
+    "This is a memory aid, not training. Take a Stop the Bleed, wilderness first aid or TCCC course."
+   ],
+   "images": []
+  },
+  {
+   "id": "ice-fishing",
+   "section": "game",
+   "kind": "skill",
+   "title": "Ice fishing",
+   "summary": "Winter protein through the ice. Check ice first.",
+   "steps": [
+    "Check thickness as you go (see Ice safety).",
+    "Drill holes with a hand auger over drop-offs, points and weed edges (5–10 m deep for walleye and lake trout; shallower for pike and perch).",
+    "Tip-ups with live or dead bait for pike; jig spoons or small jigs for walleye, perch and trout.",
+    "Skim ice from holes regularly.",
+    "Keep fish frozen on the ice; process at camp."
+   ],
+   "warnings": [
+    "Line limits and closed waters apply under licence."
+   ],
+   "related": [
+    "ice-thickness"
+   ],
+   "wiki": "Ice fishing",
+   "images": [
+    "ice-fishing"
+   ]
+  },
+  {
+   "id": "clean-fish",
+   "section": "game",
+   "kind": "skill",
+   "title": "Cleaning and filleting fish",
+   "summary": "Pike Y-bones are tricky; everything else is straightforward.",
+   "steps": [
+    "Kill quickly with a blow to the head.",
+    "Gut: cut from vent to gills, remove guts, scrape the blood line along the spine.",
+    "Fillet: cut behind the gill plate down to the spine, turn the knife and run it along the backbone to the tail. Skin by holding the tail and sliding the knife between skin and meat.",
+    "Pike: take the back strip above the Y-bones, then the two side strips below them, then the belly — five boneless pieces.",
+    "Save heads, frames and guts for bait or to bury in the garden."
+   ],
+   "warnings": [
+    "Pike, walleye and others can carry fish tapeworm: cook to 63 °C, or freeze at −20 °C for 7 days before eating raw/cold-smoked."
+   ],
+   "wiki": "Northern pike",
+   "images": [
+    "clean-fish"
+   ]
+  },
+  {
+   "id": "snare-hare",
+   "section": "game",
+   "kind": "skill",
+   "title": "Snaring snowshoe hare",
+   "practiceRequired": true,
+   "summary": "The north's most reliable winter meat. Legal only with the right licence and area.",
+   "steps": [
+    "Find fresh hare runs (packed trails through dense young conifers and willows).",
+    "Make a loop about 10 cm across from 20–22 gauge brass or steel wire with a small locking eye.",
+    "Hang it across the run with the bottom 7–10 cm above the snow (a fist above the trail).",
+    "Funnel the run with twigs on each side so the hare goes through the loop.",
+    "Anchor the wire to a solid stick or tree.",
+    "Set many snares (10–20); check every day.",
+    "Reset or remove snares when you leave."
+   ],
+   "warnings": [
+    "Check Ontario rules: small game licence, north of French and Mattawa rivers only.",
+    "Wear gloves when handling hares: tularemia. Discard any with white spots on the liver.",
+    "Hare alone is too lean to survive on: eat fat too."
+   ],
+   "related": [
+    "skin-hare"
+   ],
+   "wiki": "Snowshoe hare",
+   "images": [
+    "snare-hare"
+   ]
+  },
+  {
+   "id": "skin-hare",
+   "section": "game",
+   "kind": "skill",
+   "title": "Skinning and gutting a hare",
+   "summary": "Five minutes with practice.",
+   "steps": [
+    "Wear gloves.",
+    "Pinch the skin on the back, cut a small slit, put two fingers of each hand in, and pull apart toward head and feet.",
+    "Cut off the feet and head.",
+    "Cut the belly carefully from the pelvis to the ribs without piercing the guts.",
+    "Pull out the guts; check the liver (dark red, smooth — discard the whole animal if spotted with white/yellow).",
+    "Rinse and cook thoroughly."
+   ],
+   "warnings": [
+    "Tularemia: cook all wild rabbit and hare well done."
+   ],
+   "wiki": "Snowshoe hare",
+   "images": [
+    "skin-hare"
+   ]
+  },
+  {
+   "id": "field-dress",
+   "section": "game",
+   "kind": "skill",
+   "title": "Field dressing big game (moose, deer)",
+   "practiceRequired": true,
+   "summary": "Cool the meat fast. A moose is 200+ kg of meat: plan before you shoot.",
+   "steps": [
+    "Approach from behind; confirm it is dead (touch the eye with a stick).",
+    "Tag it if required.",
+    "Roll onto its back (prop with logs) or use the 'gutless' method on large moose: skin one side, remove quarters, backstrap and tenderloins, then flip.",
+    "For gutting: cut around the anus and tie it off. Cut the skin from pelvis to sternum, two fingers guiding the blade upward so you don't cut the gut.",
+    "Cut the diaphragm, reach up and cut the windpipe, pull everything out.",
+    "Prop the cavity open to cool; get the hide off as soon as practical in warm weather.",
+    "Hang quarters in breathable game bags in shade, off the ground."
+   ],
+   "warnings": [
+    "Bear meat carries Trichinella that survives freezing: always cook to 71 °C.",
+    "Don't eat game that acted sick; report it."
+   ],
+   "wiki": "Moose",
+   "images": [
+    "field-dress"
+   ]
+  },
+  {
+   "id": "rabbit-starvation",
+   "section": "game",
+   "kind": "reference",
+   "title": "Fat matters: rabbit starvation",
+   "summary": "Lean meat alone can't keep you alive.",
+   "steps": [
+    "Living on lean meat (hare, grouse, lean fish) without fat or carbs leads to nausea, diarrhea and death within weeks ('protein poisoning').",
+    "Aim for at least 20–30 % of calories from fat.",
+    "Fat sources: beaver, bear fat, marrow from bones, fish livers and bellies (whitefish, lake trout), stored oils, nuts.",
+    "Render fat slowly, strain, and store cool in sealed containers."
+   ],
+   "wiki": "Snowshoe hare",
+   "images": [
+    "rabbit-starvation"
+   ]
+  },
+  {
+   "id": "drying",
+   "section": "preservation",
+   "kind": "skill",
+   "title": "Drying meat and fish (jerky)",
+   "summary": "Thin strips, salt, heat and moving air.",
+   "steps": [
+    "Slice lean meat 5 mm thick, with the grain for chewy jerky. Trim all fat (fat goes rancid).",
+    "Optional: salt or marinate overnight in the fridge/cold.",
+    "Heat the meat to 71 °C (74 °C for birds) first by steaming or baking, then dry. This kills bacteria that drying alone doesn't.",
+    "Dry at 55–60 °C in a dehydrator, low oven with the door cracked, or over a low smoky fire, until strips bend and crack but don't snap (4–12 hours).",
+    "Store airtight, cool and dark; eat within 1–2 months (longer frozen)."
+   ],
+   "warnings": [
+    "Bear and other carnivores: cook thoroughly; don't make jerky unless meat is first fully cooked (Trichinella)."
+   ],
+   "wiki": "Jerky",
+   "images": [
+    "drying"
+   ]
+  },
+  {
+   "id": "smoking",
+   "section": "preservation",
+   "kind": "skill",
+   "title": "Smoking fish",
+   "summary": "Brine, dry, smoke. Hot-smoked fish is cooked but still perishable.",
+   "steps": [
+    "Fillet with skin on.",
+    "Brine: about 80–100 g salt per litre of cold water (with some sugar if you like) for 1–4 hours depending on thickness.",
+    "Rinse and air-dry until a tacky skin (pellicle) forms (1–3 hours, in shade with a breeze).",
+    "Smoke with hardwood (maple, birch, alder; never conifers — bitter, sooty).",
+    "Hot smoke: bring the thickest part to at least 63 °C and hold 30 minutes.",
+    "Cool, then refrigerate or freeze. For long storage without power, dry it much further (hard) or can it."
+   ],
+   "warnings": [
+    "Cold-smoked fish is raw: only with proper curing and freezing."
+   ],
+   "wiki": "Smokehouse",
+   "images": [
+    "smoking"
+   ]
+  },
+  {
+   "id": "curing",
+   "section": "preservation",
+   "kind": "skill",
+   "title": "Salt curing meat",
+   "summary": "Salt plus nitrite cure make bacon, ham and dried sausage safe.",
+   "steps": [
+    "Weigh the meat. Use 2.5–3 % salt by weight.",
+    "Add curing salt #1 (Prague powder #1) at 0.25 % of meat weight (2.5 g per kg) for bacon and short cures; #2 only for long dry-cured products.",
+    "Rub on all surfaces, bag or crock it cold (2–4 °C), turn daily. Allow about 7 days per 2.5 cm of thickness.",
+    "Rinse, dry to form a pellicle, then smoke or cook."
+   ],
+   "warnings": [
+    "Curing salts are toxic in excess: measure exactly with a scale and keep labelled and away from children.",
+    "Temperatures above 4 °C during curing allow spoilage."
+   ],
+   "wiki": "Curing (food preservation)",
+   "images": [
+    "curing"
+   ]
+  },
+  {
+   "id": "pressure-canning",
+   "section": "preservation",
+   "kind": "skill",
+   "title": "Pressure canning meat and fish",
+   "practiceRequired": true,
+   "summary": "The only safe way to can low-acid food (meat, fish, vegetables, beans). Botulism is the risk.",
+   "table": {
+    "columns": [
+     "Food (raw pack)",
+     "Jar",
+     "Minutes",
+     "Pressure (≤ 300 m elevation)"
+    ],
+    "rows": [
+     [
+      "Meat: moose, venison, beef, pork",
+      "500 mL",
+      "75",
+      "10 lb weighted / 11 lb dial"
+     ],
+     [
+      "Meat",
+      "1 L",
+      "90",
+      "10 lb weighted / 11 lb dial"
+     ],
+     [
+      "Poultry, hare (bone-in)",
+      "500 mL",
+      "65",
+      "10 lb weighted / 11 lb dial"
+     ],
+     [
+      "Poultry, hare (bone-in)",
+      "1 L",
+      "75",
+      "10 lb weighted / 11 lb dial"
+     ],
+     [
+      "Fish",
+      "500 mL only",
+      "100",
+      "10 lb weighted / 11 lb dial"
+     ],
+     [
+      "Dry beans (soaked, hot pack)",
+      "500 mL",
+      "75",
+      "10 lb weighted / 11 lb dial"
+     ],
+     [
+      "Potatoes (cubed)",
+      "500 mL",
+      "35",
+      "10 lb weighted / 11 lb dial"
+     ],
+     [
+      "Carrots",
+      "500 mL",
+      "25",
+      "10 lb weighted / 11 lb dial"
+     ]
+    ]
+   },
+   "steps": [
+    "Use a tested recipe (USDA / Bernardin). Check your elevation: above 300 m, use 15 lb weighted or increase dial pressure per the canner manual.",
+    "Inspect jars for chips; new lids (or approved reusable lids).",
+    "Pack raw meat into jars leaving 2.5 cm headspace; add 1/2 tsp salt per 500 mL if desired. No liquid needed for raw-pack meat.",
+    "Wipe rims, fit lids finger-tight.",
+    "Put jars on the rack with 5–8 cm of water in the canner (per manual). Lock lid.",
+    "Vent steam for 10 minutes, then add the weight/close the petcock.",
+    "Start timing only once at full pressure. Keep pressure steady the whole time; if it drops, restart the time.",
+    "Turn off heat and let pressure fall to zero on its own. Wait 10 minutes, then open away from you.",
+    "Let jars cool 24 hours. Check seals (lid doesn't flex). Remove rings, label, store cool and dark."
+   ],
+   "warnings": [
+    "Never water-bath can meat, fish or vegetables.",
+    "Bulging lids, spurting liquid, bad smell: discard without tasting. Botulism toxin can kill with no off smell.",
+    "Boil home-canned low-acid food 10 minutes before eating if you have any doubt."
+   ],
+   "wiki": "Home canning",
+   "images": [
+    "pressure-canning"
+   ]
+  },
+  {
+   "id": "water-bath",
+   "section": "preservation",
+   "kind": "skill",
+   "title": "Water-bath canning (high-acid)",
+   "summary": "For fruit, jam, pickles and acidified tomatoes only.",
+   "steps": [
+    "Use tested recipes; add lemon juice or citric acid to tomatoes.",
+    "Fill hot jars, leave headspace per recipe, remove air bubbles, wipe rims, fit lids.",
+    "Cover jars with 2–5 cm of boiling water; boil for the recipe time (e.g. jam 10 min, berries 15–20 min).",
+    "Lift out, cool 24 hours, check seals."
+   ],
+   "warnings": [
+    "Not for low-acid foods."
+   ],
+   "images": []
+  },
+  {
+   "id": "sauerkraut",
+   "section": "preservation",
+   "kind": "skill",
+   "title": "Fermenting sauerkraut",
+   "summary": "Vitamin C all winter with just cabbage and salt, no canning or fuel.",
+   "steps": [
+    "Shred cabbage, weigh it.",
+    "Add 2 % salt by weight (20 g per kg).",
+    "Massage until it releases brine.",
+    "Pack tightly in a crock or jar, pressing until the brine covers the cabbage.",
+    "Weigh it down so everything stays under brine; cover with a cloth.",
+    "Ferment at 15–22 °C for 3–6 weeks, skimming any surface scum.",
+    "Store cold (root cellar)."
+   ],
+   "warnings": [
+    "Pink, slimy or foul-smelling batches: discard."
+   ],
+   "wiki": "Sauerkraut",
+   "images": []
+  },
+  {
+   "id": "root-cellar",
+   "section": "preservation",
+   "kind": "skill",
+   "title": "Root cellaring",
+   "summary": "Keep potatoes, carrots, cabbage and squash all winter without power.",
+   "steps": [
+    "Potatoes, carrots, beets, turnips, cabbage: 0–4 °C, 90–95 % humidity, dark.",
+    "Pack carrots and beets in damp sand or sawdust.",
+    "Squash and pumpkins: warmer and dry (10–15 °C) — under a bed, not the cellar.",
+    "Onions and garlic: cool and dry.",
+    "Keep apples away from potatoes and carrots (ethylene).",
+    "Check monthly; remove anything rotting."
+   ],
+   "wiki": "Root cellar",
+   "images": [
+    "root-cellar"
+   ]
+  },
+  {
+   "id": "ice-thickness",
+   "section": "ice",
+   "kind": "reference",
+   "title": "Ice thickness",
+   "diagram": "ice-thickness",
+   "summary": "Clear blue ice only; white or snow ice is about half as strong. No ice is ever 100 % safe.",
+   "table": {
+    "columns": [
+     "Clear blue ice",
+     "Safe for"
+    ],
+    "rows": [
+     [
+      "Under 15 cm",
+      "STAY OFF"
+     ],
+     [
+      "15 cm",
+      "Walking or skating alone"
+     ],
+     [
+      "20 cm",
+      "Skating parties or games"
+     ],
+     [
+      "25 cm",
+      "Snowmobiles"
+     ],
+     [
+      "30+ cm",
+      "Cars and light trucks (rule of thumb; many agencies advise never driving on ice)"
+     ]
+    ]
+   },
+   "steps": [
+    "Thickness guide: Canadian Red Cross.",
+    "Check with an ice chisel or auger every few steps on new ice and near any change.",
+    "Danger signs: near inlets/outlets, pressure ridges, springs, beaver lodges, docks, dark or slushy patches, snow-covered ice (insulates and weakens it).",
+    "Spring ice is rotten even when thick: candling, grey, and soft. Stay off after break-up starts.",
+    "Wear ice picks around your neck and a floater suit; carry a throw rope; never go alone."
+   ],
+   "warnings": [
+    "White (snow) ice: double the thickness. Slush ice: stay off."
+   ],
+   "related": [
+    "ice-rescue",
+    "cold-water"
+   ],
+   "sources": [
+    "Canadian Red Cross"
+   ],
+   "wiki": "Ice",
+   "images": [
+    "ice-thickness"
+   ]
+  },
+  {
+   "id": "ice-rescue",
+   "section": "ice",
+   "kind": "skill",
+   "title": "Self-rescue through ice",
+   "practiceRequired": true,
+   "summary": "Turn back toward the way you came — that ice held you.",
+   "steps": [
+    "Don't panic: control your breathing through the first minute of cold shock.",
+    "Turn toward the direction you came from.",
+    "Put your arms on the ice; use ice picks (or knives, keys) to grip.",
+    "Kick your legs hard to bring your body horizontal and slide forward onto the ice like a seal.",
+    "Once out, roll away from the hole — don't stand up — until you're on solid ice.",
+    "Get to warmth and dry clothes immediately; treat for hypothermia."
+   ],
+   "warnings": [
+    "Rescuing someone: call for help, REACH with a pole or THROW a rope; don't go out on the ice yourself."
+   ],
+   "related": [
+    "cold-water",
+    "hypothermia"
+   ],
+   "wiki": "Ice rescue",
+   "images": [
+    "ice-rescue"
+   ]
+  }
+ ]
+}

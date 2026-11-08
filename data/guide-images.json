@@ -1,0 +1,683 @@
+{
+ "dataset": "guide-images",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Bundled field-guide photos with attribution. Only public-domain and Creative Commons images from Wikimedia Commons. User photos are stored on the device, not here.",
+ "records": [
+  {
+   "id": "cattail",
+   "file": "guide-images/cattail.jpg",
+   "title": "Bulrush (Typha latifolia) (8139113636)",
+   "author": "Peter O'Connor aka anemoneprojectors from Stevenage, United Kingdom",
+   "licence": "CC BY-SA 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bulrush_(Typha_latifolia)_(8139113636).jpg"
+  },
+  {
+   "id": "fiddlehead",
+   "file": "guide-images/fiddlehead.jpg",
+   "title": "Matteuccia struthiopteris fiddleheads",
+   "author": "The Cosmonaut",
+   "licence": "CC BY-SA 2.5 ca",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.5/ca/deed.en",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Matteuccia_struthiopteris_fiddleheads.jpg"
+  },
+  {
+   "id": "wild-leek",
+   "file": "guide-images/wild-leek.jpg",
+   "title": "Wild Leeks6",
+   "author": "Hardyplants at English Wikipedia",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wild_Leeks6.jpeg"
+  },
+  {
+   "id": "blueberry",
+   "file": "guide-images/blueberry.jpg",
+   "title": "Vaccinium angustifolium, Pancake Bay PP",
+   "author": "Unknown",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vaccinium_angustifolium,_Pancake_Bay_PP.jpg"
+  },
+  {
+   "id": "raspberry",
+   "file": "guide-images/raspberry.jpg",
+   "title": "Fertődi kármin málna",
+   "author": "Kollányi Gábor",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fert%C5%91di_k%C3%A1rmin_m%C3%A1lna.JPG"
+  },
+  {
+   "id": "wild-strawberry",
+   "file": "guide-images/wild-strawberry.jpg",
+   "title": "Fragaria virginiana 2427",
+   "author": "Walter Siegmund (talk)",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fragaria_virginiana_2427.JPG"
+  },
+  {
+   "id": "saskatoon",
+   "file": "guide-images/saskatoon.jpg",
+   "title": "Amelanchier alnifolia var. semiintegrifolia 4",
+   "author": "Thayne Tuason",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Amelanchier_alnifolia_var._semiintegrifolia_4.jpg"
+  },
+  {
+   "id": "chokecherry",
+   "file": "guide-images/chokecherry.jpg",
+   "title": "Prunus virginiana flowers",
+   "author": "Nadiatalent",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Prunus_virginiana_flowers.jpg"
+  },
+  {
+   "id": "highbush-cranberry",
+   "file": "guide-images/highbush-cranberry.jpg",
+   "title": "Viburnum 01",
+   "author": "Lestat (Jan Mehlich)",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Viburnum_01.JPG"
+  },
+  {
+   "id": "bog-cranberry",
+   "file": "guide-images/bog-cranberry.jpg",
+   "title": "VacciniumOxycoccos",
+   "author": "Christian Fischer",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:VacciniumOxycoccos.jpg"
+  },
+  {
+   "id": "rose-hips",
+   "file": "guide-images/rose-hips.jpg",
+   "title": "Rosa acicularis 8448",
+   "author": "Walter Siegmund (talk)",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rosa_acicularis_8448.JPG"
+  },
+  {
+   "id": "labrador-tea",
+   "file": "guide-images/labrador-tea.jpg",
+   "title": "Rhododendron groenlandicum 2 RF",
+   "author": "Robert Flogaus-Faust",
+   "licence": "CC BY 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rhododendron_groenlandicum_2_RF.jpg"
+  },
+  {
+   "id": "dandelion",
+   "file": "guide-images/dandelion.jpg",
+   "title": "Taraxacum officinale - Köhler–s Medizinal-Pflanzen-135",
+   "author": "Walther Otto Müller",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Taraxacum_officinale_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-135.jpg"
+  },
+  {
+   "id": "nettle",
+   "file": "guide-images/nettle.jpg",
+   "title": "Fen nettle (Urtica dioica ssp. galeopsifolia) - geograph.org.uk - 5423125",
+   "author": "Evelyn Simak",
+   "licence": "CC BY-SA 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fen_nettle_(Urtica_dioica_ssp._galeopsifolia)_-_geograph.org.uk_-_5423125.jpg"
+  },
+  {
+   "id": "lambs-quarters",
+   "file": "guide-images/lambs-quarters.jpg",
+   "title": "Melganzenvoet bloeiwijze Chenopodium album",
+   "author": "Rasbak",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Melganzenvoet_bloeiwijze_Chenopodium_album.jpg"
+  },
+  {
+   "id": "plantain",
+   "file": "guide-images/plantain.jpg",
+   "title": "Grote weegbree bloeiwijze Plantago major subsp. major",
+   "author": "Rasbak",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grote_weegbree_bloeiwijze_Plantago_major_subsp._major.jpg"
+  },
+  {
+   "id": "spruce-pine",
+   "file": "guide-images/spruce-pine.jpg",
+   "title": "Picea glauca Fairbanks",
+   "author": "dmcdevit",
+   "licence": "CC BY-SA 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Picea_glauca_Fairbanks.jpg"
+  },
+  {
+   "id": "birch-sap-chaga",
+   "file": "guide-images/birch-sap-chaga.jpg",
+   "title": "13. The Fall of Acadia (4039110079)",
+   "author": "InAweofGod'sCreation",
+   "licence": "CC BY 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/2.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:13._The_Fall_of_Acadia_(4039110079).jpg"
+  },
+  {
+   "id": "maple-sap",
+   "file": "guide-images/maple-sap.jpg",
+   "title": "Acer saccharum 1-jgreenlee (5098070608)",
+   "author": "Superior National Forest",
+   "licence": "CC BY 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/2.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Acer_saccharum_1-jgreenlee_(5098070608).jpg"
+  },
+  {
+   "id": "wild-rice",
+   "file": "guide-images/wild-rice.jpg",
+   "title": "Zizania palustris (20150198216)",
+   "author": "Matt Lavin from Bozeman, Montana, USA",
+   "licence": "CC BY-SA 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zizania_palustris_(20150198216).jpg"
+  },
+  {
+   "id": "arrowhead",
+   "file": "guide-images/arrowhead.jpg",
+   "title": "Sagittaria latifolia (flowers)",
+   "author": "Unknown",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sagittaria_latifolia_(flowers).jpg"
+  },
+  {
+   "id": "hazelnut",
+   "file": "guide-images/hazelnut.jpg",
+   "title": "Corylus cornuta",
+   "author": "Unknown",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Corylus_cornuta.jpg"
+  },
+  {
+   "id": "acorns",
+   "file": "guide-images/acorns.jpg",
+   "title": "Quercus rubra @ Tortworth Court",
+   "author": "Velela (assumed)",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Quercus_rubra_@_Tortworth_Court.jpg"
+  },
+  {
+   "id": "rock-tripe",
+   "file": "guide-images/rock-tripe.jpg",
+   "title": "Blistered Rocktripe (3560427638)",
+   "author": "Jason Hollinger",
+   "licence": "CC BY 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/2.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blistered_Rocktripe_(3560427638).jpg"
+  },
+  {
+   "id": "wood-sorrel",
+   "file": "guide-images/wood-sorrel.jpg",
+   "title": "Oxalis montana",
+   "author": "pellaea",
+   "licence": "CC BY 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/2.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Oxalis_montana.jpg"
+  },
+  {
+   "id": "water-hemlock",
+   "file": "guide-images/water-hemlock.jpg",
+   "title": "Cicuta maculata",
+   "author": "Williammehlhorn at English Wikipedia",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cicuta_maculata.jpg"
+  },
+  {
+   "id": "poison-hemlock",
+   "file": "guide-images/poison-hemlock.jpg",
+   "title": "Conium",
+   "author": "Unknown",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Conium.jpg"
+  },
+  {
+   "id": "baneberry",
+   "file": "guide-images/baneberry.jpg",
+   "title": "Actaea rubra kz03",
+   "author": "Krzysztof Ziarnek, Kenraiz",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Actaea_rubra_kz03.jpg"
+  },
+  {
+   "id": "lily-of-the-valley",
+   "file": "guide-images/lily-of-the-valley.jpg",
+   "title": "Convallaria majalis inflorescence - Keila",
+   "author": "Ivar Leidus",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Convallaria_majalis_inflorescence_-_Keila.jpg"
+  },
+  {
+   "id": "false-hellebore",
+   "file": "guide-images/false-hellebore.jpg",
+   "title": "Veratrum veride2",
+   "author": "User:SB_Johnny",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Veratrum_veride2.JPG"
+  },
+  {
+   "id": "white-camas",
+   "file": "guide-images/white-camas.jpg",
+   "title": "Anticlea elegans (Glacier National Park, Montana - 2006)",
+   "author": "Adam Humphreys",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Anticlea_elegans_(Glacier_National_Park,_Montana_-_2006).jpg"
+  },
+  {
+   "id": "blue-flag-iris",
+   "file": "guide-images/blue-flag-iris.jpg",
+   "title": "Blue Flag, Ottawa",
+   "author": "D. Gordon E. Robertson",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blue_Flag,_Ottawa.jpg"
+  },
+  {
+   "id": "bracken",
+   "file": "guide-images/bracken.jpg",
+   "title": "Adelaarsvaren planten Pteridium aquilinum",
+   "author": "Rasbak",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Adelaarsvaren_planten_Pteridium_aquilinum.jpg"
+  },
+  {
+   "id": "canada-yew",
+   "file": "guide-images/canada-yew.jpg",
+   "title": "Taxus canadensis drawing",
+   "author": "USDA-NRCS PLANTS Database / Britton, N.L., and A. Brown. 1913. Illustrated flora of the northern states and Canada. Vol.",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Taxus_canadensis_drawing.png"
+  },
+  {
+   "id": "poison-ivy",
+   "file": "guide-images/poison-ivy.jpg",
+   "title": "Toxicodendron rydbergii UGA1208036",
+   "author": "Dave Powell, USDA Forest Service, Bugwood.org (cropped by the uploader)",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Toxicodendron_rydbergii_UGA1208036.jpg"
+  },
+  {
+   "id": "wild-parsnip",
+   "file": "guide-images/wild-parsnip.jpg",
+   "title": "Pastinaca sativa MHNT.BOT.2004.0",
+   "author": "Didier Descouens",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pastinaca_sativa_MHNT.BOT.2004.0.jpg"
+  },
+  {
+   "id": "bog-laurel",
+   "file": "guide-images/bog-laurel.jpg",
+   "title": "Kalmia polifolia 2",
+   "author": "photo by user Meggar",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kalmia_polifolia_2.jpg"
+  },
+  {
+   "id": "buckthorn",
+   "file": "guide-images/buckthorn.jpg",
+   "title": "Illustration of Rhamnus catharticus 63-cropped",
+   "author": "Köhler, F. E. (Franz Eugen)",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Illustration_of_Rhamnus_catharticus_63-cropped.png"
+  },
+  {
+   "id": "nightshade",
+   "file": "guide-images/nightshade.jpg",
+   "title": "Solanum dulcamara (5386574212)",
+   "author": "David Eickhoff from Pearl City, Hawaii, USA",
+   "licence": "CC BY 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/2.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Solanum_dulcamara_(5386574212).jpg"
+  },
+  {
+   "id": "mushroom-rules",
+   "file": "guide-images/mushroom-rules.jpg",
+   "title": "Spore print",
+   "author": "Marshman at English Wikipedia / Eric Guinther",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Spore_print.jpg"
+  },
+  {
+   "id": "chanterelle",
+   "file": "guide-images/chanterelle.jpg",
+   "title": "Chanterelle Cantharellus cibarius",
+   "author": "Unknown",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chanterelle_Cantharellus_cibarius.jpg"
+  },
+  {
+   "id": "chicken-of-the-woods",
+   "file": "guide-images/chicken-of-the-woods.jpg",
+   "title": "Laetiporus sulphureus big",
+   "author": "Rror",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Laetiporus_sulphureus_big.jpg"
+  },
+  {
+   "id": "morel",
+   "file": "guide-images/morel.jpg",
+   "title": "Morchella conica 1 beentree",
+   "author": "Beentree",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Morchella_conica_1_beentree.jpg"
+  },
+  {
+   "id": "puffball",
+   "file": "guide-images/puffball.jpg",
+   "title": "Giant Puffball",
+   "author": "The original uploader was Sulfur at English Wikipedia.",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Giant_Puffball.jpg"
+  },
+  {
+   "id": "oyster",
+   "file": "guide-images/oyster.jpg",
+   "title": "Pleurotus ostreatus JPG7",
+   "author": "voir ci-dessous / see below",
+   "licence": "CC BY 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pleurotus_ostreatus_JPG7.jpg"
+  },
+  {
+   "id": "hedgehog",
+   "file": "guide-images/hedgehog.jpg",
+   "title": "Hedgehog fungi2",
+   "author": "D J Kelly",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hedgehog_fungi2.jpg"
+  },
+  {
+   "id": "lobster",
+   "file": "guide-images/lobster.jpg",
+   "title": "Hypomyces lactifluorum",
+   "author": "Sharksbaja",
+   "licence": "CC BY 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hypomyces_lactifluorum.JPG"
+  },
+  {
+   "id": "destroying-angel",
+   "file": "guide-images/destroying-angel.jpg",
+   "title": "Amanita bisporigera 17932",
+   "author": "Dan Molter (shroomydan)",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Amanita_bisporigera_17932.jpg"
+  },
+  {
+   "id": "fly-agaric",
+   "file": "guide-images/fly-agaric.jpg",
+   "title": "Amanita muscaria Aberystwyth 2023",
+   "author": "Kieran Roy Powell",
+   "licence": "CC BY 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Amanita_muscaria_Aberystwyth_2023.jpg"
+  },
+  {
+   "id": "galerina",
+   "file": "guide-images/galerina.jpg",
+   "title": "Galerina marginata Point Reyes",
+   "author": "Alan Rockefeller",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Galerina_marginata_Point_Reyes.jpg"
+  },
+  {
+   "id": "false-morel",
+   "file": "guide-images/false-morel.jpg",
+   "title": "Frühjahrslorchel",
+   "author": "Unknown",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fr%C3%BChjahrslorchel.JPG"
+  },
+  {
+   "id": "jack-o-lantern",
+   "file": "guide-images/jack-o-lantern.jpg",
+   "title": "Jack o' Lantern Mushroom Fungus",
+   "author": "KeithMiklas",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jack_o%27_Lantern_Mushroom_Fungus.png"
+  },
+  {
+   "id": "fire-basics",
+   "file": "guide-images/fire-basics.jpg",
+   "title": "Campfire Pinecone",
+   "author": "Emeldil at English Wikipedia (Original text: Pavan Srinath)",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Campfire_Pinecone.png"
+  },
+  {
+   "id": "ferro-rod",
+   "file": "guide-images/ferro-rod.jpg",
+   "title": "Lighter flint spark trails",
+   "author": "AkselA",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lighter_flint_spark_trails.png"
+  },
+  {
+   "id": "quinzhee",
+   "file": "guide-images/quinzhee.jpg",
+   "title": "Quinzy",
+   "author": "Ssavoie (assumed)",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Quinzy.jpg"
+  },
+  {
+   "id": "snow-trench",
+   "file": "guide-images/snow-trench.jpg",
+   "title": "Snow Cave on Mount Hood",
+   "author": "Josh Lewis",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Snow_Cave_on_Mount_Hood.jpg"
+  },
+  {
+   "id": "map-compass",
+   "file": "guide-images/map-compass.jpg",
+   "title": "2016 Busola",
+   "author": "Jacek Halicki",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:2016_Busola.JPG"
+  },
+  {
+   "id": "signals",
+   "file": "guide-images/signals.jpg",
+   "title": "Four Methods of Aiming Mirror Flashes of Sunlight",
+   "author": "Unknown authorUnknown author",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Four_Methods_of_Aiming_Mirror_Flashes_of_Sunlight.png"
+  },
+  {
+   "id": "plb",
+   "file": "guide-images/plb.jpg",
+   "title": "New C-S System Overview",
+   "author": "Unknown",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:New_C-S_System_Overview.jpg"
+  },
+  {
+   "id": "frostbite",
+   "file": "guide-images/frostbite.jpg",
+   "title": "Frost bite",
+   "author": "Dr. S. Falz",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Frost_bite.jpg"
+  },
+  {
+   "id": "snow-blindness",
+   "file": "guide-images/snow-blindness.jpg",
+   "title": "Inuit snow goggles",
+   "author": "Julian Idrobo from Winnipeg, Canada",
+   "licence": "CC BY-SA 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Inuit_snow_goggles.jpg"
+  },
+  {
+   "id": "cold-water",
+   "file": "guide-images/cold-water.jpg",
+   "title": "USMC-051020-M-1878M-003",
+   "author": "Cpl. Sarah M. Maynard",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:USMC-051020-M-1878M-003.jpg"
+  },
+  {
+   "id": "ice-fishing",
+   "file": "guide-images/ice-fishing.jpg",
+   "title": "Ice fisher catching a fish NB",
+   "author": "New Brunswick / Nouveau-Brunswick",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ice_fisher_catching_a_fish_NB.jpg"
+  },
+  {
+   "id": "clean-fish",
+   "file": "guide-images/clean-fish.jpg",
+   "title": "Esox lucius ZOO 1",
+   "author": "Jik jik",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Esox_lucius_ZOO_1.jpg"
+  },
+  {
+   "id": "snare-hare",
+   "file": "guide-images/snare-hare.jpg",
+   "title": "Lepus americanus 5459 cropped",
+   "author": "Lepus_americanus_5459.JPG: Walter Siegmund (talk) derivative work: Wsiegmund",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lepus_americanus_5459_cropped.jpg"
+  },
+  {
+   "id": "skin-hare",
+   "file": "guide-images/skin-hare.jpg",
+   "title": "Lepus americanus 5459 cropped",
+   "author": "Lepus_americanus_5459.JPG: Walter Siegmund (talk) derivative work: Wsiegmund",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lepus_americanus_5459_cropped.jpg"
+  },
+  {
+   "id": "field-dress",
+   "file": "guide-images/field-dress.jpg",
+   "title": "Alaska moose",
+   "author": "Paxson Woelber",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alaska_moose.jpg"
+  },
+  {
+   "id": "rabbit-starvation",
+   "file": "guide-images/rabbit-starvation.jpg",
+   "title": "Lepus americanus 5459 cropped",
+   "author": "Lepus_americanus_5459.JPG: Walter Siegmund (talk) derivative work: Wsiegmund",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lepus_americanus_5459_cropped.jpg"
+  },
+  {
+   "id": "drying",
+   "file": "guide-images/drying.jpg",
+   "title": "Jerky (1)",
+   "author": "Larry Jacobsen from Cheyenne Wyoming",
+   "licence": "CC BY 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/2.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jerky_(1).jpg"
+  },
+  {
+   "id": "smoking",
+   "file": "guide-images/smoking.jpg",
+   "title": "Reitman's Smokehouse; Campbell County, Kentucky",
+   "author": "FloNight (Sydney Poore) and Russell Poore",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Reitman%27s_Smokehouse;_Campbell_County,_Kentucky.JPG"
+  },
+  {
+   "id": "curing",
+   "file": "guide-images/curing.jpg",
+   "title": "ProsciuttoSeaSalt",
+   "author": "Deathworm at English Wikipedia",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:ProsciuttoSeaSalt.JPG"
+  },
+  {
+   "id": "pressure-canning",
+   "file": "guide-images/pressure-canning.jpg",
+   "title": "PreservedFood1",
+   "author": "Unknown",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:PreservedFood1.jpg"
+  },
+  {
+   "id": "root-cellar",
+   "file": "guide-images/root-cellar.jpg",
+   "title": "CCC Camp BR-83 North Platte Project, Veteran, Wyoming: \"Experimental Plots\", vegetables stored in root cellar.",
+   "author": "Unknown authorUnknown author or not provided",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:CCC_Camp_BR-83_North_Platte_Project,_Veteran,_Wyoming,_%22Experimental_Plots%22,_vegetables_stored_in_root_cellar._-_NARA_-_293597.jpg"
+  },
+  {
+   "id": "ice-thickness",
+   "file": "guide-images/ice-thickness.jpg",
+   "title": "Ice Block, Canal Park, Duluth (32752478892)",
+   "author": "Sharon Mollerus",
+   "licence": "CC BY 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/2.0",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ice_Block,_Canal_Park,_Duluth_(32752478892).jpg"
+  },
+  {
+   "id": "ice-rescue",
+   "file": "guide-images/ice-rescue.jpg",
+   "title": "USMC-051020-M-1878M-003",
+   "author": "Cpl. Sarah M. Maynard",
+   "licence": "Public domain",
+   "licenceUrl": "",
+   "sourceUrl": "https://commons.wikimedia.org/wiki/File:USMC-051020-M-1878M-003.jpg"
+  }
+ ]
+}

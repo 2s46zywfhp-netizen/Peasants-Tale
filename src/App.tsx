@@ -2,7 +2,6 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
 import { Settings } from './pages/Settings';
-import { Placeholder } from './pages/Placeholder';
 import { PrepHub } from './pages/prep/PrepHub';
 import { LocationPage } from './pages/prep/Location';
 import { HouseholdPage } from './pages/prep/Household';
@@ -12,6 +11,12 @@ import { SeedsPage } from './pages/prep/Seeds';
 import { SuppliesPage } from './pages/prep/Supplies';
 import { HuntingPage } from './pages/prep/Hunting';
 import { StockPage } from './pages/Stock';
+import { GuideHome, SectionPage, EntryPage, PrintGuide, CalendarPage } from './pages/guide/GuidePages';
+import { ImportPage, MyEntries, UserEntryPage } from './pages/guide/UserGuide';
+import { JournalList, JournalEntryPage, GardenPage } from './pages/journal/JournalPages';
+import { MapPage } from './pages/journal/MapPage';
+import { HelpPage } from './pages/Help';
+import { CreditsPage } from './pages/Credits';
 import { ThemeProvider } from './lib/theme';
 
 // Hash routing: every screen loads from the cached index.html, even offline and on any host.
@@ -31,9 +36,21 @@ export function App() {
             <Route path="prep/supplies" element={<SuppliesPage />} />
             <Route path="prep/hunting" element={<HuntingPage />} />
             <Route path="stock" element={<StockPage />} />
-            <Route path="guide" element={<Placeholder title="Field guide" phase={5} items={['Foraging with lookalikes on the same screen', 'Winter shelter, fire, water, navigation', 'Cold injuries, wound care, ice safety']} />} />
-            <Route path="journal" element={<Placeholder title="Journal" phase={6} items={['Dated logs with photos and GPS', 'Offline map pins, PIN-locked caches', 'Garden log, year over year']} />} />
+            <Route path="guide" element={<GuideHome />} />
+            <Route path="guide/s/:id" element={<SectionPage />} />
+            <Route path="guide/e/:id" element={<EntryPage />} />
+            <Route path="guide/print/:id" element={<PrintGuide />} />
+            <Route path="guide/calendar" element={<CalendarPage />} />
+            <Route path="guide/import" element={<ImportPage />} />
+            <Route path="guide/mine" element={<MyEntries />} />
+            <Route path="guide/mine/:id" element={<UserEntryPage />} />
+            <Route path="journal" element={<JournalList />} />
+            <Route path="journal/map" element={<MapPage />} />
+            <Route path="journal/garden" element={<GardenPage />} />
+            <Route path="journal/:id" element={<JournalEntryPage />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="help" element={<HelpPage />} />
+            <Route path="credits" element={<CreditsPage />} />
             <Route path="*" element={<Home />} />
           </Route>
         </Routes>

@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import type { Attachment, InventoryItem, JournalEntry, LocationProfile, Setting } from './types';
+import type { Attachment, InventoryItem, JournalEntry, LocationProfile, Setting, UserGuideEntry } from './types';
 
 /**
  * IndexedDB schema. To change it, add a new `this.version(n)` block below the
@@ -11,6 +11,7 @@ export class NorthPrepDB extends Dexie {
   inventory!: Table<InventoryItem, number>;
   journal!: Table<JournalEntry, number>;
   attachments!: Table<Attachment, number>;
+  guideEntries!: Table<UserGuideEntry, number>;
 
   constructor(name = 'northprep') {
     super(name);
@@ -25,11 +26,16 @@ export class NorthPrepDB extends Dexie {
     this.version(2).stores({
       inventory: '++id, category, expiresOn, name, targetId',
     });
+    // v3: user field-guide entries; photos linked to guide entries or journal entries.
+    this.version(3).stores({
+      attachments: '++id, createdAt, ref',
+      guideEntries: '++id, section, title',
+    });
   }
 }
 
 /** Table names included in backups, in restore order. */
-export const BACKUP_TABLES = ['settings', 'locationProfiles', 'inventory', 'journal', 'attachments'] as const;
+export const BACKUP_TABLES = ['settings', 'locationProfiles', 'inventory', 'journal', 'attachments', 'guideEntries'] as const;
 export type BackupTable = (typeof BACKUP_TABLES)[number];
 
 export const db = new NorthPrepDB();

@@ -35,14 +35,38 @@
 - [x] Manual entry always; optional barcode scan (BarcodeDetector + Open Food Facts) when online
 - [x] Printable stock list
 
+## Phase 5 — field guide ✅ (PDF content: waiting for your PDF)
+- [x] 98 entries across all 13 sections: foraging (26), mushrooms (13), dangerous lookalikes (14), water, fire, shelter (quinzhee, lean-to, snow trench, debris hut), navigation, signalling, cold injuries, wound care/TCCC, fishing & game processing, food preservation (drying, smoking, curing, pressure/water-bath canning, fermenting, root cellar), ice safety (Red Cross thickness table)
+- [x] Each entry: ID features, habitat, season, prep, numbered how-to steps, warnings, lookalikes
+- [x] SAFETY RULE: no automated identification; every edible entry shows its dangerous lookalikes (with photos) on the same screen, above the description; enforced by tests and by the user-entry editor
+- [x] 75 real photos from Wikimedia Commons, public domain / CC only, author + licence + source stored per image (`data/guide-images.json`, `scripts/fetch-guide-images.mjs`); credits page
+- [x] 10 editable inline SVG diagrams (`data/diagrams/*.svg`, use currentColor so they work in every theme and print)
+- [x] User photos per entry (camera), stored on device and in backups
+- [x] Seasonal calendar (forage seasons from entries + `data/calendar.json` + your frost dates), printable year grid
+- [x] PRACTICE REQUIRED badges (tourniquet, wound packing, splinting, bow drill, ferro rod, quinzhee, map & compass, field dressing, snaring, pressure canning, ice self-rescue, hypothermia)
+- [x] Print: any entry, any section, or the whole guide (one entry per page, contents list)
+- [x] PDF import on-device (pdf.js): splits at headings, guesses sections, review before saving; "My entries" editor; export to JSON
+- [ ] Parse the Canadian Shield Survival Field Guide PDF into entries — Blocked: PDF not provided yet. The import tool is ready.
+
+## Phase 6 — journal + offline maps ✅
+- [x] Dated entries: text, tags, photos (camera), GPS pin, weather (manual or online fill)
+- [x] Log types: general, foraging, harvest, hunt/fish, water source, cache, garden
+- [x] Cache entries PIN-locked (AES-GCM, PBKDF2 key); locked caches hidden from list and map
+- [x] Map: NRCan Canada Base Map + labels, Toporama topo layer (online); "Save this area for offline" downloads tiles into the service-worker cache; long-press to add entry; GPX export
+- [x] Garden log: planting, harvest, frost, seed-saved events; year-over-year table per crop; observed frost dates per year
+- [x] "How to use NorthPrep" printable help page
+
 ## Tests
-- 109 unit tests (`npm test`); browser smoke test `scripts/smoke-offline.mjs` covers phases 1–4 offline.
+- 136 unit tests (`npm test`); browser smoke test `scripts/smoke-offline.mjs` covers phases 1–6 with the network cut, including an offline map area.
 
 ## Blocked
-- None.
+- Field guide PDF parsing: waiting for the PDF.
 
 ## Known limits
 - Hardiness zones and design lows come from a hand-compiled town table, not computed from NRCan's model. Edit per location.
 - Legal labels need your verification before you act on them.
+- Photos of locked caches are not encrypted (only text and location are).
+- Toporama topo layer is online-only; the NRCan base map is the offline layer.
 
-## Next: Phase 5 — field guide with PDF import (needs your Canadian Shield Survival Field Guide PDF)
+## Next
+- Send the Canadian Shield Survival Field Guide PDF: import it with Field guide → Import PDF, or send it to me to convert into curated data entries.

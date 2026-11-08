@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 210" fill="none" stroke="currentColor" stroke-width="2" font-family="system-ui,sans-serif" font-size="11">
+<!-- Lean-to, side view. Wind comes from the left. -->
+<line x1="5" y1="180" x2="395" y2="180"/>
+<line x1="130" y1="180" x2="130" y2="60" stroke-width="3"/>
+<circle cx="130" cy="60" r="5" fill="currentColor"/>
+<line x1="130" y1="60" x2="20" y2="180" stroke-width="4"/>
+<path d="M118 75 L32 168" stroke-dasharray="3 5"/>
+<path d="M20 120 l25 0 m-6 -5 l6 5 l-6 5" />
+<path d="M185 180 q8 -30 15 -10 q6 -25 14 0 q8 -20 12 10"/>
+<rect x="265" y="120" width="14" height="60"/><rect x="281" y="132" width="14" height="48"/>
+<path d="M190 140 C170 110 150 105 120 120" stroke-dasharray="4 4"/><path d="M126 112 l-6 8 l9 2"/>
+<path d="M262 140 C250 125 240 125 228 140" stroke-dasharray="4 4"/>
+<rect x="45" y="170" width="80" height="10" fill="currentColor" fill-opacity="0.25"/>
+<g fill="currentColor" stroke="none">
+<text x="140" y="56">ridgepole (end view)</text>
+<text x="8" y="112">wind</text>
+<text x="20" y="200">bough bed 15+ cm</text>
+<text x="140" y="80">roof ~45° to the wind: boughs/tarp</text>
+<text x="175" y="200">fire 1–1.5 m in front</text>
+<text x="250" y="112">reflector wall</text>
+<text x="135" y="132">heat bounces in</text>
+</g>
+</svg>
