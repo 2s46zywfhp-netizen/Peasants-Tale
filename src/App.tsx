@@ -11,6 +11,7 @@ import { WaterPage } from './pages/prep/Water';
 import { SeedsPage } from './pages/prep/Seeds';
 import { SuppliesPage } from './pages/prep/Supplies';
 import { HuntingPage } from './pages/prep/Hunting';
+import { StockPage } from './pages/Stock';
 import { ThemeProvider } from './lib/theme';
 
 // Hash routing: every screen loads from the cached index.html, even offline and on any host.
@@ -29,7 +30,7 @@ export function App() {
             <Route path="prep/seeds" element={<SeedsPage />} />
             <Route path="prep/supplies" element={<SuppliesPage />} />
             <Route path="prep/hunting" element={<HuntingPage />} />
-            <Route path="stock" element={<Placeholder title="Stock & rotation" phase={4} items={['On hand vs. targets', 'Expiry and FIFO alerts', 'Use-this-month list']} />} />
+            <Route path="stock" element={<StockPage />} />
             <Route path="guide" element={<Placeholder title="Field guide" phase={5} items={['Foraging with lookalikes on the same screen', 'Winter shelter, fire, water, navigation', 'Cold injuries, wound care, ice safety']} />} />
             <Route path="journal" element={<Placeholder title="Journal" phase={6} items={['Dated logs with photos and GPS', 'Offline map pins, PIN-locked caches', 'Garden log, year over year']} />} />
             <Route path="settings" element={<Settings />} />

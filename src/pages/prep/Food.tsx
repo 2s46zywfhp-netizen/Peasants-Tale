@@ -52,7 +52,7 @@ export function FoodPage() {
 
       <section className="card space-y-2">
         <h2 className="h2">Macro split</h2>
-        <div className="flex h-8 overflow-hidden rounded border-2 border-line text-sm font-bold" aria-label={`Protein ${r.macros.proteinPct}%, fat ${r.macros.fatPct}%, carbohydrate ${r.macros.carbPct}%`}>
+        <div className="flex h-8 overflow-hidden rounded border-2 border-line text-sm font-bold print:hidden" aria-label={`Protein ${r.macros.proteinPct}%, fat ${r.macros.fatPct}%, carbohydrate ${r.macros.carbPct}%`}>
           <div className="flex items-center justify-center bg-accent text-accent-ink" style={{ width: `${r.macros.proteinPct}%` }}>P</div>
           <div className="flex items-center justify-center bg-ink text-bg" style={{ width: `${r.macros.fatPct}%` }}>F</div>
           <div className="flex items-center justify-center" style={{ width: `${r.macros.carbPct}%` }}>C</div>

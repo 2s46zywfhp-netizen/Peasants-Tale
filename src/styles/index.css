@@ -129,7 +129,10 @@ body {
   }
   .card {
     border-width: 1px;
-    break-inside: avoid;
+  }
+  h1,
+  h2 {
+    break-after: avoid;
   }
   table {
     border-collapse: collapse;

@@ -21,6 +21,10 @@ export class NorthPrepDB extends Dexie {
       journal: '++id, date, type, *tags',
       attachments: '++id, createdAt',
     });
+    // v2: inventory lots link to generated targets.
+    this.version(2).stores({
+      inventory: '++id, category, expiresOn, name, targetId',
+    });
   }
 }
 

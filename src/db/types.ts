@@ -22,11 +22,16 @@ export interface LocationProfile {
 export interface InventoryItem {
   id?: number;
   name: string;
+  /** Target group: Food, Water, Supplies, Ammo, or Other. */
   category: string;
   quantity: number;
   unit: string;
-  expiresOn?: string;
+  /** Links this lot to a generated target, e.g. "food:white-rice". */
+  targetId?: string;
+  acquiredOn?: string; // YYYY-MM-DD
+  expiresOn?: string; // YYYY-MM-DD
   location?: string;
+  barcode?: string;
   notes?: string;
   createdAt: string;
   updatedAt: string;

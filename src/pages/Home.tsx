@@ -2,10 +2,14 @@ import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/db';
 import { PrintButton, PrintHeader } from '../components/PrintButton';
+import { useMemo } from 'react';
+import { buildTargets } from '../calc/targets';
+import { alerts, toIso } from '../calc/inventory';
+import { usePlan, useProfile } from '../lib/store';
 
 const MODULES = [
-  { to: '/prep', title: 'Prep lists', body: 'Food, water, seeds, supplies, hunting and defence — scaled to your household and region.', phase: 2 },
-  { to: '/stock', title: 'Stock & rotation', body: 'What you have vs. your targets, expiry dates, use-this-month list.', phase: 4 },
+  { to: '/prep', title: 'Prep lists', body: 'Food, water, seeds, supplies, hunting and defence — scaled to your household and region.', phase: 0 },
+  { to: '/stock', title: 'Stock & rotation', body: 'What you have vs. your targets, expiry dates, use-this-month list.', phase: 0 },
   { to: '/guide', title: 'Field guide', body: 'Foraging, lookalikes, water, fire, shelter, cold injuries, ice safety.', phase: 5 },
   { to: '/journal', title: 'Journal & map', body: 'Dated logs, photos, GPS pins for water, patches and caches.', phase: 6 },
 ];
@@ -17,6 +21,10 @@ export function Home() {
     photos: await db.attachments.count(),
   }));
   const lastBackup = useLiveQuery(() => db.settings.get('lastBackupAt'));
+  const { plan } = usePlan();
+  const { profile, climate } = useProfile();
+  const items = useLiveQuery(() => db.inventory.toArray(), []);
+  const due = useMemo(() => (items ? alerts(items, buildTargets(plan, climate), toIso(Date.now()), 30) : []), [items, plan, climate]);
   const last = lastBackup?.value as string | undefined;
   const daysSince = last ? Math.floor((Date.now() - Date.parse(last)) / 86400000) : null;
 
@@ -32,6 +40,19 @@ export function Home() {
           <Stat label="Photos" value={counts?.photos} />
         </dl>
       </section>
+
+      {!profile && (
+        <Link to="/prep/location" className="card block border-accent">
+          <h2 className="h2">Start here</h2>
+          <p>Set your location (GPS or postal code), then your household. Every list adapts to them.</p>
+        </Link>
+      )}
+      {due.length > 0 && (
+        <Link to="/stock" className={`card block ${due.some((a) => a.kind === 'expired') ? 'border-danger' : 'border-accent'}`}>
+          <h2 className="h2">Use this month: {due.length}</h2>
+          <p>{due.slice(0, 3).map((a) => `${a.item.name} (${a.text.toLowerCase()})`).join(', ')}{due.length > 3 ? '…' : ''}</p>
+        </Link>
+      )}
 
       <section className={`card ${daysSince === null || daysSince > 30 ? 'border-accent' : ''}`}>
         <h2 className="h2">Backup</h2>
