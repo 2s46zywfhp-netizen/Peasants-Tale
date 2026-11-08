@@ -1,0 +1,56 @@
+{
+ "dataset": "energy-needs",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Daily energy needs at moderate activity by age and sex (rounded from Health Canada DRI estimated energy requirements). Scaled by baseKcalPerPersonDay / 2400.",
+ "records": [
+  {
+   "id": "infant",
+   "label": "Infant (<1)",
+   "male": 700,
+   "female": 700
+  },
+  {
+   "id": "child1-3",
+   "label": "Child 1–3",
+   "male": 1100,
+   "female": 1100
+  },
+  {
+   "id": "child4-8",
+   "label": "Child 4–8",
+   "male": 1500,
+   "female": 1400
+  },
+  {
+   "id": "child9-13",
+   "label": "Child 9–13",
+   "male": 2000,
+   "female": 1800
+  },
+  {
+   "id": "teen14-18",
+   "label": "Teen 14–18",
+   "male": 2700,
+   "female": 2100
+  },
+  {
+   "id": "adult19-50",
+   "label": "Adult 19–50",
+   "male": 2700,
+   "female": 2100
+  },
+  {
+   "id": "adult51-70",
+   "label": "Adult 51–70",
+   "male": 2400,
+   "female": 1900
+  },
+  {
+   "id": "senior71",
+   "label": "Senior 71+",
+   "male": 2200,
+   "female": 1800
+  }
+ ]
+}

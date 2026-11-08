@@ -1,0 +1,185 @@
+{
+ "dataset": "assumptions",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Every tunable number the calculators use. Change a value here and every list updates.",
+ "records": [
+  {
+   "id": "baseKcalPerPersonDay",
+   "value": 2400,
+   "unit": "kcal",
+   "note": "Average adult, moderate activity. All energy needs scale from this.",
+   "source": "gc-emergency-kit"
+  },
+  {
+   "id": "coldLabourFactor",
+   "value": 1.25,
+   "unit": "x",
+   "note": "Multiplier for heavy outdoor work in cold weather (+25%)."
+  },
+  {
+   "id": "activityLow",
+   "value": 0.88,
+   "unit": "x",
+   "note": "Energy multiplier for low activity."
+  },
+  {
+   "id": "activityHigh",
+   "value": 1.18,
+   "unit": "x",
+   "note": "Energy multiplier for high activity."
+  },
+  {
+   "id": "waterPerPersonDayL",
+   "value": 4,
+   "unit": "L",
+   "note": "2 L drinking + 2 L food prep/hygiene (Government of Canada baseline).",
+   "source": "gc-emergency-kit"
+  },
+  {
+   "id": "waterDrinkingShare",
+   "value": 0.5,
+   "unit": "fraction",
+   "note": "Share of personal water that is drinking water (needs purification first)."
+  },
+  {
+   "id": "waterStoreDaysCap",
+   "value": 14,
+   "unit": "days",
+   "note": "Store this many days of water; beyond that plan to source and purify."
+  },
+  {
+   "id": "waterContainerL",
+   "value": 20,
+   "unit": "L",
+   "note": "Standard water jug size."
+  },
+  {
+   "id": "filterElementL",
+   "value": 2000,
+   "unit": "L",
+   "note": "Conservative rated life of one gravity-filter element."
+  },
+  {
+   "id": "tabsCoverDays",
+   "value": 30,
+   "unit": "days",
+   "note": "Chlorine dioxide tablets cover drinking water for this many days as a backup."
+  },
+  {
+   "id": "tabLitres",
+   "value": 1,
+   "unit": "L",
+   "note": "Litres treated per chlorine dioxide tablet (e.g. 1 L tablets)."
+  },
+  {
+   "id": "bleachMlPerL",
+   "value": 0.1,
+   "unit": "mL",
+   "note": "Unscented household bleach (5-8%): about 2 drops per litre, wait 30 min.",
+   "source": "gc-emergency-kit"
+  },
+  {
+   "id": "boilMJPerL",
+   "value": 0.44,
+   "unit": "MJ",
+   "note": "Useful heat to bring 1 L from 5 °C to a 1-minute rolling boil."
+  },
+  {
+   "id": "pailL",
+   "value": 20,
+   "unit": "L",
+   "note": "Food-grade pail size."
+  },
+  {
+   "id": "pailFootprintM2",
+   "value": 0.09,
+   "unit": "m²",
+   "note": "Floor area of one 20 L pail."
+  },
+  {
+   "id": "pailStack",
+   "value": 3,
+   "unit": "pails",
+   "note": "Pails per stack."
+  },
+  {
+   "id": "shelfStackM",
+   "value": 1.2,
+   "unit": "m",
+   "note": "Usable stack/shelf height for cases and jars."
+  },
+  {
+   "id": "packingFactor",
+   "value": 1.25,
+   "unit": "x",
+   "note": "Extra space for air gaps and access."
+  },
+  {
+   "id": "shortTermDays",
+   "value": 14,
+   "unit": "days",
+   "note": "Durations up to this use the no-cook, ready-to-eat food mix."
+  },
+  {
+   "id": "preservingSaltKgPerPersonYear",
+   "value": 5,
+   "unit": "kg",
+   "note": "Non-iodized salt for curing, brining and pickling (durations of 3 months+)."
+  },
+  {
+   "id": "preservingSaltMinDays",
+   "value": 90,
+   "unit": "days",
+   "note": "Add preserving salt at or above this duration."
+  },
+  {
+   "id": "seedSafetyBufferDays",
+   "value": 14,
+   "unit": "days",
+   "note": "Days of slack required between expected harvest and season end."
+  },
+  {
+   "id": "petWaterDogMlPerKg",
+   "value": 60,
+   "unit": "mL/kg/day",
+   "note": "Dog water need."
+  },
+  {
+   "id": "petWaterCatMlPerKg",
+   "value": 50,
+   "unit": "mL/kg/day",
+   "note": "Cat water need."
+  },
+  {
+   "id": "petWaterOtherMlPerKg",
+   "value": 60,
+   "unit": "mL/kg/day",
+   "note": "Other pets."
+  },
+  {
+   "id": "petKcalDogFactor",
+   "value": 1.6,
+   "unit": "x",
+   "note": "Dog daily kcal = factor x 70 x kg^0.75."
+  },
+  {
+   "id": "petKcalCatFactor",
+   "value": 1.2,
+   "unit": "x",
+   "note": "Cat daily kcal = factor x 70 x kg^0.75."
+  },
+  {
+   "id": "petKcalOtherFactor",
+   "value": 1.0,
+   "unit": "x",
+   "note": "Other pets daily kcal factor."
+  },
+  {
+   "id": "petFoodKcalPerKg",
+   "value": 3600,
+   "unit": "kcal/kg",
+   "note": "Dry kibble energy density."
+  }
+ ]
+}

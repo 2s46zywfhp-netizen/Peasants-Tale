@@ -1,0 +1,96 @@
+{
+ "dataset": "fuels",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Heating and cooking fuels. energyMJ is per unit. Efficiencies are typical appliance values; 0 means not used for that purpose.",
+ "records": [
+  {
+   "id": "wood",
+   "name": "Firewood (mixed hardwood/softwood)",
+   "unit": "cord",
+   "energyMJ": 20000,
+   "perKgMJ": 15,
+   "heatingEff": 0.7,
+   "cookingEff": 0.12,
+   "needsPower": false,
+   "notes": "Full cord = 128 ft³ (3.62 m³) stacked, air-dried 1 year. Birch/maple/ash run higher; spruce/poplar lower."
+  },
+  {
+   "id": "propane",
+   "name": "Propane",
+   "unit": "L",
+   "energyMJ": 25.3,
+   "perKgMJ": 46,
+   "heatingEff": 0.85,
+   "cookingEff": 0.45,
+   "needsPower": false,
+   "notes": "A 100 lb cylinder holds about 90 L. Most furnaces need electricity; plan a direct-vent or vent-free heater. Below −40 °C propane barely vaporizes."
+  },
+  {
+   "id": "kerosene",
+   "name": "Kerosene",
+   "unit": "L",
+   "energyMJ": 37.6,
+   "perKgMJ": 46,
+   "heatingEff": 0.85,
+   "cookingEff": 0.4,
+   "needsPower": false,
+   "notes": "Stores for years. Indoor use needs ventilation and a CO alarm."
+  },
+  {
+   "id": "heating-oil",
+   "name": "Heating oil",
+   "unit": "L",
+   "energyMJ": 38.2,
+   "perKgMJ": 45,
+   "heatingEff": 0.82,
+   "cookingEff": 0,
+   "needsPower": true,
+   "notes": "Oil furnaces need electricity to run."
+  },
+  {
+   "id": "pellets",
+   "name": "Wood pellets",
+   "unit": "kg",
+   "energyMJ": 17.5,
+   "perKgMJ": 17.5,
+   "heatingEff": 0.78,
+   "cookingEff": 0,
+   "needsPower": true,
+   "notes": "Pellet stoves need electricity for the auger and fan; keep a battery or generator plan."
+  },
+  {
+   "id": "electric",
+   "name": "Electric",
+   "unit": "kWh",
+   "energyMJ": 3.6,
+   "perKgMJ": 0,
+   "heatingEff": 1,
+   "cookingEff": 0.8,
+   "needsPower": true,
+   "notes": "Grid-down means no heat. Plan a backup source."
+  },
+  {
+   "id": "white-gas",
+   "name": "White gas (camp fuel)",
+   "unit": "L",
+   "energyMJ": 32,
+   "perKgMJ": 44,
+   "heatingEff": 0,
+   "cookingEff": 0.4,
+   "needsPower": false,
+   "notes": "Works in deep cold, unlike butane canisters."
+  },
+  {
+   "id": "butane",
+   "name": "Butane canisters",
+   "unit": "kg",
+   "energyMJ": 45.7,
+   "perKgMJ": 45.7,
+   "heatingEff": 0,
+   "cookingEff": 0.45,
+   "needsPower": false,
+   "notes": "Fails below about 0 °C. Summer or indoor only."
+  }
+ ]
+}

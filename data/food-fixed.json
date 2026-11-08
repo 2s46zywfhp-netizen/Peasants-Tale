@@ -1,0 +1,130 @@
+{
+ "dataset": "food-fixed",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Food items sized per person instead of by calories: drinks, baking, salt, vitamins. basis: gramsPerPersonDay, tabletsPerPersonDay or preservingSalt (uses assumptions).",
+ "records": [
+  {
+   "id": "coffee",
+   "category": "morale",
+   "name": "Coffee (ground or whole bean)",
+   "basis": "gramsPerPersonDay",
+   "amount": 12,
+   "adultsOnly": true,
+   "shelfLifeYears": 2,
+   "rotationMonths": 12,
+   "unitKg": 0.9,
+   "unitLabel": "can",
+   "notes": "Whole bean in sealed cans keeps longer. Caffeine withdrawal is real."
+  },
+  {
+   "id": "tea",
+   "category": "morale",
+   "name": "Tea",
+   "basis": "gramsPerPersonDay",
+   "amount": 4,
+   "adultsOnly": false,
+   "shelfLifeYears": 3,
+   "rotationMonths": 0,
+   "unitKg": 0.25,
+   "unitLabel": "box"
+  },
+  {
+   "id": "yeast",
+   "category": "baking",
+   "name": "Instant yeast",
+   "basis": "gramsPerPersonDay",
+   "amount": 1,
+   "minDays": 15,
+   "shelfLifeYears": 2,
+   "rotationMonths": 12,
+   "unitKg": 0.45,
+   "unitLabel": "vacuum pack",
+   "notes": "Freeze to extend life. Learn sourdough as a backup."
+  },
+  {
+   "id": "baking-powder",
+   "category": "baking",
+   "name": "Baking powder",
+   "basis": "gramsPerPersonDay",
+   "amount": 1,
+   "minDays": 15,
+   "shelfLifeYears": 2,
+   "rotationMonths": 12,
+   "unitKg": 0.45,
+   "unitLabel": "tin"
+  },
+  {
+   "id": "baking-soda",
+   "category": "baking",
+   "name": "Baking soda",
+   "basis": "gramsPerPersonDay",
+   "amount": 0.7,
+   "minDays": 15,
+   "shelfLifeYears": 30,
+   "rotationMonths": 0,
+   "unitKg": 0.5,
+   "unitLabel": "box",
+   "notes": "Also for cleaning and hygiene."
+  },
+  {
+   "id": "iodized-salt",
+   "category": "salt",
+   "name": "Iodized table salt",
+   "basis": "gramsPerPersonDay",
+   "amount": 6,
+   "shelfLifeYears": 5,
+   "rotationMonths": 0,
+   "unitKg": 1,
+   "unitLabel": "kg box",
+   "notes": "Iodine prevents goitre where food is local (Shield soils are low in iodine). Iodine fades over years: keep sealed."
+  },
+  {
+   "id": "preserving-salt",
+   "category": "salt",
+   "name": "Non-iodized salt (pickling, curing)",
+   "basis": "preservingSalt",
+   "amount": 0,
+   "shelfLifeYears": 30,
+   "rotationMonths": 0,
+   "unitKg": 2,
+   "unitLabel": "bag",
+   "notes": "For brining fish, curing meat, sauerkraut. Never expires."
+  },
+  {
+   "id": "vitamin-c",
+   "category": "micronutrients",
+   "name": "Vitamin C 250–500 mg",
+   "basis": "tabletsPerPersonDay",
+   "amount": 1,
+   "perBottle": 100,
+   "shelfLifeYears": 2,
+   "rotationMonths": 12,
+   "unitLabel": "bottle of 100",
+   "notes": "Scurvy appears in 1–3 months without fresh food."
+  },
+  {
+   "id": "vitamin-d",
+   "category": "micronutrients",
+   "name": "Vitamin D3 1000 IU",
+   "basis": "tabletsPerPersonDay",
+   "amount": 1,
+   "perBottle": 100,
+   "shelfLifeYears": 2,
+   "rotationMonths": 12,
+   "unitLabel": "bottle of 100",
+   "notes": "Little winter sun north of 45°: Oct–Apr deficiency is common."
+  },
+  {
+   "id": "multivitamin",
+   "category": "micronutrients",
+   "name": "Multivitamin",
+   "basis": "tabletsPerPersonDay",
+   "amount": 1,
+   "perBottle": 100,
+   "shelfLifeYears": 2,
+   "rotationMonths": 12,
+   "unitLabel": "bottle of 100"
+  }
+ ]
+}

@@ -1,0 +1,56 @@
+{
+ "dataset": "food-shares",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Share of daily calories from each category. 'long' is used above shortTermDays, 'short' (no-cook) at or below it. Each column should add up to 1.",
+ "records": [
+  {
+   "id": "grains",
+   "label": "Grains",
+   "long": 0.45,
+   "short": 0.3
+  },
+  {
+   "id": "legumes",
+   "label": "Legumes",
+   "long": 0.15,
+   "short": 0.1
+  },
+  {
+   "id": "sweeteners",
+   "label": "Sweeteners",
+   "long": 0.08,
+   "short": 0.05
+  },
+  {
+   "id": "fats",
+   "label": "Fats & oils",
+   "long": 0.12,
+   "short": 0.1
+  },
+  {
+   "id": "dairy",
+   "label": "Dairy",
+   "long": 0.07,
+   "short": 0.05
+  },
+  {
+   "id": "cannedProtein",
+   "label": "Canned protein",
+   "long": 0.07,
+   "short": 0.2
+  },
+  {
+   "id": "cannedVeg",
+   "label": "Canned veg & fruit",
+   "long": 0.03,
+   "short": 0.1
+  },
+  {
+   "id": "morale",
+   "label": "Morale",
+   "long": 0.03,
+   "short": 0.1
+  }
+ ]
+}

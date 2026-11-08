@@ -1,0 +1,1901 @@
+{
+ "dataset": "ontario-climate",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Ontario climate stations with 1981-2010 normals from ECCC (api.weather.gc.ca). Frost dates are day-of-year. snowMonths = months averaging 15+ days with >=1 cm snow on ground. Regenerate with scripts/build-climate.ts.",
+ "source": "eccc-normals",
+ "records": [
+  {
+   "id": "6016527",
+   "name": "Pickle Lake (Airport)",
+   "lat": 51.4464,
+   "lon": -90.2142,
+   "lastFrostDoy": 144,
+   "firstFrostDoy": 269,
+   "frostFreeDays": 124,
+   "annualPrecipMm": 729,
+   "janMeanC": -19.2,
+   "janMeanMinC": -24.1,
+   "hdd": 6459,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    4,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6075425",
+   "name": "Moosonee Ua",
+   "lat": 51.2667,
+   "lon": -80.65,
+   "lastFrostDoy": 177,
+   "firstFrostDoy": 237,
+   "frostFreeDays": 58,
+   "annualPrecipMm": 704,
+   "janMeanC": -20,
+   "janMeanMinC": -26.3,
+   "hdd": 6774,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    4,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6016975",
+   "name": "Red Lake (Airport)",
+   "lat": 51.0669,
+   "lon": -93.7931,
+   "lastFrostDoy": 149,
+   "firstFrostDoy": 261,
+   "frostFreeDays": 111,
+   "annualPrecipMm": 686,
+   "janMeanC": -18.3,
+   "janMeanMinC": -23.9,
+   "hdd": 6196,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6037775",
+   "name": "Sioux Lookout (Airport)",
+   "lat": 50.1167,
+   "lon": -91.9,
+   "lastFrostDoy": 139,
+   "firstFrostDoy": 268,
+   "frostFreeDays": 128,
+   "annualPrecipMm": 777,
+   "janMeanC": -17.3,
+   "janMeanMinC": -22.7,
+   "hdd": 5917,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6032119",
+   "name": "Dryden (Airport)",
+   "lat": 49.8333,
+   "lon": -92.75,
+   "lastFrostDoy": 136,
+   "firstFrostDoy": 264,
+   "frostFreeDays": 127,
+   "annualPrecipMm": 720,
+   "janMeanC": -16.8,
+   "janMeanMinC": -21.9,
+   "hdd": 5817,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6034075",
+   "name": "Kenora (Airport)",
+   "lat": 49.7903,
+   "lon": -94.3653,
+   "lastFrostDoy": 131,
+   "firstFrostDoy": 275,
+   "frostFreeDays": 144,
+   "annualPrecipMm": 715,
+   "janMeanC": -16,
+   "janMeanMinC": -20.5,
+   "hdd": 5598,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6042716",
+   "name": "Geraldton (Airport)",
+   "lat": 49.7828,
+   "lon": -86.9306,
+   "lastFrostDoy": 155,
+   "firstFrostDoy": 257,
+   "frostFreeDays": 101,
+   "annualPrecipMm": 765,
+   "janMeanC": -18.6,
+   "janMeanMinC": -25.1,
+   "hdd": 6394,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    4,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6036904",
+   "name": "Rawson Lake",
+   "lat": 49.65,
+   "lon": -93.7167,
+   "lastFrostDoy": 134,
+   "firstFrostDoy": 273,
+   "frostFreeDays": 137,
+   "annualPrecipMm": 705,
+   "janMeanC": -15.6,
+   "janMeanMinC": -20.3,
+   "hdd": 5604,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6073975",
+   "name": "Kapuskasing (Airport)",
+   "lat": 49.4139,
+   "lon": -82.4675,
+   "lastFrostDoy": 156,
+   "firstFrostDoy": 258,
+   "frostFreeDays": 101,
+   "annualPrecipMm": 830,
+   "janMeanC": -17.9,
+   "janMeanMinC": -23.9,
+   "hdd": 6183,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    4,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6073960",
+   "name": "Kapuskasing Cda",
+   "lat": 49.4,
+   "lon": -82.4333,
+   "lastFrostDoy": 167,
+   "firstFrostDoy": 250,
+   "frostFreeDays": 82,
+   "annualPrecipMm": 839,
+   "janMeanC": -18.6,
+   "janMeanMinC": -24.8,
+   "hdd": 6242,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    4,
+    12
+   ]
+  },
+  {
+   "id": "6025203",
+   "name": "Mine Centre",
+   "lat": 48.7667,
+   "lon": -92.6167,
+   "lastFrostDoy": 150,
+   "firstFrostDoy": 260,
+   "frostFreeDays": 109,
+   "annualPrecipMm": 762,
+   "janMeanC": -15.3,
+   "janMeanMinC": -21.2,
+   "hdd": 5533,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "602K300",
+   "name": "Emo Radbourne",
+   "lat": 48.6833,
+   "lon": -93.8333,
+   "lastFrostDoy": 162,
+   "firstFrostDoy": 252,
+   "frostFreeDays": 88,
+   "annualPrecipMm": 769,
+   "janMeanC": -16,
+   "janMeanMinC": -22.7,
+   "hdd": 5693,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    4,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6022476",
+   "name": "Fort Frances (Airport)",
+   "lat": 48.65,
+   "lon": -93.4333,
+   "lastFrostDoy": 148,
+   "firstFrostDoy": 259,
+   "frostFreeDays": 110,
+   "annualPrecipMm": 726,
+   "janMeanC": -15.2,
+   "janMeanMinC": -20.9,
+   "hdd": 5481,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6020559",
+   "name": "Barwick",
+   "lat": 48.6333,
+   "lon": -93.9667,
+   "lastFrostDoy": 144,
+   "firstFrostDoy": 258,
+   "frostFreeDays": 113,
+   "annualPrecipMm": 710,
+   "janMeanC": -15.3,
+   "janMeanMinC": -21.1,
+   "hdd": 5449,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6078285",
+   "name": "Timmins Victor Power (Airport)",
+   "lat": 48.5697,
+   "lon": -81.3767,
+   "lastFrostDoy": 159,
+   "firstFrostDoy": 251,
+   "frostFreeDays": 90,
+   "annualPrecipMm": 835,
+   "janMeanC": -16.8,
+   "janMeanMinC": -23,
+   "hdd": 5991,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    4,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6042MJ7",
+   "name": "Flint",
+   "lat": 48.35,
+   "lon": -89.6833,
+   "lastFrostDoy": 167,
+   "firstFrostDoy": 240,
+   "frostFreeDays": 73,
+   "annualPrecipMm": 761,
+   "janMeanC": -14.7,
+   "janMeanMinC": -21.2,
+   "hdd": 5683,
+   "snowMonths": []
+  },
+  {
+   "id": "6049466",
+   "name": "Whitefish Lake",
+   "lat": 48.2833,
+   "lon": -89.9167,
+   "lastFrostDoy": 168,
+   "firstFrostDoy": 238,
+   "frostFreeDays": 69,
+   "annualPrecipMm": 831,
+   "janMeanC": -14.9,
+   "janMeanMinC": -20.8,
+   "hdd": 5796,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    4,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6059D09",
+   "name": "Wawa (Airport)",
+   "lat": 47.9667,
+   "lon": -84.7833,
+   "lastFrostDoy": 156,
+   "firstFrostDoy": 261,
+   "frostFreeDays": 105,
+   "annualPrecipMm": 970,
+   "janMeanC": -14,
+   "janMeanMinC": -20.2,
+   "hdd": 5814,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    4,
+    12
+   ]
+  },
+  {
+   "id": "6061361",
+   "name": "Chapleau (Airport)",
+   "lat": 47.82,
+   "lon": -83.3467,
+   "lastFrostDoy": 149,
+   "firstFrostDoy": 262,
+   "frostFreeDays": 113,
+   "annualPrecipMm": 809,
+   "janMeanC": -15.6,
+   "janMeanMinC": -21.9,
+   "hdd": 5873,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    4,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6072225",
+   "name": "Earlton (Airport)",
+   "lat": 47.7,
+   "lon": -79.85,
+   "lastFrostDoy": 148,
+   "firstFrostDoy": 263,
+   "frostFreeDays": 114,
+   "annualPrecipMm": 786,
+   "janMeanC": -16.2,
+   "janMeanMinC": -22.4,
+   "hdd": 5721,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    4,
+    12
+   ]
+  },
+  {
+   "id": "6068150",
+   "name": "Sudbury (Airport)",
+   "lat": 46.6256,
+   "lon": -80.7978,
+   "lastFrostDoy": 137,
+   "firstFrostDoy": 274,
+   "frostFreeDays": 136,
+   "annualPrecipMm": 903,
+   "janMeanC": -13,
+   "janMeanMinC": -17.9,
+   "hdd": 5200,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6057592",
+   "name": "Sault Ste Marie (Airport)",
+   "lat": 46.4833,
+   "lon": -84.5094,
+   "lastFrostDoy": 149,
+   "firstFrostDoy": 274,
+   "frostFreeDays": 123,
+   "annualPrecipMm": 898,
+   "janMeanC": -9.9,
+   "janMeanMinC": -14.8,
+   "hdd": 4927,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6085700",
+   "name": "North Bay (Airport)",
+   "lat": 46.3636,
+   "lon": -79.4228,
+   "lastFrostDoy": 136,
+   "firstFrostDoy": 272,
+   "frostFreeDays": 135,
+   "annualPrecipMm": 1045,
+   "janMeanC": -12.5,
+   "janMeanMinC": -17.4,
+   "hdd": 5146,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6065006",
+   "name": "Massey",
+   "lat": 46.1931,
+   "lon": -82.0247,
+   "lastFrostDoy": 149,
+   "firstFrostDoy": 260,
+   "frostFreeDays": 110,
+   "annualPrecipMm": 890,
+   "janMeanC": -11.1,
+   "janMeanMinC": -16.3,
+   "hdd": 4949,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6116702",
+   "name": "Powassan",
+   "lat": 46.1167,
+   "lon": -79.25,
+   "lastFrostDoy": 149,
+   "firstFrostDoy": 256,
+   "frostFreeDays": 106,
+   "annualPrecipMm": 950,
+   "janMeanC": -12.3,
+   "janMeanMinC": -17.7,
+   "hdd": 5072,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6101335",
+   "name": "Chalk River Aecl",
+   "lat": 46.05,
+   "lon": -77.3667,
+   "lastFrostDoy": 133,
+   "firstFrostDoy": 273,
+   "frostFreeDays": 139,
+   "annualPrecipMm": 859,
+   "janMeanC": -11.8,
+   "janMeanMinC": -16.7,
+   "hdd": 4729,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6112133",
+   "name": "Dunchurch",
+   "lat": 45.6167,
+   "lon": -79.8833,
+   "lastFrostDoy": 150,
+   "firstFrostDoy": 257,
+   "frostFreeDays": 106,
+   "annualPrecipMm": 1118,
+   "janMeanC": -11.1,
+   "janMeanMinC": -16.8,
+   "hdd": 4905,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6082178",
+   "name": "Dwight",
+   "lat": 45.3833,
+   "lon": -78.9,
+   "lastFrostDoy": 147,
+   "firstFrostDoy": 261,
+   "frostFreeDays": 113,
+   "annualPrecipMm": 1186,
+   "janMeanC": -11.6,
+   "janMeanMinC": -16.8,
+   "hdd": 5094,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    11,
+    12
+   ]
+  },
+  {
+   "id": "6105976",
+   "name": "Ottawa Cda",
+   "lat": 45.3833,
+   "lon": -75.7167,
+   "lastFrostDoy": 120,
+   "firstFrostDoy": 279,
+   "frostFreeDays": 158,
+   "annualPrecipMm": 920,
+   "janMeanC": -10.2,
+   "janMeanMinC": -14.4,
+   "hdd": 4395,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6101820",
+   "name": "Combermere",
+   "lat": 45.3667,
+   "lon": -77.6167,
+   "lastFrostDoy": 139,
+   "firstFrostDoy": 276,
+   "frostFreeDays": 136,
+   "annualPrecipMm": 857,
+   "janMeanC": -11.6,
+   "janMeanMinC": -17.5,
+   "hdd": 4884,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6106000",
+   "name": "Ottawa Macdonald-Cartier Int'L (Airport)",
+   "lat": 45.3225,
+   "lon": -75.6692,
+   "lastFrostDoy": 120,
+   "firstFrostDoy": 280,
+   "frostFreeDays": 159,
+   "annualPrecipMm": 943,
+   "janMeanC": -10.3,
+   "janMeanMinC": -14.8,
+   "hdd": 4477,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6101958",
+   "name": "Dalhousie Mills",
+   "lat": 45.3167,
+   "lon": -74.4667,
+   "lastFrostDoy": 138,
+   "firstFrostDoy": 267,
+   "frostFreeDays": 128,
+   "annualPrecipMm": 1077,
+   "janMeanC": -11.1,
+   "janMeanMinC": -16.2,
+   "hdd": 4646,
+   "snowMonths": []
+  },
+  {
+   "id": "6107276",
+   "name": "St. Albert",
+   "lat": 45.2872,
+   "lon": -75.0636,
+   "lastFrostDoy": 138,
+   "firstFrostDoy": 268,
+   "frostFreeDays": 128,
+   "annualPrecipMm": 1056,
+   "janMeanC": -10.2,
+   "janMeanMinC": -15,
+   "hdd": 4590,
+   "snowMonths": []
+  },
+  {
+   "id": "6107247",
+   "name": "Russell",
+   "lat": 45.2628,
+   "lon": -75.3595,
+   "lastFrostDoy": 126,
+   "firstFrostDoy": 271,
+   "frostFreeDays": 144,
+   "annualPrecipMm": 981,
+   "janMeanC": -10.1,
+   "janMeanMinC": -14.9,
+   "hdd": 4434,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6112072",
+   "name": "Dorset Moe",
+   "lat": 45.2167,
+   "lon": -78.9333,
+   "lastFrostDoy": 146,
+   "firstFrostDoy": 264,
+   "frostFreeDays": 117,
+   "annualPrecipMm": 1058,
+   "janMeanC": -10.6,
+   "janMeanMinC": -16.1,
+   "hdd": 4860,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6100398",
+   "name": "Avonmore",
+   "lat": 45.17,
+   "lon": -74.9708,
+   "lastFrostDoy": 136,
+   "firstFrostDoy": 269,
+   "frostFreeDays": 132,
+   "annualPrecipMm": 999,
+   "janMeanC": -10.4,
+   "janMeanMinC": -15.2,
+   "hdd": 4526,
+   "snowMonths": [
+    2,
+    3
+   ]
+  },
+  {
+   "id": "6110606",
+   "name": "Beatrice 2",
+   "lat": 45.1333,
+   "lon": -79.4,
+   "lastFrostDoy": 157,
+   "firstFrostDoy": 250,
+   "frostFreeDays": 92,
+   "annualPrecipMm": 1198,
+   "janMeanC": -10.7,
+   "janMeanMinC": -16.3,
+   "hdd": 4924,
+   "snowMonths": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "id": "6102J13",
+   "name": "Drummond Centre",
+   "lat": 45.0322,
+   "lon": -76.2528,
+   "lastFrostDoy": 137,
+   "firstFrostDoy": 267,
+   "frostFreeDays": 129,
+   "annualPrecipMm": 876,
+   "janMeanC": -9.7,
+   "janMeanMinC": -14.8,
+   "hdd": 4532,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6101874",
+   "name": "Cornwall",
+   "lat": 45.0156,
+   "lon": -74.7489,
+   "lastFrostDoy": 118,
+   "firstFrostDoy": 283,
+   "frostFreeDays": 164,
+   "annualPrecipMm": 1011,
+   "janMeanC": -8.5,
+   "janMeanMinC": -12.6,
+   "hdd": 4098,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6115525",
+   "name": "Muskoka (Airport)",
+   "lat": 44.9667,
+   "lon": -79.3,
+   "lastFrostDoy": 141,
+   "firstFrostDoy": 268,
+   "frostFreeDays": 126,
+   "annualPrecipMm": 1105,
+   "janMeanC": -10.3,
+   "janMeanMinC": -15.8,
+   "hdd": 4786,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6165195",
+   "name": "Minden",
+   "lat": 44.9333,
+   "lon": -78.7167,
+   "lastFrostDoy": 152,
+   "firstFrostDoy": 260,
+   "frostFreeDays": 107,
+   "annualPrecipMm": 1056,
+   "janMeanC": -9.7,
+   "janMeanMinC": -15.2,
+   "hdd": 4655,
+   "snowMonths": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "id": "6105460",
+   "name": "Morrisburg",
+   "lat": 44.9236,
+   "lon": -75.1883,
+   "lastFrostDoy": 135,
+   "firstFrostDoy": 269,
+   "frostFreeDays": 133,
+   "annualPrecipMm": 1025,
+   "janMeanC": -9.6,
+   "janMeanMinC": -14.4,
+   "hdd": 4388,
+   "snowMonths": []
+  },
+  {
+   "id": "6119500",
+   "name": "Wiarton (Airport)",
+   "lat": 44.7458,
+   "lon": -81.1072,
+   "lastFrostDoy": 132,
+   "firstFrostDoy": 281,
+   "frostFreeDays": 148,
+   "annualPrecipMm": 1048,
+   "janMeanC": -6.3,
+   "janMeanMinC": -10.1,
+   "hdd": 4304,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6100971",
+   "name": "Brockville Pcc",
+   "lat": 44.6,
+   "lon": -75.6667,
+   "lastFrostDoy": 118,
+   "firstFrostDoy": 285,
+   "frostFreeDays": 166,
+   "annualPrecipMm": 987,
+   "janMeanC": -7.8,
+   "janMeanMinC": -12,
+   "hdd": 4079,
+   "snowMonths": [
+    2
+   ]
+  },
+  {
+   "id": "6116132",
+   "name": "Owen Sound Moe",
+   "lat": 44.5833,
+   "lon": -80.9333,
+   "lastFrostDoy": 125,
+   "firstFrostDoy": 287,
+   "frostFreeDays": 162,
+   "annualPrecipMm": 1114,
+   "janMeanC": -5.4,
+   "janMeanMinC": -8.9,
+   "hdd": 4032,
+   "snowMonths": [
+    1,
+    2,
+    12
+   ]
+  },
+  {
+   "id": "611HBEC",
+   "name": "Thornbury Slama",
+   "lat": 44.5736,
+   "lon": -80.4853,
+   "lastFrostDoy": 131,
+   "firstFrostDoy": 284,
+   "frostFreeDays": 152,
+   "annualPrecipMm": 992,
+   "janMeanC": -6.3,
+   "janMeanMinC": -9.9,
+   "hdd": 4188,
+   "snowMonths": []
+  },
+  {
+   "id": "6128206",
+   "name": "Tara",
+   "lat": 44.5195,
+   "lon": -81.157,
+   "lastFrostDoy": 140,
+   "firstFrostDoy": 273,
+   "frostFreeDays": 131,
+   "annualPrecipMm": 1294,
+   "janMeanC": -6.1,
+   "janMeanMinC": -9.8,
+   "hdd": 4237,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6104725",
+   "name": "Lyndhurst Shawmere",
+   "lat": 44.5167,
+   "lon": -76.0833,
+   "lastFrostDoy": 125,
+   "firstFrostDoy": 284,
+   "frostFreeDays": 158,
+   "annualPrecipMm": 972,
+   "janMeanC": -8.4,
+   "janMeanMinC": -13.3,
+   "hdd": 4205,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6103367",
+   "name": "Hartington Ihd",
+   "lat": 44.4281,
+   "lon": -76.6903,
+   "lastFrostDoy": 124,
+   "firstFrostDoy": 275,
+   "frostFreeDays": 150,
+   "annualPrecipMm": 978,
+   "janMeanC": -8.3,
+   "janMeanMinC": -13,
+   "hdd": 4238,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6117684",
+   "name": "Shanty Bay",
+   "lat": 44.3995,
+   "lon": -79.6328,
+   "lastFrostDoy": 131,
+   "firstFrostDoy": 280,
+   "frostFreeDays": 148,
+   "annualPrecipMm": 968,
+   "janMeanC": -7.7,
+   "janMeanMinC": -12,
+   "hdd": 4282,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6111467",
+   "name": "Chatsworth",
+   "lat": 44.395,
+   "lon": -80.9056,
+   "lastFrostDoy": 142,
+   "firstFrostDoy": 273,
+   "frostFreeDays": 130,
+   "annualPrecipMm": 1178,
+   "janMeanC": -6.9,
+   "janMeanMinC": -10.9,
+   "hdd": 4370,
+   "snowMonths": []
+  },
+  {
+   "id": "6110557",
+   "name": "Barrie Wpcc",
+   "lat": 44.3758,
+   "lon": -79.6897,
+   "lastFrostDoy": 127,
+   "firstFrostDoy": 282,
+   "frostFreeDays": 153,
+   "annualPrecipMm": 933,
+   "janMeanC": -7.7,
+   "janMeanMinC": -12.4,
+   "hdd": 4254,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6166455",
+   "name": "Peterborough Trent U",
+   "lat": 44.3667,
+   "lon": -78.3,
+   "lastFrostDoy": 128,
+   "firstFrostDoy": 276,
+   "frostFreeDays": 147,
+   "annualPrecipMm": 882,
+   "janMeanC": -8.4,
+   "janMeanMinC": -13,
+   "hdd": 4244,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6164433",
+   "name": "Lindsay Frost",
+   "lat": 44.3384,
+   "lon": -78.7403,
+   "lastFrostDoy": 133,
+   "firstFrostDoy": 277,
+   "frostFreeDays": 143,
+   "annualPrecipMm": 897,
+   "janMeanC": -8.4,
+   "janMeanMinC": -12.7,
+   "hdd": 4357,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6104175",
+   "name": "Kingston Pumping Station",
+   "lat": 44.2439,
+   "lon": -76.4806,
+   "lastFrostDoy": 115,
+   "firstFrostDoy": 285,
+   "frostFreeDays": 169,
+   "annualPrecipMm": 951,
+   "janMeanC": -7,
+   "janMeanMinC": -11.4,
+   "hdd": 3976,
+   "snowMonths": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "id": "6166418",
+   "name": "Peterborough (Airport)",
+   "lat": 44.2333,
+   "lon": -78.3667,
+   "lastFrostDoy": 134,
+   "firstFrostDoy": 267,
+   "frostFreeDays": 132,
+   "annualPrecipMm": 855,
+   "janMeanC": -8.5,
+   "janMeanMinC": -13.6,
+   "hdd": 4441,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6147229",
+   "name": "Ruskview",
+   "lat": 44.2333,
+   "lon": -80.1333,
+   "lastFrostDoy": 130,
+   "firstFrostDoy": 278,
+   "frostFreeDays": 147,
+   "annualPrecipMm": 996,
+   "janMeanC": -7.3,
+   "janMeanMinC": -10.9,
+   "hdd": 4406,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6153853",
+   "name": "Janetville",
+   "lat": 44.2167,
+   "lon": -78.6333,
+   "lastFrostDoy": 142,
+   "firstFrostDoy": 264,
+   "frostFreeDays": 121,
+   "annualPrecipMm": 949,
+   "janMeanC": -7.7,
+   "janMeanMinC": -12,
+   "hdd": 4331,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6111859",
+   "name": "Cookstown",
+   "lat": 44.2067,
+   "lon": -79.6947,
+   "lastFrostDoy": 138,
+   "firstFrostDoy": 268,
+   "frostFreeDays": 130,
+   "annualPrecipMm": 826,
+   "janMeanC": -7.9,
+   "janMeanMinC": -12.2,
+   "hdd": 4372,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6112171",
+   "name": "Durham",
+   "lat": 44.1833,
+   "lon": -80.8167,
+   "lastFrostDoy": 143,
+   "firstFrostDoy": 273,
+   "frostFreeDays": 129,
+   "annualPrecipMm": 1119,
+   "janMeanC": -7.1,
+   "janMeanMinC": -10.8,
+   "hdd": 4334,
+   "snowMonths": []
+  },
+  {
+   "id": "6116750",
+   "name": "Proton Station",
+   "lat": 44.1667,
+   "lon": -80.5167,
+   "lastFrostDoy": 151,
+   "firstFrostDoy": 259,
+   "frostFreeDays": 107,
+   "annualPrecipMm": 1106,
+   "janMeanC": -8.3,
+   "janMeanMinC": -12.1,
+   "hdd": 4754,
+   "snowMonths": []
+  },
+  {
+   "id": "6110218",
+   "name": "Alliston Nelson",
+   "lat": 44.1514,
+   "lon": -79.8722,
+   "lastFrostDoy": 131,
+   "firstFrostDoy": 280,
+   "frostFreeDays": 149,
+   "annualPrecipMm": 834,
+   "janMeanC": -6.5,
+   "janMeanMinC": -10.4,
+   "hdd": 4025,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6150689",
+   "name": "Belleville",
+   "lat": 44.1506,
+   "lon": -77.3947,
+   "lastFrostDoy": 114,
+   "firstFrostDoy": 286,
+   "frostFreeDays": 171,
+   "annualPrecipMm": 912,
+   "janMeanC": -6.7,
+   "janMeanMinC": -11.1,
+   "hdd": 3911,
+   "snowMonths": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "6158875",
+   "name": "Trenton (Airport)",
+   "lat": 44.1189,
+   "lon": -77.5281,
+   "lastFrostDoy": 121,
+   "firstFrostDoy": 281,
+   "frostFreeDays": 158,
+   "annualPrecipMm": 911,
+   "janMeanC": -6.8,
+   "janMeanMinC": -11.6,
+   "hdd": 4097,
+   "snowMonths": [
+    1,
+    2,
+    12
+   ]
+  },
+  {
+   "id": "6113329",
+   "name": "Hanover",
+   "lat": 44.1164,
+   "lon": -81.0058,
+   "lastFrostDoy": 144,
+   "firstFrostDoy": 269,
+   "frostFreeDays": 124,
+   "annualPrecipMm": 1087,
+   "janMeanC": -6.8,
+   "janMeanMinC": -10.9,
+   "hdd": 4287,
+   "snowMonths": []
+  },
+  {
+   "id": "61519JM",
+   "name": "Cressy",
+   "lat": 44.1,
+   "lon": -76.85,
+   "lastFrostDoy": 112,
+   "firstFrostDoy": 295,
+   "frostFreeDays": 182,
+   "annualPrecipMm": 946,
+   "janMeanC": -6.1,
+   "janMeanMinC": -10,
+   "hdd": 3924,
+   "snowMonths": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "id": "615EMR7",
+   "name": "Mountainview",
+   "lat": 44.052,
+   "lon": -77.3017,
+   "lastFrostDoy": 120,
+   "firstFrostDoy": 279,
+   "frostFreeDays": 158,
+   "annualPrecipMm": 948,
+   "janMeanC": -6,
+   "janMeanMinC": -10.2,
+   "hdd": 3941,
+   "snowMonths": [
+    2
+   ]
+  },
+  {
+   "id": "6151042",
+   "name": "Burketon Mclaughlin",
+   "lat": 44.0333,
+   "lon": -78.8,
+   "lastFrostDoy": 125,
+   "firstFrostDoy": 281,
+   "frostFreeDays": 155,
+   "annualPrecipMm": 921,
+   "janMeanC": -7.4,
+   "janMeanMinC": -11.4,
+   "hdd": 4270,
+   "snowMonths": []
+  },
+  {
+   "id": "6154142",
+   "name": "King Smoke Tree",
+   "lat": 44.0167,
+   "lon": -79.5167,
+   "lastFrostDoy": 126,
+   "firstFrostDoy": 282,
+   "frostFreeDays": 155,
+   "annualPrecipMm": 858,
+   "janMeanC": -7.4,
+   "janMeanMinC": -11.1,
+   "hdd": 4243,
+   "snowMonths": []
+  },
+  {
+   "id": "6151689",
+   "name": "Cobourg Stp",
+   "lat": 43.9667,
+   "lon": -78.1833,
+   "lastFrostDoy": 125,
+   "firstFrostDoy": 283,
+   "frostFreeDays": 158,
+   "annualPrecipMm": 890,
+   "janMeanC": -5.5,
+   "janMeanMinC": -9.7,
+   "hdd": 4009,
+   "snowMonths": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "6155790",
+   "name": "Orangeville Moe",
+   "lat": 43.9184,
+   "lon": -80.0864,
+   "lastFrostDoy": 140,
+   "firstFrostDoy": 273,
+   "frostFreeDays": 132,
+   "annualPrecipMm": 902,
+   "janMeanC": -7.5,
+   "janMeanMinC": -11.6,
+   "hdd": 4421,
+   "snowMonths": [
+    1,
+    2,
+    12
+   ]
+  },
+  {
+   "id": "6150830",
+   "name": "Bowmanville Mostert",
+   "lat": 43.9167,
+   "lon": -78.6667,
+   "lastFrostDoy": 129,
+   "firstFrostDoy": 271,
+   "frostFreeDays": 141,
+   "annualPrecipMm": 866,
+   "janMeanC": -5.6,
+   "janMeanMinC": -9.9,
+   "hdd": 3997,
+   "snowMonths": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "6157012",
+   "name": "Richmond Hill",
+   "lat": 43.8772,
+   "lon": -79.4478,
+   "lastFrostDoy": 125,
+   "firstFrostDoy": 283,
+   "frostFreeDays": 157,
+   "annualPrecipMm": 895,
+   "janMeanC": -6.2,
+   "janMeanMinC": -10.2,
+   "hdd": 3961,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6155878",
+   "name": "Oshawa Wpcp",
+   "lat": 43.8667,
+   "lon": -78.8333,
+   "lastFrostDoy": 119,
+   "firstFrostDoy": 287,
+   "frostFreeDays": 168,
+   "annualPrecipMm": 872,
+   "janMeanC": -4.8,
+   "janMeanMinC": -8.4,
+   "hdd": 3806,
+   "snowMonths": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "615HMAK",
+   "name": "Toronto Buttonville (Airport)",
+   "lat": 43.8622,
+   "lon": -79.37,
+   "lastFrostDoy": 125,
+   "firstFrostDoy": 283,
+   "frostFreeDays": 157,
+   "annualPrecipMm": 853,
+   "janMeanC": -5.8,
+   "janMeanMinC": -10.1,
+   "hdd": 4004,
+   "snowMonths": [
+    1,
+    2,
+    12
+   ]
+  },
+  {
+   "id": "6142400",
+   "name": "Fergus Shand Dam",
+   "lat": 43.7347,
+   "lon": -80.3303,
+   "lastFrostDoy": 127,
+   "firstFrostDoy": 279,
+   "frostFreeDays": 151,
+   "annualPrecipMm": 946,
+   "janMeanC": -7.4,
+   "janMeanMinC": -11.1,
+   "hdd": 4307,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6120819",
+   "name": "Blyth",
+   "lat": 43.7183,
+   "lon": -81.3836,
+   "lastFrostDoy": 135,
+   "firstFrostDoy": 278,
+   "frostFreeDays": 143,
+   "annualPrecipMm": 1247,
+   "janMeanC": -7,
+   "janMeanMinC": -10.1,
+   "hdd": 4184,
+   "snowMonths": []
+  },
+  {
+   "id": "6142803",
+   "name": "Glen Allan",
+   "lat": 43.6839,
+   "lon": -80.7103,
+   "lastFrostDoy": 130,
+   "firstFrostDoy": 279,
+   "frostFreeDays": 148,
+   "annualPrecipMm": 1014,
+   "janMeanC": -7.2,
+   "janMeanMinC": -10.9,
+   "hdd": 4291,
+   "snowMonths": []
+  },
+  {
+   "id": "6158733",
+   "name": "Toronto Lester B. Pearson Int'L (Airport)",
+   "lat": 43.6772,
+   "lon": -79.6306,
+   "lastFrostDoy": 120,
+   "firstFrostDoy": 289,
+   "frostFreeDays": 168,
+   "annualPrecipMm": 786,
+   "janMeanC": -5.5,
+   "janMeanMinC": -9.4,
+   "hdd": 3873,
+   "snowMonths": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "6158350",
+   "name": "Toronto",
+   "lat": 43.6667,
+   "lon": -79.4,
+   "lastFrostDoy": 103,
+   "firstFrostDoy": 307,
+   "frostFreeDays": 203,
+   "annualPrecipMm": 831,
+   "janMeanC": -3.7,
+   "janMeanMinC": -6.7,
+   "hdd": 3498,
+   "snowMonths": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "6152695",
+   "name": "Georgetown Wwtp",
+   "lat": 43.64,
+   "lon": -79.8792,
+   "lastFrostDoy": 142,
+   "firstFrostDoy": 267,
+   "frostFreeDays": 125,
+   "annualPrecipMm": 877,
+   "janMeanC": -6.3,
+   "janMeanMinC": -10.9,
+   "hdd": 4153,
+   "snowMonths": []
+  },
+  {
+   "id": "6149387",
+   "name": "Waterloo Wellington (Airport)",
+   "lat": 43.45,
+   "lon": -80.3833,
+   "lastFrostDoy": 127,
+   "firstFrostDoy": 275,
+   "frostFreeDays": 147,
+   "annualPrecipMm": 916,
+   "janMeanC": -6.5,
+   "janMeanMinC": -10.3,
+   "hdd": 4194,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6148105",
+   "name": "Stratford Wwtp",
+   "lat": 43.3689,
+   "lon": -81.0047,
+   "lastFrostDoy": 132,
+   "firstFrostDoy": 279,
+   "frostFreeDays": 146,
+   "annualPrecipMm": 1070,
+   "janMeanC": -6,
+   "janMeanMinC": -9.4,
+   "hdd": 4064,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6147188",
+   "name": "Roseville",
+   "lat": 43.3536,
+   "lon": -80.4736,
+   "lastFrostDoy": 132,
+   "firstFrostDoy": 275,
+   "frostFreeDays": 142,
+   "annualPrecipMm": 919,
+   "janMeanC": -6.5,
+   "janMeanMinC": -10.1,
+   "hdd": 4121,
+   "snowMonths": []
+  },
+  {
+   "id": "6122370",
+   "name": "Exeter",
+   "lat": 43.35,
+   "lon": -81.5,
+   "lastFrostDoy": 126,
+   "firstFrostDoy": 288,
+   "frostFreeDays": 162,
+   "annualPrecipMm": 998,
+   "janMeanC": -5.5,
+   "janMeanMinC": -8.9,
+   "hdd": 3922,
+   "snowMonths": []
+  },
+  {
+   "id": "6155183",
+   "name": "Millgrove",
+   "lat": 43.3167,
+   "lon": -79.9667,
+   "lastFrostDoy": 127,
+   "firstFrostDoy": 275,
+   "frostFreeDays": 147,
+   "annualPrecipMm": 1004,
+   "janMeanC": -5.5,
+   "janMeanMinC": -9.3,
+   "hdd": 3938,
+   "snowMonths": []
+  },
+  {
+   "id": "6153194",
+   "name": "Hamilton (Airport)",
+   "lat": 43.1717,
+   "lon": -79.9342,
+   "lastFrostDoy": 119,
+   "firstFrostDoy": 287,
+   "frostFreeDays": 167,
+   "annualPrecipMm": 930,
+   "janMeanC": -5.5,
+   "janMeanMinC": -9.3,
+   "hdd": 3924,
+   "snowMonths": [
+    1,
+    2,
+    12
+   ]
+  },
+  {
+   "id": "6139143",
+   "name": "Vineland Rittenhouse",
+   "lat": 43.1667,
+   "lon": -79.4167,
+   "lastFrostDoy": 116,
+   "firstFrostDoy": 291,
+   "frostFreeDays": 174,
+   "annualPrecipMm": 892,
+   "janMeanC": -3.7,
+   "janMeanMinC": -7.1,
+   "hdd": 3561,
+   "snowMonths": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "6149625",
+   "name": "Woodstock",
+   "lat": 43.1361,
+   "lon": -80.7706,
+   "lastFrostDoy": 129,
+   "firstFrostDoy": 280,
+   "frostFreeDays": 150,
+   "annualPrecipMm": 969,
+   "janMeanC": -5.8,
+   "janMeanMinC": -9.6,
+   "hdd": 3946,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6140954",
+   "name": "Brantford Moe",
+   "lat": 43.1333,
+   "lon": -80.2333,
+   "lastFrostDoy": 121,
+   "firstFrostDoy": 283,
+   "frostFreeDays": 161,
+   "annualPrecipMm": 867,
+   "janMeanC": -6,
+   "janMeanMinC": -10.4,
+   "hdd": 3887,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6135657",
+   "name": "Niagara Falls Npcsh",
+   "lat": 43.1333,
+   "lon": -79.05,
+   "lastFrostDoy": 119,
+   "firstFrostDoy": 308,
+   "frostFreeDays": 188,
+   "annualPrecipMm": 947,
+   "janMeanC": -4.1,
+   "janMeanMinC": -7.8,
+   "hdd": 3548,
+   "snowMonths": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "id": "6143722",
+   "name": "Ilderton Bear Creek",
+   "lat": 43.05,
+   "lon": -81.4333,
+   "lastFrostDoy": 124,
+   "firstFrostDoy": 285,
+   "frostFreeDays": 160,
+   "annualPrecipMm": 1024,
+   "janMeanC": -5.6,
+   "janMeanMinC": -9.1,
+   "hdd": 3849,
+   "snowMonths": [
+    1,
+    2,
+    12
+   ]
+  },
+  {
+   "id": "6137161",
+   "name": "Ridgeville",
+   "lat": 43.0417,
+   "lon": -79.325,
+   "lastFrostDoy": 115,
+   "firstFrostDoy": 299,
+   "frostFreeDays": 183,
+   "annualPrecipMm": 946,
+   "janMeanC": -4.4,
+   "janMeanMinC": -7.5,
+   "hdd": 3656,
+   "snowMonths": [
+    1,
+    12
+   ]
+  },
+  {
+   "id": "6144475",
+   "name": "London Int'L Airport",
+   "lat": 43.0331,
+   "lon": -81.1511,
+   "lastFrostDoy": 121,
+   "firstFrostDoy": 286,
+   "frostFreeDays": 164,
+   "annualPrecipMm": 1012,
+   "janMeanC": -5.5,
+   "janMeanMinC": -9.2,
+   "hdd": 3941,
+   "snowMonths": [
+    1,
+    2,
+    12
+   ]
+  },
+  {
+   "id": "6142420",
+   "name": "Foldens",
+   "lat": 43.0184,
+   "lon": -80.7808,
+   "lastFrostDoy": 119,
+   "firstFrostDoy": 286,
+   "frostFreeDays": 166,
+   "annualPrecipMm": 954,
+   "janMeanC": -5.8,
+   "janMeanMinC": -9.2,
+   "hdd": 3917,
+   "snowMonths": [
+    1,
+    2,
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6139445",
+   "name": "Welland",
+   "lat": 42.9925,
+   "lon": -79.2611,
+   "lastFrostDoy": 129,
+   "firstFrostDoy": 282,
+   "frostFreeDays": 151,
+   "annualPrecipMm": 997,
+   "janMeanC": -4.3,
+   "janMeanMinC": -8.2,
+   "hdd": 3668,
+   "snowMonths": [
+    3,
+    12
+   ]
+  },
+  {
+   "id": "6127514",
+   "name": "Sarnia Airport",
+   "lat": 42.9922,
+   "lon": -82.3047,
+   "lastFrostDoy": 119,
+   "firstFrostDoy": 292,
+   "frostFreeDays": 172,
+   "annualPrecipMm": 878,
+   "janMeanC": -4.8,
+   "janMeanMinC": -8.2,
+   "hdd": 3785,
+   "snowMonths": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "6141933",
+   "name": "Culloden Easey",
+   "lat": 42.8895,
+   "lon": -80.8467,
+   "lastFrostDoy": 124,
+   "firstFrostDoy": 280,
+   "frostFreeDays": 155,
+   "annualPrecipMm": 1046,
+   "janMeanC": -5.7,
+   "janMeanMinC": -9.1,
+   "hdd": 3912,
+   "snowMonths": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "6136606",
+   "name": "Port Colborne",
+   "lat": 42.8833,
+   "lon": -79.25,
+   "lastFrostDoy": 115,
+   "firstFrostDoy": 299,
+   "frostFreeDays": 182,
+   "annualPrecipMm": 985,
+   "janMeanC": -3.6,
+   "janMeanMinC": -6.9,
+   "hdd": 3554,
+   "snowMonths": [
+    1
+   ]
+  },
+  {
+   "id": "6132470",
+   "name": "Fort Erie",
+   "lat": 42.8833,
+   "lon": -78.9667,
+   "lastFrostDoy": 124,
+   "firstFrostDoy": 285,
+   "frostFreeDays": 160,
+   "annualPrecipMm": 1051,
+   "janMeanC": -4.1,
+   "janMeanMinC": -8,
+   "hdd": 3687,
+   "snowMonths": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "id": "6126499",
+   "name": "Petrolia Town",
+   "lat": 42.8833,
+   "lon": -82.1667,
+   "lastFrostDoy": 127,
+   "firstFrostDoy": 279,
+   "frostFreeDays": 151,
+   "annualPrecipMm": 961,
+   "janMeanC": -5,
+   "janMeanMinC": -8.6,
+   "hdd": 3676,
+   "snowMonths": [
+    1,
+    2,
+    12
+   ]
+  },
+  {
+   "id": "6137362",
+   "name": "St Thomas Wpcp",
+   "lat": 42.7683,
+   "lon": -81.205,
+   "lastFrostDoy": 128,
+   "firstFrostDoy": 281,
+   "frostFreeDays": 152,
+   "annualPrecipMm": 993,
+   "janMeanC": -4.7,
+   "janMeanMinC": -8.5,
+   "hdd": 3673,
+   "snowMonths": [
+    1,
+    12
+   ]
+  },
+  {
+   "id": "6135583",
+   "name": "New Glasgow",
+   "lat": 42.5145,
+   "lon": -81.6361,
+   "lastFrostDoy": 123,
+   "firstFrostDoy": 287,
+   "frostFreeDays": 163,
+   "annualPrecipMm": 952,
+   "janMeanC": -4.3,
+   "janMeanMinC": -7.8,
+   "hdd": 3664,
+   "snowMonths": []
+  },
+  {
+   "id": "6131415",
+   "name": "Chatham Wpcp",
+   "lat": 42.39,
+   "lon": -82.2153,
+   "lastFrostDoy": 114,
+   "firstFrostDoy": 299,
+   "frostFreeDays": 185,
+   "annualPrecipMm": 882,
+   "janMeanC": -3.6,
+   "janMeanMinC": -6.9,
+   "hdd": 3428,
+   "snowMonths": [
+    1
+   ]
+  },
+  {
+   "id": "6139525",
+   "name": "Windsor (Airport)",
+   "lat": 42.2756,
+   "lon": -82.9556,
+   "lastFrostDoy": 107,
+   "firstFrostDoy": 303,
+   "frostFreeDays": 195,
+   "annualPrecipMm": 935,
+   "janMeanC": -3.8,
+   "janMeanMinC": -7.3,
+   "hdd": 3409,
+   "snowMonths": [
+    1
+   ]
+  },
+  {
+   "id": "6134190",
+   "name": "Kingsville Moe",
+   "lat": 42.0431,
+   "lon": -82.6739,
+   "lastFrostDoy": 113,
+   "firstFrostDoy": 305,
+   "frostFreeDays": 191,
+   "annualPrecipMm": 900,
+   "janMeanC": -3.7,
+   "janMeanMinC": -7.1,
+   "hdd": 3437,
+   "snowMonths": [
+    1
+   ]
+  }
+ ]
+}

@@ -1,4 +1,5 @@
-import { NavLink, Outlet, Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../lib/theme';
 import { useOnline } from '../lib/useOnline';
 import { IconBook, IconBox, IconEye, IconGear, IconHome, IconList, IconMoon, IconPen, IconSun } from './Icons';
@@ -14,6 +15,10 @@ const TABS = [
 
 export function Layout() {
   const { theme, cycleTheme } = useTheme();
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   const online = useOnline();
   const ThemeIcon = theme === 'light' ? IconSun : theme === 'dark' ? IconMoon : IconEye;
   const themeName = theme === 'light' ? 'Sun' : theme === 'dark' ? 'Dark' : 'Night';

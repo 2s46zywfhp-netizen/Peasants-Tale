@@ -1,0 +1,958 @@
+{
+ "dataset": "food-items",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Storage foods by category. kcal and macros per 100 g (USDA FoodData Central, rounded). shelfLifeYears = sealed, cool, dry, dark. rotationMonths 0 = no rotation needed within shelf life. tiers = which budget levels use the item; use = short (no-cook, up to 2 weeks) or long storage.",
+ "records": [
+  {
+   "id": "white-rice",
+   "category": "grains",
+   "name": "White rice",
+   "kcalPer100g": 365,
+   "proteinG": 7.1,
+   "fatG": 0.7,
+   "carbG": 80,
+   "shelfLifeYears": 25,
+   "rotationMonths": 0,
+   "packaging": "pail",
+   "unitKg": 1,
+   "unitLabel": "kg",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 2,
+   "needsCooking": true,
+   "canned": false,
+   "notes": "Store in mylar + oxygen absorbers in pails. Brown rice goes rancid in about 1 year — avoid for long storage.",
+   "kgPerPail": 13
+  },
+  {
+   "id": "wheat-berries",
+   "category": "grains",
+   "name": "Hard red wheat (whole berries)",
+   "kcalPer100g": 330,
+   "proteinG": 12.6,
+   "fatG": 1.5,
+   "carbG": 71,
+   "shelfLifeYears": 25,
+   "rotationMonths": 0,
+   "packaging": "pail",
+   "unitKg": 1,
+   "unitLabel": "kg",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 2,
+   "needsCooking": true,
+   "canned": false,
+   "notes": "Needs a hand grain mill. Can also be sprouted for vitamin C.",
+   "kgPerPail": 15
+  },
+  {
+   "id": "rolled-oats",
+   "category": "grains",
+   "name": "Rolled oats",
+   "kcalPer100g": 379,
+   "proteinG": 13,
+   "fatG": 6.5,
+   "carbG": 68,
+   "shelfLifeYears": 10,
+   "rotationMonths": 0,
+   "packaging": "pail",
+   "unitKg": 1,
+   "unitLabel": "kg",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": true,
+   "canned": false,
+   "notes": "Quick oats and rolled oats store well sealed; steel-cut has more fat and less life.",
+   "kgPerPail": 9
+  },
+  {
+   "id": "flour",
+   "category": "grains",
+   "name": "All-purpose flour",
+   "kcalPer100g": 364,
+   "proteinG": 10,
+   "fatG": 1,
+   "carbG": 76,
+   "shelfLifeYears": 5,
+   "rotationMonths": 12,
+   "packaging": "pail",
+   "unitKg": 1,
+   "unitLabel": "kg",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": true,
+   "canned": false,
+   "notes": "1 year in the bag. Seal in pails with oxygen absorbers for 5+ years.",
+   "kgPerPail": 11
+  },
+  {
+   "id": "pasta",
+   "category": "grains",
+   "name": "Pasta",
+   "kcalPer100g": 371,
+   "proteinG": 13,
+   "fatG": 1.5,
+   "carbG": 75,
+   "shelfLifeYears": 20,
+   "rotationMonths": 0,
+   "packaging": "pail",
+   "unitKg": 1,
+   "unitLabel": "kg",
+   "tiers": [
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": true,
+   "canned": false,
+   "notes": "Quick to cook: saves fuel.",
+   "kgPerPail": 10
+  },
+  {
+   "id": "cornmeal",
+   "category": "grains",
+   "name": "Cornmeal (degermed)",
+   "kcalPer100g": 370,
+   "proteinG": 7,
+   "fatG": 1.8,
+   "carbG": 79,
+   "shelfLifeYears": 10,
+   "rotationMonths": 0,
+   "packaging": "pail",
+   "unitKg": 1,
+   "unitLabel": "kg",
+   "tiers": [
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": true,
+   "canned": false,
+   "notes": "",
+   "kgPerPail": 13
+  },
+  {
+   "id": "crackers",
+   "category": "grains",
+   "name": "Crackers / hardtack",
+   "kcalPer100g": 420,
+   "proteinG": 9,
+   "fatG": 10,
+   "carbG": 72,
+   "shelfLifeYears": 1,
+   "rotationMonths": 12,
+   "packaging": "case",
+   "unitKg": 0.45,
+   "unitLabel": "box",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "Ready to eat. Hardtack lasts for decades if kept dry.",
+   "litresPerKg": 4
+  },
+  {
+   "id": "granola-bars",
+   "category": "grains",
+   "name": "Granola / energy bars",
+   "kcalPer100g": 450,
+   "proteinG": 8,
+   "fatG": 17,
+   "carbG": 66,
+   "shelfLifeYears": 1,
+   "rotationMonths": 12,
+   "packaging": "case",
+   "unitKg": 0.25,
+   "unitLabel": "box",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "No cooking needed.",
+   "litresPerKg": 3
+  },
+  {
+   "id": "instant-oats",
+   "category": "grains",
+   "name": "Instant oatmeal packets",
+   "kcalPer100g": 370,
+   "proteinG": 11,
+   "fatG": 6,
+   "carbG": 68,
+   "shelfLifeYears": 2,
+   "rotationMonths": 12,
+   "packaging": "case",
+   "unitKg": 0.4,
+   "unitLabel": "box",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short"
+   ],
+   "weight": 1,
+   "needsCooking": true,
+   "canned": false,
+   "notes": "Needs only hot water.",
+   "litresPerKg": 3
+  },
+  {
+   "id": "dry-beans",
+   "category": "legumes",
+   "name": "Dry beans (pinto, navy, black)",
+   "kcalPer100g": 347,
+   "proteinG": 21,
+   "fatG": 1.2,
+   "carbG": 63,
+   "shelfLifeYears": 25,
+   "rotationMonths": 0,
+   "packaging": "pail",
+   "unitKg": 1,
+   "unitLabel": "kg",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 2,
+   "needsCooking": true,
+   "canned": false,
+   "notes": "Old beans stay safe but take longer to soften. Pressure cooking saves fuel.",
+   "kgPerPail": 13
+  },
+  {
+   "id": "lentils",
+   "category": "legumes",
+   "name": "Red/green lentils",
+   "kcalPer100g": 352,
+   "proteinG": 25,
+   "fatG": 1,
+   "carbG": 63,
+   "shelfLifeYears": 10,
+   "rotationMonths": 0,
+   "packaging": "pail",
+   "unitKg": 1,
+   "unitLabel": "kg",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": true,
+   "canned": false,
+   "notes": "Red lentils cook in 15 min without soaking: best fuel saver.",
+   "kgPerPail": 13.5
+  },
+  {
+   "id": "split-peas",
+   "category": "legumes",
+   "name": "Split peas",
+   "kcalPer100g": 341,
+   "proteinG": 25,
+   "fatG": 1.2,
+   "carbG": 60,
+   "shelfLifeYears": 10,
+   "rotationMonths": 0,
+   "packaging": "pail",
+   "unitKg": 1,
+   "unitLabel": "kg",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": true,
+   "canned": false,
+   "notes": "",
+   "kgPerPail": 13.5
+  },
+  {
+   "id": "canned-beans",
+   "category": "legumes",
+   "name": "Canned beans",
+   "kcalPer100g": 90,
+   "proteinG": 6,
+   "fatG": 0.5,
+   "carbG": 16,
+   "shelfLifeYears": 3,
+   "rotationMonths": 24,
+   "packaging": "case",
+   "unitKg": 0.54,
+   "unitLabel": "can",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": true,
+   "notes": "Ready to eat. Must not freeze.",
+   "litresPerKg": 1.3
+  },
+  {
+   "id": "sugar",
+   "category": "sweeteners",
+   "name": "White sugar",
+   "kcalPer100g": 387,
+   "proteinG": 0,
+   "fatG": 0,
+   "carbG": 100,
+   "shelfLifeYears": 30,
+   "rotationMonths": 0,
+   "packaging": "pail",
+   "unitKg": 1,
+   "unitLabel": "kg",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 2,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "Keeps indefinitely if dry. Needed for canning jams and curing.",
+   "kgPerPail": 15
+  },
+  {
+   "id": "honey",
+   "category": "sweeteners",
+   "name": "Honey",
+   "kcalPer100g": 304,
+   "proteinG": 0.3,
+   "fatG": 0,
+   "carbG": 82,
+   "shelfLifeYears": 30,
+   "rotationMonths": 0,
+   "packaging": "jar",
+   "unitKg": 1,
+   "unitLabel": "kg jar",
+   "tiers": [
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short",
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "Never spoils. Crystallizes: warm gently. Not for infants under 1.",
+   "litresPerKg": 0.75
+  },
+  {
+   "id": "maple-syrup",
+   "category": "sweeteners",
+   "name": "Maple syrup",
+   "kcalPer100g": 260,
+   "proteinG": 0,
+   "fatG": 0.1,
+   "carbG": 67,
+   "shelfLifeYears": 2,
+   "rotationMonths": 12,
+   "packaging": "jar",
+   "unitKg": 1,
+   "unitLabel": "L jug",
+   "tiers": [
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "Refrigerate after opening. Can be made locally in spring.",
+   "litresPerKg": 0.75
+  },
+  {
+   "id": "hard-candy",
+   "category": "sweeteners",
+   "name": "Hard candy",
+   "kcalPer100g": 394,
+   "proteinG": 0,
+   "fatG": 0.2,
+   "carbG": 98,
+   "shelfLifeYears": 10,
+   "rotationMonths": 0,
+   "packaging": "case",
+   "unitKg": 0.5,
+   "unitLabel": "bag",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "",
+   "litresPerKg": 1.5
+  },
+  {
+   "id": "canola-oil",
+   "category": "fats",
+   "name": "Canola oil",
+   "kcalPer100g": 884,
+   "proteinG": 0,
+   "fatG": 100,
+   "carbG": 0,
+   "shelfLifeYears": 1.5,
+   "rotationMonths": 12,
+   "packaging": "bottle",
+   "unitKg": 3,
+   "unitLabel": "3 L jug",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short",
+    "long"
+   ],
+   "weight": 2,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "Goes rancid: rotate yearly. Store dark and cool.",
+   "litresPerKg": 1.1,
+   "isFat": true
+  },
+  {
+   "id": "shortening",
+   "category": "fats",
+   "name": "Vegetable shortening",
+   "kcalPer100g": 884,
+   "proteinG": 0,
+   "fatG": 100,
+   "carbG": 0,
+   "shelfLifeYears": 3,
+   "rotationMonths": 24,
+   "packaging": "case",
+   "unitKg": 1.36,
+   "unitLabel": "can",
+   "tiers": [
+    "budget",
+    "standard"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "Lasts longer than liquid oil while sealed.",
+   "litresPerKg": 1.3,
+   "isFat": true
+  },
+  {
+   "id": "peanut-butter",
+   "category": "fats",
+   "name": "Peanut butter",
+   "kcalPer100g": 588,
+   "proteinG": 25,
+   "fatG": 50,
+   "carbG": 20,
+   "shelfLifeYears": 1.5,
+   "rotationMonths": 12,
+   "packaging": "jar",
+   "unitKg": 1,
+   "unitLabel": "kg jar",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short",
+    "long"
+   ],
+   "weight": 2,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "High calorie, protein and fat, no cooking. Natural PB goes rancid faster.",
+   "litresPerKg": 1.1,
+   "isFat": true
+  },
+  {
+   "id": "coconut-oil",
+   "category": "fats",
+   "name": "Coconut oil",
+   "kcalPer100g": 862,
+   "proteinG": 0,
+   "fatG": 100,
+   "carbG": 0,
+   "shelfLifeYears": 4,
+   "rotationMonths": 24,
+   "packaging": "jar",
+   "unitKg": 1.6,
+   "unitLabel": "jar",
+   "tiers": [
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "Most stable common oil (saturated fat).",
+   "litresPerKg": 1.1,
+   "isFat": true
+  },
+  {
+   "id": "ghee",
+   "category": "fats",
+   "name": "Ghee / canned butter",
+   "kcalPer100g": 876,
+   "proteinG": 0.3,
+   "fatG": 99,
+   "carbG": 0,
+   "shelfLifeYears": 3,
+   "rotationMonths": 24,
+   "packaging": "jar",
+   "unitKg": 0.4,
+   "unitLabel": "jar",
+   "tiers": [
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "",
+   "litresPerKg": 1.2,
+   "isFat": true
+  },
+  {
+   "id": "nonfat-milk-powder",
+   "category": "dairy",
+   "name": "Non-fat milk powder",
+   "kcalPer100g": 362,
+   "proteinG": 36,
+   "fatG": 0.8,
+   "carbG": 52,
+   "shelfLifeYears": 20,
+   "rotationMonths": 0,
+   "packaging": "pail",
+   "unitKg": 1,
+   "unitLabel": "kg",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 2,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "20+ years sealed with oxygen absorbers; about 2 years in the bag.",
+   "kgPerPail": 11
+  },
+  {
+   "id": "whole-milk-powder",
+   "category": "dairy",
+   "name": "Whole milk powder",
+   "kcalPer100g": 496,
+   "proteinG": 26,
+   "fatG": 27,
+   "carbG": 38,
+   "shelfLifeYears": 2,
+   "rotationMonths": 12,
+   "packaging": "case",
+   "unitKg": 0.9,
+   "unitLabel": "bag",
+   "tiers": [
+    "premium"
+   ],
+   "use": [
+    "short",
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "Fat content means short life: rotate yearly.",
+   "litresPerKg": 2.2,
+   "isFat": true
+  },
+  {
+   "id": "evaporated-milk",
+   "category": "dairy",
+   "name": "Evaporated milk",
+   "kcalPer100g": 134,
+   "proteinG": 6.8,
+   "fatG": 7.6,
+   "carbG": 10,
+   "shelfLifeYears": 2,
+   "rotationMonths": 18,
+   "packaging": "case",
+   "unitKg": 0.37,
+   "unitLabel": "can",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": true,
+   "notes": "Must not freeze.",
+   "litresPerKg": 1.3
+  },
+  {
+   "id": "canned-fish",
+   "category": "cannedProtein",
+   "name": "Canned salmon / tuna",
+   "kcalPer100g": 165,
+   "proteinG": 24,
+   "fatG": 7,
+   "carbG": 0,
+   "shelfLifeYears": 4,
+   "rotationMonths": 24,
+   "packaging": "case",
+   "unitKg": 0.21,
+   "unitLabel": "can",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short",
+    "long"
+   ],
+   "weight": 2,
+   "needsCooking": false,
+   "canned": true,
+   "notes": "Salmon with bones adds calcium. Must not freeze.",
+   "litresPerKg": 1.3
+  },
+  {
+   "id": "canned-chicken",
+   "category": "cannedProtein",
+   "name": "Canned chicken",
+   "kcalPer100g": 165,
+   "proteinG": 23,
+   "fatG": 8,
+   "carbG": 0,
+   "shelfLifeYears": 4,
+   "rotationMonths": 24,
+   "packaging": "case",
+   "unitKg": 0.35,
+   "unitLabel": "can",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short",
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": true,
+   "notes": "",
+   "litresPerKg": 1.3
+  },
+  {
+   "id": "canned-ham",
+   "category": "cannedProtein",
+   "name": "Canned ham / luncheon meat",
+   "kcalPer100g": 315,
+   "proteinG": 13,
+   "fatG": 27,
+   "carbG": 4.6,
+   "shelfLifeYears": 4,
+   "rotationMonths": 24,
+   "packaging": "case",
+   "unitKg": 0.34,
+   "unitLabel": "can",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short",
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": true,
+   "notes": "",
+   "litresPerKg": 1.3
+  },
+  {
+   "id": "canned-stew",
+   "category": "cannedProtein",
+   "name": "Canned stew / chili",
+   "kcalPer100g": 100,
+   "proteinG": 6,
+   "fatG": 4,
+   "carbG": 10,
+   "shelfLifeYears": 3,
+   "rotationMonths": 24,
+   "packaging": "case",
+   "unitKg": 0.7,
+   "unitLabel": "can",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": true,
+   "notes": "",
+   "litresPerKg": 1.2
+  },
+  {
+   "id": "canned-veg",
+   "category": "cannedVeg",
+   "name": "Canned mixed vegetables",
+   "kcalPer100g": 50,
+   "proteinG": 2.5,
+   "fatG": 0.3,
+   "carbG": 9,
+   "shelfLifeYears": 3,
+   "rotationMonths": 24,
+   "packaging": "case",
+   "unitKg": 0.4,
+   "unitLabel": "can",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short",
+    "long"
+   ],
+   "weight": 2,
+   "needsCooking": false,
+   "canned": true,
+   "notes": "Must not freeze.",
+   "litresPerKg": 1.2
+  },
+  {
+   "id": "canned-tomatoes",
+   "category": "cannedVeg",
+   "name": "Canned tomatoes",
+   "kcalPer100g": 32,
+   "proteinG": 1.6,
+   "fatG": 0.3,
+   "carbG": 7,
+   "shelfLifeYears": 2,
+   "rotationMonths": 18,
+   "packaging": "case",
+   "unitKg": 0.8,
+   "unitLabel": "can",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short",
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": true,
+   "notes": "Acidic: shorter life, rotate.",
+   "litresPerKg": 1.2
+  },
+  {
+   "id": "canned-fruit",
+   "category": "cannedVeg",
+   "name": "Canned fruit (in juice)",
+   "kcalPer100g": 54,
+   "proteinG": 0.5,
+   "fatG": 0.1,
+   "carbG": 14,
+   "shelfLifeYears": 2,
+   "rotationMonths": 18,
+   "packaging": "case",
+   "unitKg": 0.4,
+   "unitLabel": "can",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short",
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": true,
+   "notes": "Some vitamin C. Must not freeze.",
+   "litresPerKg": 1.2
+  },
+  {
+   "id": "dehydrated-veg",
+   "category": "cannedVeg",
+   "name": "Dehydrated vegetables",
+   "kcalPer100g": 340,
+   "proteinG": 12,
+   "fatG": 1.5,
+   "carbG": 70,
+   "shelfLifeYears": 10,
+   "rotationMonths": 0,
+   "packaging": "pail",
+   "unitKg": 1,
+   "unitLabel": "kg",
+   "tiers": [
+    "premium"
+   ],
+   "use": [
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": true,
+   "canned": false,
+   "notes": "",
+   "kgPerPail": 4
+  },
+  {
+   "id": "chocolate",
+   "category": "morale",
+   "name": "Chocolate",
+   "kcalPer100g": 535,
+   "proteinG": 7.6,
+   "fatG": 30,
+   "carbG": 59,
+   "shelfLifeYears": 2,
+   "rotationMonths": 12,
+   "packaging": "case",
+   "unitKg": 0.1,
+   "unitLabel": "bar",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short",
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "Morale matters in a long winter.",
+   "litresPerKg": 2
+  },
+  {
+   "id": "drink-mix",
+   "category": "morale",
+   "name": "Hot chocolate / drink mix",
+   "kcalPer100g": 400,
+   "proteinG": 6,
+   "fatG": 4,
+   "carbG": 85,
+   "shelfLifeYears": 2,
+   "rotationMonths": 12,
+   "packaging": "case",
+   "unitKg": 0.8,
+   "unitLabel": "tin",
+   "tiers": [
+    "budget",
+    "standard",
+    "premium"
+   ],
+   "use": [
+    "short",
+    "long"
+   ],
+   "weight": 1,
+   "needsCooking": false,
+   "canned": false,
+   "notes": "",
+   "litresPerKg": 2
+  }
+ ]
+}

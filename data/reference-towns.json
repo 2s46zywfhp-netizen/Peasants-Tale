@@ -1,0 +1,626 @@
+{
+ "dataset": "reference-towns",
+ "version": "1.0.0",
+ "updated": "2026-11-08",
+ "description": "Reference communities for postal-code lookup, NRCan hardiness zone and National Building Code (2020) January 2.5% design temperature. Zones and design lows are approximate values compiled for this app: verify at planthardiness.gc.ca and NBC Appendix C before relying on them. Rural postal areas (P0x) are large; GPS is more accurate. Edit freely.",
+ "sources": [
+  "nrcan-hardiness"
+ ],
+ "records": [
+  {
+   "id": "big-trout-lake",
+   "name": "Big Trout Lake",
+   "lat": 53.82,
+   "lon": -89.88,
+   "zone": "1a",
+   "designLowC": -38,
+   "fsa": []
+  },
+  {
+   "id": "sandy-lake",
+   "name": "Sandy Lake",
+   "lat": 53.06,
+   "lon": -93.34,
+   "zone": "1a",
+   "designLowC": -38,
+   "fsa": []
+  },
+  {
+   "id": "pickle-lake",
+   "name": "Pickle Lake",
+   "lat": 51.47,
+   "lon": -90.19,
+   "zone": "1b",
+   "designLowC": -37,
+   "fsa": []
+  },
+  {
+   "id": "moosonee",
+   "name": "Moosonee",
+   "lat": 51.27,
+   "lon": -80.65,
+   "zone": "1b",
+   "designLowC": -36,
+   "fsa": []
+  },
+  {
+   "id": "red-lake",
+   "name": "Red Lake",
+   "lat": 51.02,
+   "lon": -93.83,
+   "zone": "2a",
+   "designLowC": -36,
+   "fsa": [
+    "P0V"
+   ]
+  },
+  {
+   "id": "sioux-lookout",
+   "name": "Sioux Lookout",
+   "lat": 50.1,
+   "lon": -91.92,
+   "zone": "2b",
+   "designLowC": -35,
+   "fsa": [
+    "P8T"
+   ]
+  },
+  {
+   "id": "dryden",
+   "name": "Dryden",
+   "lat": 49.78,
+   "lon": -92.84,
+   "zone": "2b",
+   "designLowC": -34,
+   "fsa": [
+    "P8N"
+   ]
+  },
+  {
+   "id": "kenora",
+   "name": "Kenora",
+   "lat": 49.77,
+   "lon": -94.49,
+   "zone": "3a",
+   "designLowC": -33,
+   "fsa": [
+    "P9N",
+    "P0X"
+   ]
+  },
+  {
+   "id": "hearst",
+   "name": "Hearst",
+   "lat": 49.69,
+   "lon": -83.67,
+   "zone": "2a",
+   "designLowC": -35,
+   "fsa": []
+  },
+  {
+   "id": "geraldton",
+   "name": "Geraldton",
+   "lat": 49.72,
+   "lon": -86.95,
+   "zone": "2a",
+   "designLowC": -36,
+   "fsa": [
+    "P0T"
+   ]
+  },
+  {
+   "id": "kapuskasing",
+   "name": "Kapuskasing",
+   "lat": 49.42,
+   "lon": -82.43,
+   "zone": "2b",
+   "designLowC": -34,
+   "fsa": [
+    "P5N",
+    "P0L"
+   ]
+  },
+  {
+   "id": "cochrane",
+   "name": "Cochrane",
+   "lat": 49.06,
+   "lon": -81.02,
+   "zone": "2b",
+   "designLowC": -34,
+   "fsa": []
+  },
+  {
+   "id": "timmins",
+   "name": "Timmins",
+   "lat": 48.48,
+   "lon": -81.33,
+   "zone": "3a",
+   "designLowC": -34,
+   "fsa": [
+    "P4N",
+    "P4P",
+    "P4R"
+   ]
+  },
+  {
+   "id": "nipigon",
+   "name": "Nipigon",
+   "lat": 49.01,
+   "lon": -88.26,
+   "zone": "3a",
+   "designLowC": -35,
+   "fsa": []
+  },
+  {
+   "id": "marathon",
+   "name": "Marathon",
+   "lat": 48.72,
+   "lon": -86.38,
+   "zone": "3a",
+   "designLowC": -31,
+   "fsa": []
+  },
+  {
+   "id": "atikokan",
+   "name": "Atikokan",
+   "lat": 48.76,
+   "lon": -91.62,
+   "zone": "3a",
+   "designLowC": -33,
+   "fsa": []
+  },
+  {
+   "id": "fort-frances",
+   "name": "Fort Frances",
+   "lat": 48.61,
+   "lon": -93.4,
+   "zone": "3a",
+   "designLowC": -33,
+   "fsa": [
+    "P9A",
+    "P0W"
+   ]
+  },
+  {
+   "id": "thunder-bay",
+   "name": "Thunder Bay",
+   "lat": 48.38,
+   "lon": -89.25,
+   "zone": "3b",
+   "designLowC": -31,
+   "fsa": [
+    "P7A",
+    "P7B",
+    "P7C",
+    "P7E",
+    "P7G",
+    "P7J",
+    "P7K"
+   ]
+  },
+  {
+   "id": "kirkland-lake",
+   "name": "Kirkland Lake",
+   "lat": 48.15,
+   "lon": -80.03,
+   "zone": "3a",
+   "designLowC": -33,
+   "fsa": [
+    "P2N",
+    "P0K"
+   ]
+  },
+  {
+   "id": "wawa",
+   "name": "Wawa",
+   "lat": 47.99,
+   "lon": -84.77,
+   "zone": "3a",
+   "designLowC": -34,
+   "fsa": [
+    "P0S"
+   ]
+  },
+  {
+   "id": "chapleau",
+   "name": "Chapleau",
+   "lat": 47.84,
+   "lon": -83.4,
+   "zone": "3a",
+   "designLowC": -35,
+   "fsa": []
+  },
+  {
+   "id": "temiskaming-shores",
+   "name": "Temiskaming Shores",
+   "lat": 47.51,
+   "lon": -79.68,
+   "zone": "3a",
+   "designLowC": -32,
+   "fsa": [
+    "P0J"
+   ]
+  },
+  {
+   "id": "sault-ste-marie",
+   "name": "Sault Ste. Marie",
+   "lat": 46.52,
+   "lon": -84.33,
+   "zone": "4b",
+   "designLowC": -25,
+   "fsa": [
+    "P6A",
+    "P6B",
+    "P6C",
+    "P0R"
+   ]
+  },
+  {
+   "id": "sudbury",
+   "name": "Sudbury",
+   "lat": 46.49,
+   "lon": -80.99,
+   "zone": "4a",
+   "designLowC": -28,
+   "fsa": [
+    "P3A",
+    "P3B",
+    "P3C",
+    "P3E",
+    "P3G",
+    "P3L",
+    "P3N",
+    "P3P",
+    "P3Y",
+    "P0M"
+   ]
+  },
+  {
+   "id": "elliot-lake",
+   "name": "Elliot Lake",
+   "lat": 46.38,
+   "lon": -82.65,
+   "zone": "4a",
+   "designLowC": -26,
+   "fsa": [
+    "P5A"
+   ]
+  },
+  {
+   "id": "espanola",
+   "name": "Espanola",
+   "lat": 46.26,
+   "lon": -81.77,
+   "zone": "4b",
+   "designLowC": -27,
+   "fsa": [
+    "P5E"
+   ]
+  },
+  {
+   "id": "north-bay",
+   "name": "North Bay",
+   "lat": 46.31,
+   "lon": -79.46,
+   "zone": "4a",
+   "designLowC": -28,
+   "fsa": [
+    "P1A",
+    "P1B",
+    "P1C",
+    "P0H"
+   ]
+  },
+  {
+   "id": "gore-bay",
+   "name": "Gore Bay",
+   "lat": 45.91,
+   "lon": -82.47,
+   "zone": "5a",
+   "designLowC": -24,
+   "fsa": [
+    "P0P"
+   ]
+  },
+  {
+   "id": "pembroke",
+   "name": "Pembroke",
+   "lat": 45.83,
+   "lon": -77.11,
+   "zone": "4b",
+   "designLowC": -28,
+   "fsa": [
+    "K8A",
+    "K8B"
+   ]
+  },
+  {
+   "id": "parry-sound",
+   "name": "Parry Sound",
+   "lat": 45.35,
+   "lon": -80.04,
+   "zone": "4b",
+   "designLowC": -24,
+   "fsa": [
+    "P2A",
+    "P0A",
+    "P0G"
+   ]
+  },
+  {
+   "id": "huntsville",
+   "name": "Huntsville",
+   "lat": 45.33,
+   "lon": -79.22,
+   "zone": "4b",
+   "designLowC": -27,
+   "fsa": [
+    "P1H"
+   ]
+  },
+  {
+   "id": "bancroft",
+   "name": "Bancroft",
+   "lat": 45.06,
+   "lon": -77.85,
+   "zone": "4b",
+   "designLowC": -27,
+   "fsa": []
+  },
+  {
+   "id": "haliburton",
+   "name": "Haliburton",
+   "lat": 45.05,
+   "lon": -78.51,
+   "zone": "4b",
+   "designLowC": -28,
+   "fsa": []
+  },
+  {
+   "id": "bracebridge",
+   "name": "Bracebridge",
+   "lat": 45.04,
+   "lon": -79.31,
+   "zone": "4b",
+   "designLowC": -26,
+   "fsa": [
+    "P1L",
+    "P1P",
+    "P0B",
+    "P0C",
+    "P0E"
+   ]
+  },
+  {
+   "id": "ottawa",
+   "name": "Ottawa",
+   "lat": 45.42,
+   "lon": -75.7,
+   "zone": "5a",
+   "designLowC": -25,
+   "fsa": [
+    "K1A",
+    "K1B",
+    "K1C",
+    "K1E",
+    "K1G",
+    "K1H",
+    "K1J",
+    "K1K",
+    "K1L",
+    "K1M",
+    "K1N",
+    "K1P",
+    "K1R",
+    "K1S",
+    "K1T",
+    "K1V",
+    "K1W",
+    "K1X",
+    "K1Y",
+    "K1Z",
+    "K2A",
+    "K2B",
+    "K2C",
+    "K2E",
+    "K2G",
+    "K2H",
+    "K2J",
+    "K2K",
+    "K2L",
+    "K2M",
+    "K2P",
+    "K2R",
+    "K2S",
+    "K2T",
+    "K2V",
+    "K2W"
+   ]
+  },
+  {
+   "id": "cornwall",
+   "name": "Cornwall",
+   "lat": 45.02,
+   "lon": -74.73,
+   "zone": "5a",
+   "designLowC": -23,
+   "fsa": [
+    "K6H",
+    "K6J",
+    "K6K"
+   ]
+  },
+  {
+   "id": "owen-sound",
+   "name": "Owen Sound",
+   "lat": 44.57,
+   "lon": -80.94,
+   "zone": "5b",
+   "designLowC": -19,
+   "fsa": [
+    "N4K"
+   ]
+  },
+  {
+   "id": "barrie",
+   "name": "Barrie",
+   "lat": 44.39,
+   "lon": -79.69,
+   "zone": "5a",
+   "designLowC": -24,
+   "fsa": [
+    "L4M",
+    "L4N"
+   ]
+  },
+  {
+   "id": "peterborough",
+   "name": "Peterborough",
+   "lat": 44.3,
+   "lon": -78.32,
+   "zone": "5a",
+   "designLowC": -25,
+   "fsa": [
+    "K9H",
+    "K9J",
+    "K9K",
+    "K9L"
+   ]
+  },
+  {
+   "id": "kingston",
+   "name": "Kingston",
+   "lat": 44.23,
+   "lon": -76.49,
+   "zone": "5b",
+   "designLowC": -22,
+   "fsa": [
+    "K7K",
+    "K7L",
+    "K7M",
+    "K7N",
+    "K7P"
+   ]
+  },
+  {
+   "id": "kitchener-waterloo",
+   "name": "Kitchener-Waterloo",
+   "lat": 43.45,
+   "lon": -80.49,
+   "zone": "5b",
+   "designLowC": -19,
+   "fsa": [
+    "N2A",
+    "N2B",
+    "N2C",
+    "N2E",
+    "N2G",
+    "N2H",
+    "N2J",
+    "N2K",
+    "N2L",
+    "N2M",
+    "N2N",
+    "N2P",
+    "N2R",
+    "N2T",
+    "N2V"
+   ]
+  },
+  {
+   "id": "toronto",
+   "name": "Toronto",
+   "lat": 43.65,
+   "lon": -79.38,
+   "zone": "6a",
+   "designLowC": -18,
+   "fsa": [
+    "M"
+   ]
+  },
+  {
+   "id": "hamilton",
+   "name": "Hamilton",
+   "lat": 43.26,
+   "lon": -79.87,
+   "zone": "6a",
+   "designLowC": -17,
+   "fsa": [
+    "L8E",
+    "L8G",
+    "L8H",
+    "L8J",
+    "L8K",
+    "L8L",
+    "L8M",
+    "L8N",
+    "L8P",
+    "L8R",
+    "L8S",
+    "L8T",
+    "L8V",
+    "L8W",
+    "L9A",
+    "L9B",
+    "L9C",
+    "L9G",
+    "L9H",
+    "L9K"
+   ]
+  },
+  {
+   "id": "london",
+   "name": "London",
+   "lat": 42.98,
+   "lon": -81.25,
+   "zone": "6a",
+   "designLowC": -19,
+   "fsa": [
+    "N5V",
+    "N5W",
+    "N5X",
+    "N5Y",
+    "N5Z",
+    "N6A",
+    "N6B",
+    "N6C",
+    "N6E",
+    "N6G",
+    "N6H",
+    "N6J",
+    "N6K",
+    "N6L",
+    "N6M",
+    "N6N",
+    "N6P"
+   ]
+  },
+  {
+   "id": "windsor",
+   "name": "Windsor",
+   "lat": 42.31,
+   "lon": -83.04,
+   "zone": "6b",
+   "designLowC": -16,
+   "fsa": [
+    "N8N",
+    "N8P",
+    "N8R",
+    "N8S",
+    "N8T",
+    "N8V",
+    "N8W",
+    "N8X",
+    "N8Y",
+    "N9A",
+    "N9B",
+    "N9C",
+    "N9E",
+    "N9G",
+    "N9H",
+    "N9J",
+    "N9K"
+   ]
+  }
+ ]
+}
