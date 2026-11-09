@@ -1,4 +1,4 @@
-/** Shapes of everything stored in IndexedDB. Later phases extend these. */
+/** Shapes of everything stored in IndexedDB. */
 
 export type ThemeName = 'light' | 'dark' | 'red';
 
@@ -13,7 +13,7 @@ export interface LocationProfile {
   postalCode?: string;
   lat?: number;
   lon?: number;
-  /** Derived climate values are filled in by Phase 2. */
+  /** Derived climate values. */
   climate?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;

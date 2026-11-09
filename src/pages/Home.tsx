@@ -8,11 +8,11 @@ import { alerts, toIso } from '../calc/inventory';
 import { usePlan, useProfile } from '../lib/store';
 
 const MODULES = [
-  { to: '/prep', title: 'Prep lists', body: 'Food, water, seeds, supplies, hunting and defence — scaled to your household and region.', phase: 0 },
-  { to: '/stock', title: 'Stock & rotation', body: 'What you have vs. your targets, expiry dates, use-this-month list.', phase: 0 },
-  { to: '/guide', title: 'Field guide', body: 'Foraging with lookalikes, mushrooms, water, fire, shelter, navigation, cold injuries, first aid, preservation, ice safety. Seasonal calendar.', phase: 0 },
-  { to: '/journal', title: 'Journal & map', body: 'Dated logs with photos, GPS and weather; offline map pins; PIN-locked caches; garden log.', phase: 0 },
-  { to: '/help', title: 'How to use NorthPrep', body: 'Install, set up, print paper backups, save offline maps, back up.', phase: 0 },
+  { to: '/prep', title: 'Prep lists', body: 'Food, water, seeds, supplies, hunting and defence — scaled to your household and region.' },
+  { to: '/stock', title: 'Stock & rotation', body: 'What you have vs. your targets, expiry dates, use-this-month list.' },
+  { to: '/guide', title: 'Field guide', body: 'Foraging with lookalikes, mushrooms, water, fire, shelter, navigation, cold injuries, first aid, preservation, ice safety. Seasonal calendar.' },
+  { to: '/journal', title: 'Journal & map', body: 'Dated logs with photos, GPS and weather; offline map pins; PIN-locked caches; garden log.' },
+  { to: '/help', title: 'How to use NorthPrep', body: 'Install, set up, print paper backups, save offline maps, back up.' },
 ];
 
 export function Home() {
@@ -74,6 +74,7 @@ export function Home() {
       ))}
 
       <PrintButton />
+      <p className="text-center text-sm text-muted">NorthPrep v{__APP_VERSION__}</p>
     </div>
   );
 }
