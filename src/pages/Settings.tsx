@@ -7,6 +7,7 @@ import { downloadText } from '../lib/files';
 import { THEMES, useTheme } from '../lib/theme';
 import { getStorageStatus, requestPersistence, type StorageStatus } from '../lib/storage';
 import { datasets } from '../data/datasets';
+import { photoStatus, savePhotosForOffline } from '../lib/offlinePhotos';
 
 type Msg = { kind: 'ok' | 'err'; text: string } | null;
 
@@ -18,7 +19,11 @@ export function Settings() {
   const [mode, setMode] = useState<RestoreMode>('replace');
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const refreshStorage = () => getStorageStatus().then(setStorage);
+  const [photos, setPhotos] = useState<{ saved: number; total: number } | null>(null);
+  const refreshStorage = () => {
+    void photoStatus().then(setPhotos);
+    return getStorageStatus().then(setStorage);
+  };
   useEffect(() => {
     void refreshStorage();
   }, []);
@@ -144,6 +149,16 @@ export function Settings() {
           <p className="text-muted">
             Using {storage.usageMB} MB of {storage.quotaMB} MB available.
           </p>
+        )}
+        {photos && (
+          <p>
+            Field-guide photos saved for offline: <b>{photos.saved} of {photos.total}</b>
+          </p>
+        )}
+        {photos && photos.saved < photos.total && (
+          <button type="button" className="btn w-full" disabled={!navigator.onLine} onClick={() => savePhotosForOffline((s, n) => setPhotos({ saved: s, total: n })).then(refreshStorage)}>
+            Save photos now
+          </button>
         )}
         {!storage?.persisted && (
           <button

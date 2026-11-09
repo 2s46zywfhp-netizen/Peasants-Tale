@@ -18,6 +18,15 @@ await page.waitForFunction(() => navigator.serviceWorker.controller !== null || 
 await page.reload(); // second load is served by the service worker
 if (!(await page.evaluate(() => !!navigator.serviceWorker.controller))) fail('service worker not controlling page');
 ok('service worker installed and controlling');
+{
+  let n = 0;
+  for (let i = 0; i < 90 && n < 70; i++) {
+    await page.waitForTimeout(1000);
+    n = await page.evaluate(async () => (await (await caches.open('guide-images')).keys()).length);
+  }
+  if (n < 70) fail('photos not saved for offline: ' + n);
+}
+ok('field-guide photos saved in the background');
 
 // Seed a record so backup has something in it.
 await page.evaluate(() => new Promise((res, rej) => {
