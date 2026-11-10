@@ -1,0 +1,5 @@
+project_id = "migratory"
+
+[functions.sightings]
+# The app calls this with the public anon key; no user accounts in v1.
+verify_jwt = true
